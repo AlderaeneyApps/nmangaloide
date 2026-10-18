@@ -1,0 +1,5 @@
+@if (backUrl()) {
+  <ion-button (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | transloco">
+    <ion-icon slot="icon-only" ios="chevron-back-outline" md="arrow-back-sharp" aria-hidden="true"></ion-icon>
+  </ion-button>
+}

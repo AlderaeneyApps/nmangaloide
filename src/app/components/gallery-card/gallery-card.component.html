@@ -1,0 +1,8 @@
+<ion-card class="gallery-card">
+  <div class="cover" [style.aspect-ratio]="aspectRatio()">
+    @if (imageUrl(); as url) {
+      <img [src]="url" [alt]="title()" loading="lazy" decoding="async" />
+    }
+  </div>
+  <p class="title" [title]="title()">{{ title() }}</p>
+</ion-card>

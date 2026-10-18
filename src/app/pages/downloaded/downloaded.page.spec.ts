@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { DownloadedPage } from './downloaded.page';
@@ -7,6 +8,7 @@ describe('DownloadedPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DownloadedPage, getTranslocoTestingModule()],
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 

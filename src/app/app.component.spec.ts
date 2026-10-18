@@ -56,10 +56,29 @@ describe('AppComponent', () => {
       .queryAll(By.directive(RouterLink))
       .map((el) => el.injector.get(RouterLink));
     expect(links.length).toEqual(4);
-    expect(router.serializeUrl(links[0].urlTree!)).toEqual('/tags');
-    expect(router.serializeUrl(links[1].urlTree!)).toEqual('/favorites');
-    expect(router.serializeUrl(links[2].urlTree!)).toEqual('/downloaded');
-    expect(router.serializeUrl(links[3].urlTree!)).toEqual('/settings');
+    expect(router.serializeUrl(links[0].urlTree!)).toEqual('/tags?from=%2F');
+    expect(router.serializeUrl(links[1].urlTree!)).toEqual('/favorites?from=%2F');
+    expect(router.serializeUrl(links[2].urlTree!)).toEqual('/downloaded?from=%2F');
+    expect(router.serializeUrl(links[3].urlTree!)).toEqual('/settings?from=%2F');
+  });
+
+  it('should add the current page as the from parameter of the sidebar links', async () => {
+    const router = TestBed.inject(Router);
+    router.resetConfig([{ path: '**', children: [] }]);
+    const fixture = TestBed.createComponent(AppComponent);
+    await router.navigateByUrl('/tags?sort=name&from=/home');
+    fixture.detectChanges();
+
+    const links = fixture.debugElement
+      .queryAll(By.directive(RouterLink))
+      .map((el) => router.serializeUrl(el.injector.get(RouterLink).urlTree!));
+    // The current page's own link gets no parameter, and an existing `from` isn't nested.
+    expect(links).toEqual([
+      '/tags',
+      '/favorites?from=%2Ftags%3Fsort%3Dname',
+      '/downloaded?from=%2Ftags%3Fsort%3Dname',
+      '/settings?from=%2Ftags%3Fsort%3Dname',
+    ]);
   });
 
   it('should link the subtitle to the GitHub repository', () => {

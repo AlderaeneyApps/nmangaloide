@@ -13,6 +13,7 @@ import {
 } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { LanguageService } from '../../services/language.service';
 
 @Component({
@@ -30,6 +31,7 @@ import { LanguageService } from '../../services/language.service';
     IonSelect,
     IonSelectOption,
     TranslocoPipe,
+    BackButtonComponent,
   ],
 })
 export class SettingsPage {

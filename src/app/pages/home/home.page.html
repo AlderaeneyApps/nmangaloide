@@ -1,6 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
+      <app-back-button></app-back-button>
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ 'HOME.TITLE' | transloco }}</ion-title>
@@ -13,4 +14,37 @@
       <ion-title size="large">{{ 'HOME.TITLE' | transloco }}</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading() && galleries().length === 0) {
+    <div class="state">
+      <ion-spinner></ion-spinner>
+    </div>
+  } @else if (error()) {
+    <div class="state">
+      <ion-text color="medium">
+        <p>{{ 'HOME.ERROR' | transloco }}</p>
+      </ion-text>
+      <ion-button fill="outline" (click)="loadFirstPage()">{{ 'HOME.RETRY' | transloco }}</ion-button>
+    </div>
+  } @else if (galleries().length === 0) {
+    <div class="state">
+      <ion-text color="medium">
+        <p>{{ 'HOME.EMPTY' | transloco }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <div class="gallery-grid">
+      @for (gallery of galleries(); track gallery.id) {
+        <app-gallery-card [gallery]="gallery"></app-gallery-card>
+      }
+    </div>
+  }
+
+  <ion-infinite-scroll [disabled]="!hasMore()" (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

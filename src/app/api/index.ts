@@ -3,6 +3,7 @@ export * from './api-key.service';
 export * from './nhentai.interceptor';
 export * from './models';
 export * from './meta.service';
+export * from './cdn.service';
 export * from './galleries.service';
 export * from './search.service';
 export * from './tags.service';

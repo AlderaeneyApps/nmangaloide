@@ -6,10 +6,16 @@
     "SETTINGS": "Paramètres"
   },
   "HOME": {
-    "TITLE": "Accueil"
+    "TITLE": "Accueil",
+    "ERROR": "Impossible de charger les galeries.",
+    "RETRY": "Réessayer",
+    "EMPTY": "Aucune galerie trouvée."
   },
   "SETTINGS": {
     "TITLE": "Paramètres",
     "LANGUAGE": "Langue"
+  },
+  "COMMON": {
+    "BACK": "Retour"
   }
 }

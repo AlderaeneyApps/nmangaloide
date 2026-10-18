@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 
 import { LanguageService } from '../../services/language.service';
@@ -9,6 +10,7 @@ describe('SettingsPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SettingsPage, getTranslocoTestingModule()],
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 

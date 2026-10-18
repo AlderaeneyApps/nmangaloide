@@ -6,10 +6,16 @@
     "SETTINGS": "Configuració"
   },
   "HOME": {
-    "TITLE": "Inici"
+    "TITLE": "Inici",
+    "ERROR": "No s'han pogut carregar les galeries.",
+    "RETRY": "Torna-ho a provar",
+    "EMPTY": "No s'han trobat galeries."
   },
   "SETTINGS": {
     "TITLE": "Configuració",
     "LANGUAGE": "Idioma"
+  },
+  "COMMON": {
+    "BACK": "Enrere"
   }
 }

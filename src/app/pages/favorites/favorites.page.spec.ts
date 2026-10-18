@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { FavoritesPage } from './favorites.page';
@@ -7,6 +8,7 @@ describe('FavoritesPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FavoritesPage, getTranslocoTestingModule()],
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 

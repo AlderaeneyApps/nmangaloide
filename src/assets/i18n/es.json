@@ -6,10 +6,16 @@
     "SETTINGS": "Ajustes"
   },
   "HOME": {
-    "TITLE": "Inicio"
+    "TITLE": "Inicio",
+    "ERROR": "No se pudieron cargar las galerías.",
+    "RETRY": "Reintentar",
+    "EMPTY": "No se encontraron galerías."
   },
   "SETTINGS": {
     "TITLE": "Ajustes",
     "LANGUAGE": "Idioma"
+  },
+  "COMMON": {
+    "BACK": "Atrás"
   }
 }

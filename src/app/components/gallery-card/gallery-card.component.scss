@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.gallery-card {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cover {
+  width: 100%;
+  overflow: hidden;
+  background: var(--ion-color-step-100, var(--ion-background-color-step-100, #e6e6e6));
+}
+
+.cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.title {
+  margin: 0;
+  padding: 8px 10px 10px;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--ion-text-color, #000);
+
+  // Truncate to two lines with an ellipsis.
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}

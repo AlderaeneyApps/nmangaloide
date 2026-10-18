@@ -9,9 +9,11 @@ import {
 } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
+
 @Component({
   selector: 'app-tags',
   templateUrl: './tags.page.html',
-  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, TranslocoPipe],
+  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, TranslocoPipe, BackButtonComponent],
 })
 export class TagsPage {}

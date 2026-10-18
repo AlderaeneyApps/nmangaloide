@@ -6,10 +6,16 @@
     "SETTINGS": "Settings"
   },
   "HOME": {
-    "TITLE": "Home"
+    "TITLE": "Home",
+    "ERROR": "Could not load galleries.",
+    "RETRY": "Retry",
+    "EMPTY": "No galleries found."
   },
   "SETTINGS": {
     "TITLE": "Settings",
     "LANGUAGE": "Language"
+  },
+  "COMMON": {
+    "BACK": "Back"
   }
 }

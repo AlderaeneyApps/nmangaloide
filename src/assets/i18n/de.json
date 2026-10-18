@@ -6,10 +6,16 @@
     "SETTINGS": "Einstellungen"
   },
   "HOME": {
-    "TITLE": "Startseite"
+    "TITLE": "Startseite",
+    "ERROR": "Galerien konnten nicht geladen werden.",
+    "RETRY": "Erneut versuchen",
+    "EMPTY": "Keine Galerien gefunden."
   },
   "SETTINGS": {
     "TITLE": "Einstellungen",
     "LANGUAGE": "Sprache"
+  },
+  "COMMON": {
+    "BACK": "Zurück"
   }
 }
