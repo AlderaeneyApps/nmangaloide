@@ -8,12 +8,14 @@ import {
 } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 
-import { provideTranslateService } from '@ngx-translate/core';
-import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { isDevMode } from '@angular/core';
+import { provideTransloco } from '@jsverse/transloco';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { nhentaiInterceptor, provideNhentaiApi } from './app/api';
+import { AVAILABLE_LANGS, DEFAULT_LANG, TranslocoHttpLoader } from './app/transloco-loader';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -24,14 +26,17 @@ bootstrapApplication(AppComponent, {
       withPreloading(PreloadAllModules),
       withComponentInputBinding(),
     ),
-    provideHttpClient(),
-    provideTranslateService({
-      loader: provideTranslateHttpLoader({
-        prefix: '/assets/i18n/',
-        suffix: '.json',
-      }),
-      fallbackLang: 'en',
-      lang: 'en',
+    provideHttpClient(withInterceptors([nhentaiInterceptor])),
+    provideNhentaiApi(),
+    provideTransloco({
+      config: {
+        availableLangs: AVAILABLE_LANGS,
+        defaultLang: DEFAULT_LANG,
+        fallbackLang: DEFAULT_LANG,
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
+      },
+      loader: TranslocoHttpLoader,
     }),
   ],
 });

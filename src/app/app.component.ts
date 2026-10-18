@@ -15,7 +15,26 @@ import {
   IonRouterOutlet,
   IonRouterLink,
 } from '@ionic/angular';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { addIcons } from 'ionicons';
+import {
+  downloadOutline,
+  downloadSharp,
+  heartOutline,
+  heartSharp,
+  pricetagOutline,
+  pricetagSharp,
+  settingsOutline,
+  settingsSharp,
+} from 'ionicons/icons';
+
+import { LanguageService } from './services/language.service';
+
+export interface AppPage {
+  title: string;
+  url: string;
+  icon: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -37,12 +56,30 @@ import { TranslateService } from '@ngx-translate/core';
     IonLabel,
     IonRouterLink,
     IonRouterOutlet,
+    TranslocoPipe,
   ],
 })
 export class AppComponent {
-  private translate = inject(TranslateService);
+  private readonly language = inject(LanguageService);
+
+  readonly appPages: AppPage[] = [
+    { title: 'MENU.TAGS', url: '/tags', icon: 'pricetag' },
+    { title: 'MENU.FAVORITES', url: '/favorites', icon: 'heart' },
+    { title: 'MENU.DOWNLOADED', url: '/downloaded', icon: 'download' },
+    { title: 'MENU.SETTINGS', url: '/settings', icon: 'settings' },
+  ];
 
   constructor() {
-    this.translate.addLangs(['es', 'en', 'ca']);
+    addIcons({
+      pricetagOutline,
+      pricetagSharp,
+      heartOutline,
+      heartSharp,
+      downloadOutline,
+      downloadSharp,
+      settingsOutline,
+      settingsSharp,
+    });
+    void this.language.init();
   }
 }

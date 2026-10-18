@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { SQLiteService } from "./sqlite.service";
 import { Toast } from '@capacitor/toast';
+import { DB_NMANGALOIDE } from "../constants";
 
 @Injectable()
 export class InitializeAppService {

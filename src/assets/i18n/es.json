@@ -1,0 +1,15 @@
+{
+  "MENU": {
+    "TAGS": "Etiquetas",
+    "FAVORITES": "Favoritos",
+    "DOWNLOADED": "Descargados",
+    "SETTINGS": "Ajustes"
+  },
+  "HOME": {
+    "TITLE": "Inicio"
+  },
+  "SETTINGS": {
+    "TITLE": "Ajustes",
+    "LANGUAGE": "Idioma"
+  }
+}

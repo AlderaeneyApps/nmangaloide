@@ -1,15 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, Router, RouterLink } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
+
+import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest';
 
 import { AppComponent } from './app.component';
+import { getTranslocoTestingModule } from './testing/transloco-testing';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
-      providers: [provideRouter([])]
+      imports: [AppComponent, getTranslocoTestingModule()],
+      providers: [provideRouter([])],
     }).compileComponents();
+  });
+
+  // Capacitor Preferences uses localStorage on the web, under the "CapacitorStorage." prefix.
+  afterEach(() => {
+    localStorage.clear();
+    vi.restoreAllMocks();
   });
 
   it('should create the app', () => {
@@ -26,16 +36,18 @@ describe('AppComponent', () => {
     await fixture.whenStable();
     const app = fixture.nativeElement;
     const menuItems = app.querySelectorAll('ion-label');
-    expect(menuItems.length).toEqual(12);
-    expect(menuItems[0].innerHTML).toContain('Inbox');
-    expect(menuItems[1].innerHTML).toContain('Outbox');
+    expect(menuItems.length).toEqual(4);
+    expect(menuItems[0].innerHTML).toContain('Tags');
+    expect(menuItems[1].innerHTML).toContain('Favorites');
+    expect(menuItems[2].innerHTML).toContain('Downloaded');
+    expect(menuItems[3].innerHTML).toContain('Settings');
   });
 
   it('should have urls', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.nativeElement;
-    expect(app.querySelectorAll('ion-item').length).toEqual(12);
+    expect(app.querySelectorAll('ion-item').length).toEqual(4);
     // Ionic applies the rendered href through its own async write queue, so
     // reading the DOM attribute is flaky (FW-6264). Assert the routerLink
     // binding directly, which resolves synchronously.
@@ -43,8 +55,38 @@ describe('AppComponent', () => {
     const links = fixture.debugElement
       .queryAll(By.directive(RouterLink))
       .map((el) => el.injector.get(RouterLink));
-    expect(links.length).toEqual(6);
-    expect(router.serializeUrl(links[0].urlTree!)).toEqual('/folder/Inbox');
-    expect(router.serializeUrl(links[1].urlTree!)).toEqual('/folder/Outbox');
+    expect(links.length).toEqual(4);
+    expect(router.serializeUrl(links[0].urlTree!)).toEqual('/tags');
+    expect(router.serializeUrl(links[1].urlTree!)).toEqual('/favorites');
+    expect(router.serializeUrl(links[2].urlTree!)).toEqual('/downloaded');
+    expect(router.serializeUrl(links[3].urlTree!)).toEqual('/settings');
+  });
+
+  it('should link the subtitle to the GitHub repository', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('ion-note a');
+    expect(link.href).toEqual('https://github.com/AlderaeneyApps/nmangaloide');
+  });
+
+  it('should use the saved language setting', async () => {
+    localStorage.setItem('CapacitorStorage.lang', 'es');
+    const fixture = TestBed.createComponent(AppComponent);
+    const transloco = TestBed.inject(TranslocoService);
+
+    await vi.waitFor(() => expect(transloco.getActiveLang()).toBe('es'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('ion-label').innerHTML).toContain('Etiquetas');
+  });
+
+  it('should fall back to English for an unsupported device language and save it', async () => {
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('ja-JP');
+    TestBed.createComponent(AppComponent);
+    const transloco = TestBed.inject(TranslocoService);
+
+    await vi.waitFor(() => expect(localStorage.getItem('CapacitorStorage.lang')).toBe('en'));
+    expect(transloco.getActiveLang()).toBe('en');
   });
 });
