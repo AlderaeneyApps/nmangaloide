@@ -30,6 +30,23 @@
     </ion-item>
   </ion-list>
 
+  <ion-list [inset]="true" data-section="reader">
+    <ion-list-header>
+      <ion-label>{{ 'SETTINGS.READER' | transloco }}</ion-label>
+    </ion-list-header>
+    <ion-radio-group [value]="settings.readerMode()" (ionChange)="onReaderModeChange($event)">
+      @for (mode of readerModes; track mode) {
+        <ion-item>
+          <ion-radio [value]="mode" justify="space-between">
+            {{ 'SETTINGS.READER_MODE.' + mode | transloco }}
+            <br />
+            <ion-note>{{ 'SETTINGS.READER_MODE_HINT.' + mode | transloco }}</ion-note>
+          </ion-radio>
+        </ion-item>
+      }
+    </ion-radio-group>
+  </ion-list>
+
   <ion-list [inset]="true">
     <ion-list-header>
       <ion-label>{{ 'SETTINGS.DATA' | transloco }}</ion-label>

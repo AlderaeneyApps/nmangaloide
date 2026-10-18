@@ -1,0 +1,86 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button></app-back-button>
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ gallery()?.title?.pretty || ('GALLERY.TITLE' | transloco) }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (loading()) {
+    <div class="state"><ion-spinner></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <ion-text color="medium"><p>{{ 'GALLERY.ERROR' | transloco }}</p></ion-text>
+      <ion-button fill="outline" (click)="load()">{{ 'GALLERY.RETRY' | transloco }}</ion-button>
+    </div>
+  } @else if (gallery(); as g) {
+    <div class="gallery">
+      <div class="cover" [style.aspect-ratio]="coverRatio()">
+        @if (coverUrl(); as url) {
+          <img [src]="url" [alt]="g.title.pretty || g.title.english" />
+        }
+      </div>
+
+      <div class="info">
+        <h1 class="english">{{ g.title.english || g.title.pretty }}</h1>
+        @if (g.title.japanese) {
+          <p class="japanese" lang="ja">{{ g.title.japanese }}</p>
+        }
+
+        <ul class="facts">
+          <li><ion-icon name="documents-outline" aria-hidden="true"></ion-icon>{{ 'GALLERY.PAGES' | transloco: { count: g.num_pages } }}</li>
+          <li><ion-icon name="heart-outline" aria-hidden="true"></ion-icon>{{ 'GALLERY.FAVORITES' | transloco: { count: g.num_favorites } }}</li>
+          @if (uploadDate()) {
+            <li><ion-icon name="time-outline" aria-hidden="true"></ion-icon>{{ 'GALLERY.UPLOADED' | transloco: { date: uploadDate() } }}</li>
+          }
+          <li class="id">#{{ g.id }}</li>
+        </ul>
+      </div>
+    </div>
+
+    @for (group of tagGroups(); track group.type) {
+      <section class="tag-group" [attr.data-type]="group.type">
+        <h2>{{ 'TAGS.TYPES.' + group.type | transloco }}</h2>
+        <div class="chips">
+          @for (tag of group.tags; track tag.id) {
+            <ion-chip
+              [outline]="true"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="'GALLERY.SEARCH_TAG' | transloco: { tag: tag.name }"
+              (click)="searchFor(tag)"
+              (keydown.enter)="searchFor(tag)"
+              (keydown.space)="$event.preventDefault(); searchFor(tag)"
+            >
+              <ion-label>{{ tag.name }}</ion-label>
+              <span class="count">{{ tag.count }}</span>
+            </ion-chip>
+          }
+        </div>
+      </section>
+    }
+
+    @if (g.scanlator) {
+      <p class="scanlator">{{ 'GALLERY.SCANLATOR' | transloco: { name: g.scanlator } }}</p>
+    }
+
+    <div class="fab-spacer"></div>
+
+    <!-- Always visible while scrolling the details. -->
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button
+        class="read"
+        [routerLink]="['/gallery', g.id, 'read']"
+        [queryParams]="readerParams()"
+        [disabled]="g.pages.length === 0"
+        [attr.aria-label]="'GALLERY.READ' | transloco"
+        [title]="'GALLERY.READ' | transloco"
+      >
+        <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+</ion-content>

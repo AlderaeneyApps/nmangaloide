@@ -21,7 +21,8 @@ export const nhentaiInterceptor: HttpInterceptorFn = (req, next) => {
   if (key && !req.headers.has('Authorization')) {
     setHeaders['Authorization'] = `Key ${key}`;
   }
-  // Browsers refuse to let scripts set User-Agent, so only send it natively.
+  // Browsers refuse to let scripts set User-Agent, so only send it natively, where
+  // CapacitorHttp makes the request (see capacitor.config.ts).
   if (Capacitor.isNativePlatform()) {
     setHeaders['User-Agent'] = config.userAgent;
   }

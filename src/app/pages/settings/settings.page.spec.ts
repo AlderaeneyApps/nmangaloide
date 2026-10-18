@@ -6,6 +6,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { BackupService } from '../../services/backup.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
+import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { SettingsPage } from './settings.page';
 
@@ -14,8 +15,10 @@ describe('SettingsPage', () => {
   let toastCreate: ReturnType<typeof vi.fn>;
   let alertRole: string;
   let alertCreate: ReturnType<typeof vi.fn>;
+  let db: FakeDatabase;
 
   beforeEach(async () => {
+    db = new FakeDatabase();
     backup = {
       exportToFile: vi.fn().mockResolvedValue('nmangaloide-backup.json'),
       importFromFile: vi.fn().mockResolvedValue(undefined),
@@ -33,6 +36,7 @@ describe('SettingsPage', () => {
         { provide: BackupService, useValue: backup },
         { provide: ToastController, useValue: { create: toastCreate } },
         { provide: AlertController, useValue: { create: alertCreate } },
+        provideFakeDatabase(db),
       ],
     }).compileComponents();
   });
@@ -147,6 +151,54 @@ describe('SettingsPage', () => {
         'That file is not a valid nmangaloide backup.',
         'This backup comes from a newer version of the app. Update the app to import it.',
       ]);
+    });
+  });
+
+  describe('reader mode', () => {
+    const settle = () => new Promise((resolve) => setTimeout(resolve));
+
+    async function render() {
+      const fixture = TestBed.createComponent(SettingsPage);
+      fixture.detectChanges();
+      await settle();
+      fixture.detectChanges();
+      return fixture;
+    }
+
+    const group = (el: HTMLElement) => el.querySelector('[data-section="reader"] ion-radio-group') as HTMLIonRadioGroupElement;
+
+    it('sits above the backup buttons and defaults to infinite scroll', async () => {
+      const el: HTMLElement = (await render()).nativeElement;
+      const sections = [...el.querySelectorAll('ion-list-header')].map((h) => h.textContent?.trim());
+      expect(sections).toEqual(['Reader', 'Data']);
+      const options = [...el.querySelectorAll('[data-section="reader"] ion-radio')].map((r) => r.textContent);
+      expect(options[0]).toContain('Infinite scroll');
+      expect(options[1]).toContain('One page at a time');
+      expect(group(el).value).toBe('scroll');
+    });
+
+    it('shows the saved mode', async () => {
+      db.settings.set('reader_mode', 'paged');
+      const el: HTMLElement = (await render()).nativeElement;
+      expect(group(el).value).toBe('paged');
+    });
+
+    it('saves the chosen mode in the database', async () => {
+      const fixture = await render();
+      group(fixture.nativeElement).dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'paged' } }));
+      await settle();
+      fixture.detectChanges();
+      expect(db.settings.get('reader_mode')).toBe('paged');
+      expect(group(fixture.nativeElement).value).toBe('paged');
+    });
+
+    it('reports a failed save', async () => {
+      const fixture = await render();
+      db.failNext = new Error('disk full');
+      group(fixture.nativeElement).dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'paged' } }));
+      await settle();
+      expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'Could not save the setting.' }));
+      expect(db.settings.has('reader_mode')).toBe(false);
     });
   });
 });

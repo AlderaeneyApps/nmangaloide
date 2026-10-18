@@ -1,0 +1,59 @@
+<ion-header [translucent]="true" class="reader-header" [class.hidden]="headerHidden()">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button></app-back-button>
+    </ion-buttons>
+    <ion-title>{{ gallery()?.title?.pretty || ('READER.TITLE' | transloco) }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="reader" [fullscreen]="true" [scrollEvents]="mode() === 'scroll'" (ionScroll)="onScroll($event)">
+  @if (loading()) {
+    <div class="state"><ion-spinner></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <ion-text color="medium"><p>{{ 'READER.ERROR' | transloco }}</p></ion-text>
+      <ion-button fill="outline" (click)="load()">{{ 'GALLERY.RETRY' | transloco }}</ion-button>
+    </div>
+  } @else if (pages().length === 0) {
+    <div class="state">
+      <ion-text color="medium"><p>{{ 'READER.NO_PAGES' | transloco }}</p></ion-text>
+    </div>
+  } @else if (mode() === 'scroll') {
+    <div class="scroll" data-mode="scroll">
+      @for (page of pages(); track page.number) {
+        <div class="page" [style.aspect-ratio]="page.ratio">
+          @if (page.url) {
+            <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" loading="lazy" decoding="async" />
+          }
+        </div>
+      }
+    </div>
+  } @else if (current(); as page) {
+    <div class="paged" data-mode="paged" (click)="onPageTap($event)">
+      @if (page.url) {
+        <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" />
+      }
+    </div>
+  }
+</ion-content>
+
+@if (mode() === 'paged' && !loading() && pages().length > 0) {
+  <ion-footer>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button data-action="previous" [disabled]="!hasPrevious()" (click)="previous()" [attr.aria-label]="'READER.PREVIOUS' | transloco">
+          <ion-icon slot="icon-only" name="chevron-back-outline" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title class="counter" size="small">
+        {{ 'READER.PAGE_OF' | transloco: { page: index() + 1, total: pages().length } }}
+      </ion-title>
+      <ion-buttons slot="end">
+        <ion-button data-action="next" [disabled]="!hasNext()" (click)="next()" [attr.aria-label]="'READER.NEXT' | transloco">
+          <ion-icon slot="icon-only" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+}

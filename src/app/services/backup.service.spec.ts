@@ -2,11 +2,13 @@ import { TestBed } from '@angular/core/testing';
 
 import { DatabaseService } from '../sql-services/database.service';
 import { BackupService, backupFileName } from './backup.service';
+import { AppSettingsService } from './app-settings.service';
 import { TagPreferencesService } from './tag-preferences.service';
 
 describe('BackupService', () => {
   let database: { exportJson: ReturnType<typeof vi.fn>; importJson: ReturnType<typeof vi.fn> };
   let tags: { reload: ReturnType<typeof vi.fn> };
+  let settings: { reload: ReturnType<typeof vi.fn> };
   let service: BackupService;
 
   beforeEach(() => {
@@ -15,10 +17,12 @@ describe('BackupService', () => {
       importJson: vi.fn().mockResolvedValue(undefined),
     };
     tags = { reload: vi.fn().mockResolvedValue(undefined) };
+    settings = { reload: vi.fn().mockResolvedValue(undefined) };
     TestBed.configureTestingModule({
       providers: [
         { provide: DatabaseService, useValue: database },
         { provide: TagPreferencesService, useValue: tags },
+        { provide: AppSettingsService, useValue: settings },
       ],
     });
     service = TestBed.inject(BackupService);
@@ -48,10 +52,11 @@ describe('BackupService', () => {
     expect(clicked!.href).toBe('blob:backup');
   });
 
-  it('imports a file and reloads the saved tags', async () => {
+  it('imports a file and reloads the saved tags and settings', async () => {
     await service.importFromFile(new Blob(['{"tables":[]}'], { type: 'application/json' }));
     expect(database.importJson).toHaveBeenCalledWith('{"tables":[]}');
     expect(tags.reload).toHaveBeenCalled();
+    expect(settings.reload).toHaveBeenCalled();
   });
 
   it('does not reload when the import fails', async () => {

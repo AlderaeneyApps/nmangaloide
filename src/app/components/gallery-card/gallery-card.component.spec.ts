@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { CdnService, GalleryListItem, resolveMediaUrl } from '../../api';
-import { GalleryCardComponent } from './gallery-card.component';
+import { GalleryCardComponent, truncateTitle } from './gallery-card.component';
 
 const GALLERY: GalleryListItem = {
   id: 1,
@@ -48,7 +48,10 @@ describe('GalleryCardComponent', () => {
     const img = el.querySelector('img')!;
     expect(img.getAttribute('src')).toBe('https://t1.example.net/galleries/100/thumb.webp');
     expect(img.getAttribute('alt')).toBe(GALLERY.english_title);
-    expect(el.querySelector('.title')?.textContent?.trim()).toBe(GALLERY.english_title);
+    const title = el.querySelector('.title')!;
+    // Cut to 35 characters, with the full title kept in the tooltip.
+    expect(title.textContent?.trim()).toBe('A very long gallery title that shou...');
+    expect(title.getAttribute('title')).toBe(GALLERY.english_title);
   });
 
   it('should reserve space using the thumbnail size', async () => {
@@ -83,5 +86,31 @@ describe('resolveMediaUrl', () => {
     expect(resolveMediaUrl('', ['https://t1'])).toBeNull();
     expect(resolveMediaUrl('a.jpg', [])).toBeNull();
     expect(resolveMediaUrl('a.jpg', undefined)).toBeNull();
+  });
+});
+
+describe('truncateTitle', () => {
+  it('keeps titles of up to 35 characters', () => {
+    const exactly35 = 'x'.repeat(35);
+    expect(truncateTitle(exactly35)).toBe(exactly35);
+    expect(truncateTitle('Short title')).toBe('Short title');
+    expect(truncateTitle('')).toBe('');
+  });
+
+  it('cuts longer titles to 35 characters and adds three dots', () => {
+    const result = truncateTitle('y'.repeat(36));
+    expect(result).toBe('y'.repeat(35) + '...');
+  });
+
+  it('drops a trailing space before the dots', () => {
+    expect(truncateTitle('A title with a space right at the cut and more')).toBe('A title with a space right at the c...');
+    expect(truncateTitle(`${'a'.repeat(34)} more words`)).toBe(`${'a'.repeat(34)}...`);
+  });
+
+  it('counts each visible character once, including Japanese and emoji', () => {
+    const japanese = 'あ'.repeat(40);
+    expect(truncateTitle(japanese)).toBe('あ'.repeat(35) + '...');
+    const emoji = '😀'.repeat(36);
+    expect(truncateTitle(emoji)).toBe('😀'.repeat(35) + '...');
   });
 });

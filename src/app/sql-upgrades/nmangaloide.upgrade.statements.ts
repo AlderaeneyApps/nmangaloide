@@ -20,6 +20,16 @@ export const NMANGALOIDE_UPGRADES: capSQLiteVersionUpgrade[] = [
       `CREATE INDEX IF NOT EXISTS idx_tag_preferences_name ON tag_preferences (name COLLATE NOCASE);`,
     ],
   },
+  {
+    toVersion: 2,
+    statements: [
+      `CREATE TABLE IF NOT EXISTS app_settings (
+        key TEXT PRIMARY KEY NOT NULL,
+        value TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+      );`,
+    ],
+  },
 ];
 
 /** The schema version the app expects. */

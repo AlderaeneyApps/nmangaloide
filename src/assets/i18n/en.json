@@ -9,7 +9,11 @@
     "TITLE": "Home",
     "ERROR": "Could not load galleries.",
     "RETRY": "Retry",
-    "EMPTY": "No galleries found."
+    "EMPTY": "No galleries found.",
+    "CLEAR_SEARCH": "Clear the search and show the newest galleries",
+    "NO_RESULTS": "No galleries match this search.",
+    "SAVED_TAGS": "Your tags ({{count}})",
+    "SAVED_TAGS_HINT": "Showing galleries filtered by your saved tags. Open the Tags page to change them."
   },
   "SETTINGS": {
     "TITLE": "Settings",
@@ -27,7 +31,18 @@
     "EXPORT_ERROR": "Could not export the database.",
     "IMPORT_DONE": "Database imported.",
     "IMPORT_ERROR": "That file is not a valid nmangaloide backup.",
-    "IMPORT_NEWER": "This backup comes from a newer version of the app. Update the app to import it."
+    "IMPORT_NEWER": "This backup comes from a newer version of the app. Update the app to import it.",
+    "READER": "Reader",
+    "READER_MODE": {
+      "scroll": "Infinite scroll",
+      "paged": "One page at a time"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "All pages in one continuous vertical scroll.",
+      "paged": "Tap to move between pages."
+    },
+    "SETTINGS_LOAD_ERROR": "Could not load your settings.",
+    "SETTINGS_SAVE_ERROR": "Could not save the setting."
   },
   "COMMON": {
     "BACK": "Back"
@@ -65,5 +80,25 @@
       "language": "Language",
       "category": "Category"
     }
+  },
+  "GALLERY": {
+    "TITLE": "Gallery",
+    "PAGES": "{{count}} pages",
+    "FAVORITES": "{{count}} favorites",
+    "UPLOADED": "Uploaded {{date}}",
+    "READ": "Read",
+    "ERROR": "Could not load this gallery.",
+    "RETRY": "Retry",
+    "SCANLATOR": "Scanlated by {{name}}",
+    "SEARCH_TAG": "Show galleries with {{tag}}"
+  },
+  "READER": {
+    "TITLE": "Reader",
+    "ERROR": "Could not load the pages.",
+    "NO_PAGES": "This gallery has no pages.",
+    "PAGE_ALT": "Page {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Previous page",
+    "NEXT": "Next page"
   }
 }

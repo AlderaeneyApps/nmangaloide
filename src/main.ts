@@ -15,7 +15,7 @@ import { provideTransloco } from '@jsverse/transloco';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { nhentaiInterceptor, provideNhentaiApi } from './app/api';
 import { AVAILABLE_LANGS, DEFAULT_LANG, TranslocoHttpLoader } from './app/transloco-loader';
 import { DatabaseService } from './app/sql-services/database.service';
@@ -45,7 +45,8 @@ setUpWebSqlite()
           withPreloading(PreloadAllModules),
           withComponentInputBinding(),
         ),
-        provideHttpClient(withInterceptors([nhentaiInterceptor])),
+        // fetch: on Android/iOS, CapacitorHttp routes it through the native HTTP stack (see capacitor.config.ts).
+        provideHttpClient(withFetch(), withInterceptors([nhentaiInterceptor])),
         provideNhentaiApi(),
         SQLiteService,
         DbnameVersionService,

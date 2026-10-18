@@ -9,7 +9,11 @@
     "TITLE": "Accueil",
     "ERROR": "Impossible de charger les galeries.",
     "RETRY": "Réessayer",
-    "EMPTY": "Aucune galerie trouvée."
+    "EMPTY": "Aucune galerie trouvée.",
+    "CLEAR_SEARCH": "Effacer la recherche et afficher les galeries récentes",
+    "NO_RESULTS": "Aucune galerie ne correspond à cette recherche.",
+    "SAVED_TAGS": "Vos tags ({{count}})",
+    "SAVED_TAGS_HINT": "Galeries filtrées selon vos tags enregistrés. Ouvrez la page Tags pour les modifier."
   },
   "SETTINGS": {
     "TITLE": "Paramètres",
@@ -27,7 +31,18 @@
     "EXPORT_ERROR": "Impossible d’exporter la base de données.",
     "IMPORT_DONE": "Base de données importée.",
     "IMPORT_ERROR": "Ce fichier n’est pas une sauvegarde nmangaloide valide.",
-    "IMPORT_NEWER": "Cette sauvegarde provient d’une version plus récente de l’app. Mettez l’app à jour pour l’importer."
+    "IMPORT_NEWER": "Cette sauvegarde provient d’une version plus récente de l’app. Mettez l’app à jour pour l’importer.",
+    "READER": "Lecteur",
+    "READER_MODE": {
+      "scroll": "Défilement infini",
+      "paged": "Une page à la fois"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Toutes les pages dans un seul défilement vertical.",
+      "paged": "Touchez pour passer d’une page à l’autre."
+    },
+    "SETTINGS_LOAD_ERROR": "Impossible de charger vos paramètres.",
+    "SETTINGS_SAVE_ERROR": "Impossible d’enregistrer le paramètre."
   },
   "COMMON": {
     "BACK": "Retour"
@@ -65,5 +80,25 @@
       "language": "Langue",
       "category": "Catégorie"
     }
+  },
+  "GALLERY": {
+    "TITLE": "Galerie",
+    "PAGES": "{{count}} pages",
+    "FAVORITES": "{{count}} favoris",
+    "UPLOADED": "Publiée le {{date}}",
+    "READ": "Lire",
+    "ERROR": "Impossible de charger cette galerie.",
+    "RETRY": "Réessayer",
+    "SCANLATOR": "Traduite par {{name}}",
+    "SEARCH_TAG": "Afficher les galeries avec {{tag}}"
+  },
+  "READER": {
+    "TITLE": "Lecteur",
+    "ERROR": "Impossible de charger les pages.",
+    "NO_PAGES": "Cette galerie n’a aucune page.",
+    "PAGE_ALT": "Page {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Page précédente",
+    "NEXT": "Page suivante"
   }
 }

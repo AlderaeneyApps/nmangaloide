@@ -4,6 +4,7 @@ import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 
 import { DatabaseService } from '../sql-services/database.service';
+import { AppSettingsService } from './app-settings.service';
 import { TagPreferencesService } from './tag-preferences.service';
 
 /** Exports the database to a JSON file and imports it back. */
@@ -11,6 +12,7 @@ import { TagPreferencesService } from './tag-preferences.service';
 export class BackupService {
   private readonly database = inject(DatabaseService);
   private readonly tagPreferences = inject(TagPreferencesService);
+  private readonly settings = inject(AppSettingsService);
 
   /**
    * Exports the database. On Android/iOS the file is written to the app's cache
@@ -37,7 +39,7 @@ export class BackupService {
   /** Replaces the database with the backup in `file`, then reloads what the app shows. */
   async importFromFile(file: Blob): Promise<void> {
     await this.database.importJson(await file.text());
-    await this.tagPreferences.reload();
+    await Promise.all([this.tagPreferences.reload(), this.settings.reload()]);
   }
 }
 

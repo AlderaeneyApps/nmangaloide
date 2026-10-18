@@ -22,4 +22,12 @@ export const routes: Routes = [
     path: 'settings',
     loadComponent: () => import('./pages/settings/settings.page').then((m) => m.SettingsPage),
   },
+  {
+    path: 'gallery/:id',
+    loadComponent: () => import('./pages/gallery/gallery.page').then((m) => m.GalleryPage),
+  },
+  {
+    path: 'gallery/:id/read',
+    loadComponent: () => import('./pages/reader/reader.page').then((m) => m.ReaderPage),
+  },
 ];

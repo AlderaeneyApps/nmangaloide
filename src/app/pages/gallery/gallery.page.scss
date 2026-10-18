@@ -1,0 +1,112 @@
+.gallery {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+
+  // Cover beside the info on wider screens.
+  @media (min-width: 640px) {
+    grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.cover {
+  width: 100%;
+  max-width: 320px;
+  justify-self: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--ion-color-step-100, var(--ion-background-color-step-100, #e6e6e6));
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.info {
+  min-width: 0;
+}
+
+.english {
+  margin: 0 0 4px;
+  font-size: 20px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.japanese {
+  margin: 0 0 12px;
+  color: var(--ion-color-medium);
+  overflow-wrap: anywhere;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--ion-color-medium);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+// Room at the end, so the floating Read button never covers the last tags.
+.fab-spacer {
+  height: 88px;
+}
+
+.tag-group {
+  padding: 0 16px 8px;
+
+  h2 {
+    margin: 8px 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ion-color-medium);
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -4px;
+
+  ion-chip {
+    margin: 4px;
+  }
+
+  .count {
+    margin-inline-start: 6px;
+    font-size: 11px;
+    color: var(--ion-color-medium);
+  }
+}
+
+.scanlator {
+  padding: 0 16px;
+  font-size: 13px;
+  color: var(--ion-color-medium);
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 16px;
+  text-align: center;
+}

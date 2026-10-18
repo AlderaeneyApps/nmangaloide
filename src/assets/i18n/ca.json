@@ -9,7 +9,11 @@
     "TITLE": "Inici",
     "ERROR": "No s'han pogut carregar les galeries.",
     "RETRY": "Torna-ho a provar",
-    "EMPTY": "No s'han trobat galeries."
+    "EMPTY": "No s'han trobat galeries.",
+    "CLEAR_SEARCH": "Treu la cerca i mostra les galeries més recents",
+    "NO_RESULTS": "Cap galeria coincideix amb aquesta cerca.",
+    "SAVED_TAGS": "Les teves etiquetes ({{count}})",
+    "SAVED_TAGS_HINT": "Es mostren galeries filtrades per les teves etiquetes desades. Obre la pàgina d'etiquetes per canviar-les."
   },
   "SETTINGS": {
     "TITLE": "Configuració",
@@ -27,7 +31,18 @@
     "EXPORT_ERROR": "No s'ha pogut exportar la base de dades.",
     "IMPORT_DONE": "S'ha importat la base de dades.",
     "IMPORT_ERROR": "Aquest fitxer no és una còpia vàlida de nmangaloide.",
-    "IMPORT_NEWER": "Aquesta còpia és d'una versió més nova de l'app. Actualitza l'app per importar-la."
+    "IMPORT_NEWER": "Aquesta còpia és d'una versió més nova de l'app. Actualitza l'app per importar-la.",
+    "READER": "Lector",
+    "READER_MODE": {
+      "scroll": "Desplaçament infinit",
+      "paged": "Una pàgina cada cop"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Totes les pàgines en un sol desplaçament vertical.",
+      "paged": "Toca per passar d'una pàgina a una altra."
+    },
+    "SETTINGS_LOAD_ERROR": "No s'ha pogut carregar la configuració.",
+    "SETTINGS_SAVE_ERROR": "No s'ha pogut desar el canvi."
   },
   "COMMON": {
     "BACK": "Enrere"
@@ -65,5 +80,25 @@
       "language": "Idioma",
       "category": "Categoria"
     }
+  },
+  "GALLERY": {
+    "TITLE": "Galeria",
+    "PAGES": "{{count}} pàgines",
+    "FAVORITES": "{{count}} preferits",
+    "UPLOADED": "Pujada el {{date}}",
+    "READ": "Llegeix",
+    "ERROR": "No s'ha pogut carregar aquesta galeria.",
+    "RETRY": "Torna-ho a provar",
+    "SCANLATOR": "Traduïda per {{name}}",
+    "SEARCH_TAG": "Mostra les galeries amb {{tag}}"
+  },
+  "READER": {
+    "TITLE": "Lector",
+    "ERROR": "No s'han pogut carregar les pàgines.",
+    "NO_PAGES": "Aquesta galeria no té pàgines.",
+    "PAGE_ALT": "Pàgina {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Pàgina anterior",
+    "NEXT": "Pàgina següent"
   }
 }

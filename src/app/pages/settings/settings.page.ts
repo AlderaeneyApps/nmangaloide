@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import {
   AlertController,
   IonButtons,
@@ -10,6 +10,9 @@ import {
   IonList,
   IonListHeader,
   IonMenuButton,
+  IonNote,
+  IonRadio,
+  IonRadioGroup,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -22,6 +25,7 @@ import { addIcons } from 'ionicons';
 import { cloudDownloadOutline, cloudUploadOutline } from 'ionicons/icons';
 
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
+import { AppSettingsService, READER_MODES, ReaderMode } from '../../services/app-settings.service';
 import { BackupService } from '../../services/backup.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
@@ -44,12 +48,17 @@ import { NewerBackupError } from '../../sql-services/database.service';
     IonSpinner,
     IonSelect,
     IonSelectOption,
+    IonRadioGroup,
+    IonRadio,
+    IonNote,
     TranslocoPipe,
     BackButtonComponent,
   ],
 })
-export class SettingsPage {
+export class SettingsPage implements OnInit {
   protected readonly language = inject(LanguageService);
+  protected readonly settings = inject(AppSettingsService);
+  protected readonly readerModes = READER_MODES;
   private readonly backup = inject(BackupService);
   private readonly alerts = inject(AlertController);
   private readonly toasts = inject(ToastController);
@@ -62,6 +71,22 @@ export class SettingsPage {
 
   constructor() {
     addIcons({ cloudUploadOutline, cloudDownloadOutline });
+  }
+
+  ngOnInit(): void {
+    this.settings.load().catch(() => this.toast('SETTINGS.SETTINGS_LOAD_ERROR', 'danger'));
+  }
+
+  protected async onReaderModeChange(event: Event): Promise<void> {
+    const mode = (event as CustomEvent<{ value: ReaderMode }>).detail.value;
+    if (mode === this.settings.readerMode()) {
+      return;
+    }
+    try {
+      await this.settings.setReaderMode(mode);
+    } catch {
+      await this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger');
+    }
   }
 
   protected async exportDatabase(): Promise<void> {

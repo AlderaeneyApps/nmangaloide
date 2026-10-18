@@ -9,7 +9,11 @@
     "TITLE": "Startseite",
     "ERROR": "Galerien konnten nicht geladen werden.",
     "RETRY": "Erneut versuchen",
-    "EMPTY": "Keine Galerien gefunden."
+    "EMPTY": "Keine Galerien gefunden.",
+    "CLEAR_SEARCH": "Suche entfernen und die neuesten Galerien anzeigen",
+    "NO_RESULTS": "Keine Galerien entsprechen dieser Suche.",
+    "SAVED_TAGS": "Deine Tags ({{count}})",
+    "SAVED_TAGS_HINT": "Galerien gefiltert nach deinen gespeicherten Tags. Öffne die Tags-Seite, um sie zu ändern."
   },
   "SETTINGS": {
     "TITLE": "Einstellungen",
@@ -27,7 +31,18 @@
     "EXPORT_ERROR": "Die Datenbank konnte nicht exportiert werden.",
     "IMPORT_DONE": "Datenbank importiert.",
     "IMPORT_ERROR": "Diese Datei ist keine gültige nmangaloide-Sicherung.",
-    "IMPORT_NEWER": "Diese Sicherung stammt aus einer neueren App-Version. Aktualisiere die App, um sie zu importieren."
+    "IMPORT_NEWER": "Diese Sicherung stammt aus einer neueren App-Version. Aktualisiere die App, um sie zu importieren.",
+    "READER": "Reader",
+    "READER_MODE": {
+      "scroll": "Endloses Scrollen",
+      "paged": "Eine Seite nach der anderen"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Alle Seiten in einem durchgehenden vertikalen Bildlauf.",
+      "paged": "Tippe, um zwischen den Seiten zu wechseln."
+    },
+    "SETTINGS_LOAD_ERROR": "Deine Einstellungen konnten nicht geladen werden.",
+    "SETTINGS_SAVE_ERROR": "Die Einstellung konnte nicht gespeichert werden."
   },
   "COMMON": {
     "BACK": "Zurück"
@@ -65,5 +80,25 @@
       "language": "Sprache",
       "category": "Kategorie"
     }
+  },
+  "GALLERY": {
+    "TITLE": "Galerie",
+    "PAGES": "{{count}} Seiten",
+    "FAVORITES": "{{count}} Favoriten",
+    "UPLOADED": "Hochgeladen am {{date}}",
+    "READ": "Lesen",
+    "ERROR": "Diese Galerie konnte nicht geladen werden.",
+    "RETRY": "Erneut versuchen",
+    "SCANLATOR": "Übersetzt von {{name}}",
+    "SEARCH_TAG": "Galerien mit {{tag}} anzeigen"
+  },
+  "READER": {
+    "TITLE": "Reader",
+    "ERROR": "Die Seiten konnten nicht geladen werden.",
+    "NO_PAGES": "Diese Galerie hat keine Seiten.",
+    "PAGE_ALT": "Seite {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Vorherige Seite",
+    "NEXT": "Nächste Seite"
   }
 }

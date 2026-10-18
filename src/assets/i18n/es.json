@@ -9,7 +9,11 @@
     "TITLE": "Inicio",
     "ERROR": "No se pudieron cargar las galerías.",
     "RETRY": "Reintentar",
-    "EMPTY": "No se encontraron galerías."
+    "EMPTY": "No se encontraron galerías.",
+    "CLEAR_SEARCH": "Quitar la búsqueda y mostrar las galerías más recientes",
+    "NO_RESULTS": "Ninguna galería coincide con esta búsqueda.",
+    "SAVED_TAGS": "Tus etiquetas ({{count}})",
+    "SAVED_TAGS_HINT": "Mostrando galerías filtradas por tus etiquetas guardadas. Abre la página de etiquetas para cambiarlas."
   },
   "SETTINGS": {
     "TITLE": "Ajustes",
@@ -27,7 +31,18 @@
     "EXPORT_ERROR": "No se pudo exportar la base de datos.",
     "IMPORT_DONE": "Base de datos importada.",
     "IMPORT_ERROR": "Ese archivo no es una copia válida de nmangaloide.",
-    "IMPORT_NEWER": "Esta copia es de una versión más reciente de la app. Actualiza la app para importarla."
+    "IMPORT_NEWER": "Esta copia es de una versión más reciente de la app. Actualiza la app para importarla.",
+    "READER": "Lector",
+    "READER_MODE": {
+      "scroll": "Desplazamiento infinito",
+      "paged": "Una página cada vez"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Todas las páginas en un único desplazamiento vertical.",
+      "paged": "Toca para pasar de una página a otra."
+    },
+    "SETTINGS_LOAD_ERROR": "No se pudieron cargar tus ajustes.",
+    "SETTINGS_SAVE_ERROR": "No se pudo guardar el ajuste."
   },
   "COMMON": {
     "BACK": "Atrás"
@@ -65,5 +80,25 @@
       "language": "Idioma",
       "category": "Categoría"
     }
+  },
+  "GALLERY": {
+    "TITLE": "Galería",
+    "PAGES": "{{count}} páginas",
+    "FAVORITES": "{{count}} favoritos",
+    "UPLOADED": "Subida el {{date}}",
+    "READ": "Leer",
+    "ERROR": "No se pudo cargar esta galería.",
+    "RETRY": "Reintentar",
+    "SCANLATOR": "Traducida por {{name}}",
+    "SEARCH_TAG": "Mostrar galerías con {{tag}}"
+  },
+  "READER": {
+    "TITLE": "Lector",
+    "ERROR": "No se pudieron cargar las páginas.",
+    "NO_PAGES": "Esta galería no tiene páginas.",
+    "PAGE_ALT": "Página {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Página anterior",
+    "NEXT": "Página siguiente"
   }
 }

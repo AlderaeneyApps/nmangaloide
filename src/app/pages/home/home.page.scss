@@ -14,3 +14,23 @@
   padding: 48px 16px;
   text-align: center;
 }
+
+.card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 8px;
+
+  &:focus-visible {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.search-filter {
+  padding: 12px 12px 0;
+
+  ion-chip {
+    margin: 0;
+  }
+}
