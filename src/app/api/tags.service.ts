@@ -9,6 +9,9 @@ import { AutocompleteRequest, TagPaginatedResponse, TagResponse, TagSort } from 
 /** Tag types used by nhentai (the API types this as a plain string). */
 export type TagType = 'tag' | 'artist' | 'character' | 'parody' | 'group' | 'language' | 'category';
 
+/** Every tag type, in the order the app shows them. */
+export const TAG_TYPES: readonly TagType[] = ['tag', 'artist', 'character', 'parody', 'group', 'language', 'category'];
+
 @Injectable({ providedIn: 'root' })
 export class TagsService {
   private readonly http = inject(HttpClient);

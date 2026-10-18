@@ -13,9 +13,57 @@
   },
   "SETTINGS": {
     "TITLE": "Ajustes",
-    "LANGUAGE": "Idioma"
+    "LANGUAGE": "Idioma",
+    "DATA": "Datos",
+    "EXPORT": "Exportar base de datos",
+    "EXPORT_HINT": "Guarda una copia de tus etiquetas en un archivo JSON.",
+    "IMPORT": "Importar base de datos",
+    "IMPORT_HINT": "Restaura una copia hecha con Exportar.",
+    "IMPORT_CONFIRM_TITLE": "¿Reemplazar tus datos?",
+    "IMPORT_CONFIRM_MESSAGE": "Importar una copia reemplaza todo lo que hay guardado en la app.",
+    "IMPORT_CONFIRM": "Importar",
+    "CANCEL": "Cancelar",
+    "EXPORT_DONE": "Base de datos exportada.",
+    "EXPORT_ERROR": "No se pudo exportar la base de datos.",
+    "IMPORT_DONE": "Base de datos importada.",
+    "IMPORT_ERROR": "Ese archivo no es una copia válida de nmangaloide.",
+    "IMPORT_NEWER": "Esta copia es de una versión más reciente de la app. Actualiza la app para importarla."
   },
   "COMMON": {
     "BACK": "Atrás"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Seleccionadas",
+    "HINT": "Toca una etiqueta para activarla, otra vez para desactivarla y una vez más para quitarla.",
+    "STATE_ENABLED": "activada",
+    "STATE_DISABLED": "desactivada",
+    "STATE_NONE": "sin seleccionar",
+    "SELECTED_EMPTY": "Aún no has seleccionado etiquetas.",
+    "BROWSE_ALL": "Ver etiquetas",
+    "SELECTED_ERROR": "No se pudieron cargar tus etiquetas guardadas.",
+    "ALL_ERROR": "No se pudieron cargar las etiquetas.",
+    "RETRY": "Reintentar",
+    "SAVE_ERROR": "No se pudo guardar la etiqueta.",
+    "SEARCH_PLACEHOLDER": "Buscar etiquetas",
+    "NO_MATCHES": "Ninguna etiqueta coincide con tu búsqueda.",
+    "TYPE_EMPTY": "No hay etiquetas de este tipo.",
+    "TYPES": {
+      "tag": "Etiquetas",
+      "artist": "Artistas",
+      "character": "Personajes",
+      "parody": "Parodias",
+      "group": "Grupos",
+      "language": "Idiomas",
+      "category": "Categorías"
+    },
+    "KIND": {
+      "tag": "Etiqueta",
+      "artist": "Artista",
+      "character": "Personaje",
+      "parody": "Parodia",
+      "group": "Grupo",
+      "language": "Idioma",
+      "category": "Categoría"
+    }
   }
 }

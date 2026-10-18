@@ -62,3 +62,11 @@ if (!hasUsableLocalStorage()) {
     Object.defineProperty(target, 'localStorage', { value: storage, configurable: true, writable: true });
   }
 }
+
+// jsdom doesn't implement element scrolling, which scrollable ion-segment uses.
+if (!Element.prototype.scrollTo) {
+  Element.prototype.scrollTo = () => undefined;
+}
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => undefined;
+}

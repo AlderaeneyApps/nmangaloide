@@ -6,12 +6,90 @@
     </ion-buttons>
     <ion-title>{{ 'MENU.TAGS' | transloco }}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [value]="query()"
+      [debounce]="300"
+      [placeholder]="'TAGS.SEARCH_PLACEHOLDER' | transloco"
+      (ionInput)="onSearch($event)"
+    ></ion-searchbar>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [value]="tab()" [scrollable]="true" (ionChange)="onTabChange($event)">
+      <ion-segment-button value="selected">
+        <ion-label>{{ 'TAGS.TAB_SELECTED' | transloco }}</ion-label>
+      </ion-segment-button>
+      @for (type of types; track type) {
+        <ion-segment-button [value]="type">
+          <ion-label>{{ 'TAGS.TYPES.' + type | transloco }}</ion-label>
+        </ion-segment-button>
+      }
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ 'MENU.TAGS' | transloco }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  @if (activeList(); as list) {
+    @if (list.loading() && list.tags().length === 0) {
+      <div class="state"><ion-spinner></ion-spinner></div>
+    } @else if (list.error()) {
+      <div class="state">
+        <ion-text color="medium"><p>{{ 'TAGS.ALL_ERROR' | transloco }}</p></ion-text>
+        <ion-button fill="outline" (click)="retryActive()">{{ 'TAGS.RETRY' | transloco }}</ion-button>
+      </div>
+    } @else if (list.tags().length === 0) {
+      <div class="state">
+        <ion-text color="medium"><p>{{ (query() ? 'TAGS.NO_MATCHES' : 'TAGS.TYPE_EMPTY') | transloco }}</p></ion-text>
+      </div>
+    } @else {
+      <ion-text color="medium"><p class="hint">{{ 'TAGS.HINT' | transloco }}</p></ion-text>
+      <div class="tag-grid" [attr.data-tab]="tab()">
+        @for (tag of list.tags(); track tag.id) {
+          <app-tag-toggle
+            [name]="tag.name"
+            [count]="tag.count"
+            [state]="preferences.stateOf(tag.id)"
+            [disabled]="saving().has(tag.id)"
+            (cycle)="toggle(tag)"
+          ></app-tag-toggle>
+        }
+      </div>
+    }
+  } @else {
+    @if (selectedLoading()) {
+      <div class="state"><ion-spinner></ion-spinner></div>
+    } @else if (selectedError()) {
+      <div class="state">
+        <ion-text color="medium"><p>{{ 'TAGS.SELECTED_ERROR' | transloco }}</p></ion-text>
+        <ion-button fill="outline" (click)="loadSelected()">{{ 'TAGS.RETRY' | transloco }}</ion-button>
+      </div>
+    } @else if (preferences.preferences().length === 0) {
+      <div class="state">
+        <ion-text color="medium"><p>{{ 'TAGS.SELECTED_EMPTY' | transloco }}</p></ion-text>
+        <ion-button fill="outline" (click)="showTab('tag')">{{ 'TAGS.BROWSE_ALL' | transloco }}</ion-button>
+      </div>
+    } @else if (filteredSelected().length === 0) {
+      <div class="state">
+        <ion-text color="medium"><p>{{ 'TAGS.NO_MATCHES' | transloco }}</p></ion-text>
+      </div>
+    } @else {
+      <ion-text color="medium"><p class="hint">{{ 'TAGS.HINT' | transloco }}</p></ion-text>
+      <div class="tag-grid" data-tab="selected">
+        @for (tag of filteredSelected(); track tag.id) {
+          <app-tag-toggle
+            [name]="tag.name"
+            [kind]="'TAGS.KIND.' + tag.type | transloco"
+            [count]="tag.count"
+            [state]="tag.state"
+            [disabled]="saving().has(tag.id)"
+            (cycle)="toggle(tag)"
+          ></app-tag-toggle>
+        }
+      </div>
+    }
+  }
+
+  <ion-infinite-scroll [disabled]="infiniteDisabled()" (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

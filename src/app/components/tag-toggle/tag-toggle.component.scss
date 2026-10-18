@@ -1,0 +1,82 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.tag-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--ion-color-step-200, var(--ion-background-color-step-200, #ccc));
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ion-text-color, #000);
+  font: inherit;
+  font-size: 14px;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  ion-icon {
+    flex: none;
+    font-size: 20px;
+    color: var(--ion-color-medium);
+  }
+
+  &.enabled {
+    border-color: var(--ion-color-success);
+    background: rgba(var(--ion-color-success-rgb), 0.12);
+
+    ion-icon {
+      color: var(--ion-color-success);
+    }
+  }
+
+  &.disabled {
+    border-color: var(--ion-color-danger);
+    background: rgba(var(--ion-color-danger-rgb), 0.12);
+
+    ion-icon {
+      color: var(--ion-color-danger);
+    }
+
+    .name {
+      text-decoration: line-through;
+    }
+  }
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kind {
+  font-size: 11px;
+  color: var(--ion-color-medium);
+}
+
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  flex: none;
+  font-size: 12px;
+  color: var(--ion-color-medium);
+}

@@ -29,4 +29,31 @@
       </ion-select>
     </ion-item>
   </ion-list>
+
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>{{ 'SETTINGS.DATA' | transloco }}</ion-label>
+    </ion-list-header>
+    <ion-item button [detail]="false" [disabled]="!!busy()" (click)="exportDatabase()" data-action="export">
+      <ion-icon slot="start" name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+      <ion-label>
+        {{ 'SETTINGS.EXPORT' | transloco }}
+        <p>{{ 'SETTINGS.EXPORT_HINT' | transloco }}</p>
+      </ion-label>
+      @if (busy() === 'export') {
+        <ion-spinner slot="end" name="crescent"></ion-spinner>
+      }
+    </ion-item>
+    <ion-item button [detail]="false" [disabled]="!!busy()" (click)="chooseImportFile()" data-action="import">
+      <ion-icon slot="start" name="cloud-download-outline" aria-hidden="true"></ion-icon>
+      <ion-label>
+        {{ 'SETTINGS.IMPORT' | transloco }}
+        <p>{{ 'SETTINGS.IMPORT_HINT' | transloco }}</p>
+      </ion-label>
+      @if (busy() === 'import') {
+        <ion-spinner slot="end" name="crescent"></ion-spinner>
+      }
+    </ion-item>
+  </ion-list>
+  <input #importFile type="file" accept="application/json,.json" hidden (change)="onImportFileChosen($event)" />
 </ion-content>

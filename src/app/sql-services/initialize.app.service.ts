@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { SQLiteService } from "./sqlite.service";
 import { Toast } from '@capacitor/toast';
 import { DB_NMANGALOIDE } from "../constants";
+import { DatabaseService } from "./database.service";
 
 @Injectable()
 export class InitializeAppService {
@@ -9,6 +10,7 @@ export class InitializeAppService {
   platform!: string;
 
   private sqliteService: SQLiteService = inject(SQLiteService);
+  private databaseService: DatabaseService = inject(DatabaseService);
 
   async initializeApp() {
     await this.sqliteService.initializePlugin().then(async () => {
@@ -17,11 +19,8 @@ export class InitializeAppService {
         if (this.sqliteService.platform === 'web') {
           await this.sqliteService.initWebStore();
         }
-        // Initialize the myuserdb database
-
-        // Here Initialize MOCK_DATA if required
-
-        // Initialize whatever database and/or MOCK_DATA you like
+        // Create or upgrade the nmangaloide database and open the shared connection
+        await this.databaseService.open();
 
         if (this.sqliteService.platform === 'web') {
           await this.sqliteService.saveToStore(DB_NMANGALOIDE);

@@ -13,9 +13,57 @@
   },
   "SETTINGS": {
     "TITLE": "Configuració",
-    "LANGUAGE": "Idioma"
+    "LANGUAGE": "Idioma",
+    "DATA": "Dades",
+    "EXPORT": "Exporta la base de dades",
+    "EXPORT_HINT": "Desa una còpia de les teves etiquetes en un fitxer JSON.",
+    "IMPORT": "Importa la base de dades",
+    "IMPORT_HINT": "Restaura una còpia feta amb Exporta.",
+    "IMPORT_CONFIRM_TITLE": "Vols substituir les teves dades?",
+    "IMPORT_CONFIRM_MESSAGE": "Importar una còpia substitueix tot el que hi ha desat a l'app.",
+    "IMPORT_CONFIRM": "Importa",
+    "CANCEL": "Cancel·la",
+    "EXPORT_DONE": "S'ha exportat la base de dades.",
+    "EXPORT_ERROR": "No s'ha pogut exportar la base de dades.",
+    "IMPORT_DONE": "S'ha importat la base de dades.",
+    "IMPORT_ERROR": "Aquest fitxer no és una còpia vàlida de nmangaloide.",
+    "IMPORT_NEWER": "Aquesta còpia és d'una versió més nova de l'app. Actualitza l'app per importar-la."
   },
   "COMMON": {
     "BACK": "Enrere"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Seleccionades",
+    "HINT": "Toca una etiqueta per activar-la, un altre cop per desactivar-la i un cop més per treure-la.",
+    "STATE_ENABLED": "activada",
+    "STATE_DISABLED": "desactivada",
+    "STATE_NONE": "sense seleccionar",
+    "SELECTED_EMPTY": "Encara no has seleccionat cap etiqueta.",
+    "BROWSE_ALL": "Mostra les etiquetes",
+    "SELECTED_ERROR": "No s'han pogut carregar les teves etiquetes desades.",
+    "ALL_ERROR": "No s'han pogut carregar les etiquetes.",
+    "RETRY": "Torna-ho a provar",
+    "SAVE_ERROR": "No s'ha pogut desar l'etiqueta.",
+    "SEARCH_PLACEHOLDER": "Cerca etiquetes",
+    "NO_MATCHES": "Cap etiqueta coincideix amb la cerca.",
+    "TYPE_EMPTY": "No hi ha etiquetes d'aquest tipus.",
+    "TYPES": {
+      "tag": "Etiquetes",
+      "artist": "Artistes",
+      "character": "Personatges",
+      "parody": "Paròdies",
+      "group": "Grups",
+      "language": "Idiomes",
+      "category": "Categories"
+    },
+    "KIND": {
+      "tag": "Etiqueta",
+      "artist": "Artista",
+      "character": "Personatge",
+      "parody": "Paròdia",
+      "group": "Grup",
+      "language": "Idioma",
+      "category": "Categoria"
+    }
   }
 }

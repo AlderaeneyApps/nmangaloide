@@ -13,9 +13,57 @@
   },
   "SETTINGS": {
     "TITLE": "Settings",
-    "LANGUAGE": "Language"
+    "LANGUAGE": "Language",
+    "DATA": "Data",
+    "EXPORT": "Export database",
+    "EXPORT_HINT": "Save a backup of your saved tags as a JSON file.",
+    "IMPORT": "Import database",
+    "IMPORT_HINT": "Restore a backup made with Export.",
+    "IMPORT_CONFIRM_TITLE": "Replace your data?",
+    "IMPORT_CONFIRM_MESSAGE": "Importing a backup replaces everything currently saved in the app.",
+    "IMPORT_CONFIRM": "Import",
+    "CANCEL": "Cancel",
+    "EXPORT_DONE": "Database exported.",
+    "EXPORT_ERROR": "Could not export the database.",
+    "IMPORT_DONE": "Database imported.",
+    "IMPORT_ERROR": "That file is not a valid nmangaloide backup.",
+    "IMPORT_NEWER": "This backup comes from a newer version of the app. Update the app to import it."
   },
   "COMMON": {
     "BACK": "Back"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Selected",
+    "HINT": "Tap a tag to enable it, again to disable it, and once more to clear it.",
+    "STATE_ENABLED": "enabled",
+    "STATE_DISABLED": "disabled",
+    "STATE_NONE": "not selected",
+    "SELECTED_EMPTY": "No tags selected yet.",
+    "BROWSE_ALL": "Browse tags",
+    "SELECTED_ERROR": "Could not load your saved tags.",
+    "ALL_ERROR": "Could not load tags.",
+    "RETRY": "Retry",
+    "SAVE_ERROR": "Could not save the tag.",
+    "SEARCH_PLACEHOLDER": "Search tags",
+    "NO_MATCHES": "No tags match your search.",
+    "TYPE_EMPTY": "No tags of this type.",
+    "TYPES": {
+      "tag": "Tags",
+      "artist": "Artists",
+      "character": "Characters",
+      "parody": "Parodies",
+      "group": "Groups",
+      "language": "Languages",
+      "category": "Categories"
+    },
+    "KIND": {
+      "tag": "Tag",
+      "artist": "Artist",
+      "character": "Character",
+      "parody": "Parody",
+      "group": "Group",
+      "language": "Language",
+      "category": "Category"
+    }
   }
 }

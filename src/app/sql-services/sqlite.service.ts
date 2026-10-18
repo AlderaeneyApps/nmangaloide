@@ -10,6 +10,18 @@ import {
 } from '@capacitor-community/sqlite';
 import { DB_NMANGALOIDE } from '../constants';
 
+export interface EncryptionOptions {
+  encrypted: boolean;
+  /** `no-encryption`, `secret` (open/create encrypted) or `encryption` (encrypt an existing plain database). */
+  mode: string;
+}
+
+/** A random 256-bit passphrase, hex encoded. */
+export function generatePassphrase(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 
 @Injectable()
 export class SQLiteService {
@@ -61,6 +73,27 @@ export class SQLiteService {
     return db;
   }
 
+  /**
+   * How to open `dbName`. On Android/iOS with encryption enabled in
+   * capacitor.config.ts, databases are encrypted with SQLCipher: a random
+   * passphrase is created on first use and kept by the plugin in the iOS
+   * Keychain / Android encrypted storage, and an existing unencrypted database
+   * is encrypted in place. The web build has no encryption support.
+   */
+  async encryptionOptions(dbName: string): Promise<EncryptionOptions> {
+    if (!this.native || !(await this.sqliteConnection.isInConfigEncryption()).result) {
+      return { encrypted: false, mode: 'no-encryption' };
+    }
+    if (!(await this.sqliteConnection.isSecretStored()).result) {
+      await this.sqliteConnection.setEncryptionSecret(generatePassphrase());
+    }
+    const exists = (await this.sqliteConnection.isDatabase(dbName)).result;
+    if (exists && !(await this.sqliteConnection.isDatabaseEncrypted(dbName)).result) {
+      return { encrypted: true, mode: 'encryption' };
+    }
+    return { encrypted: true, mode: 'secret' };
+  }
+
   async retrieveConnection(dbName: string, readonly: boolean): Promise<SQLiteDBConnection> {
     return await this.sqliteConnection.retrieveConnection(dbName, readonly);
   }
@@ -79,21 +112,11 @@ export class SQLiteService {
     return await this.sqliteConnection.saveToStore(database);
   }
 
-  async exportDb() {
-    const db = await this.openDatabase(DB_NMANGALOIDE, false, 'no-encryption', 1, true);
-    const exportedJSON = await db.exportToJson('full');
-    return JSON.stringify(exportedJSON);
+  async isJsonValid(json: string): Promise<boolean> {
+    return (await this.sqliteConnection.isJsonValid(json)).result ?? false;
   }
 
-  async importDb(json: string) {
-    const isValid = await this.sqlitePlugin.isJsonValid({ jsonstring: json });
-    if (isValid.result) {
-      await this.sqlitePlugin.closeConnection({
-        database: DB_NMANGALOIDE,
-      });
-      await this.sqlitePlugin.importFromJson({
-        jsonstring: json,
-      });
-    }
+  async importFromJson(json: string): Promise<void> {
+    await this.sqliteConnection.importFromJson(json);
   }
 }

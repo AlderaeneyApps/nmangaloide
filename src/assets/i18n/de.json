@@ -13,9 +13,57 @@
   },
   "SETTINGS": {
     "TITLE": "Einstellungen",
-    "LANGUAGE": "Sprache"
+    "LANGUAGE": "Sprache",
+    "DATA": "Daten",
+    "EXPORT": "Datenbank exportieren",
+    "EXPORT_HINT": "Speichere eine Sicherung deiner Tags als JSON-Datei.",
+    "IMPORT": "Datenbank importieren",
+    "IMPORT_HINT": "Stelle eine mit Exportieren erstellte Sicherung wieder her.",
+    "IMPORT_CONFIRM_TITLE": "Deine Daten ersetzen?",
+    "IMPORT_CONFIRM_MESSAGE": "Beim Import einer Sicherung wird alles ersetzt, was derzeit in der App gespeichert ist.",
+    "IMPORT_CONFIRM": "Importieren",
+    "CANCEL": "Abbrechen",
+    "EXPORT_DONE": "Datenbank exportiert.",
+    "EXPORT_ERROR": "Die Datenbank konnte nicht exportiert werden.",
+    "IMPORT_DONE": "Datenbank importiert.",
+    "IMPORT_ERROR": "Diese Datei ist keine gültige nmangaloide-Sicherung.",
+    "IMPORT_NEWER": "Diese Sicherung stammt aus einer neueren App-Version. Aktualisiere die App, um sie zu importieren."
   },
   "COMMON": {
     "BACK": "Zurück"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Ausgewählt",
+    "HINT": "Tippe auf einen Tag, um ihn zu aktivieren, erneut, um ihn zu deaktivieren, und noch einmal, um ihn zu entfernen.",
+    "STATE_ENABLED": "aktiviert",
+    "STATE_DISABLED": "deaktiviert",
+    "STATE_NONE": "nicht ausgewählt",
+    "SELECTED_EMPTY": "Noch keine Tags ausgewählt.",
+    "BROWSE_ALL": "Tags durchsuchen",
+    "SELECTED_ERROR": "Deine gespeicherten Tags konnten nicht geladen werden.",
+    "ALL_ERROR": "Tags konnten nicht geladen werden.",
+    "RETRY": "Erneut versuchen",
+    "SAVE_ERROR": "Der Tag konnte nicht gespeichert werden.",
+    "SEARCH_PLACEHOLDER": "Tags durchsuchen",
+    "NO_MATCHES": "Keine Tags entsprechen deiner Suche.",
+    "TYPE_EMPTY": "Keine Tags dieser Art.",
+    "TYPES": {
+      "tag": "Tags",
+      "artist": "Künstler",
+      "character": "Charaktere",
+      "parody": "Parodien",
+      "group": "Gruppen",
+      "language": "Sprachen",
+      "category": "Kategorien"
+    },
+    "KIND": {
+      "tag": "Tag",
+      "artist": "Künstler",
+      "character": "Charakter",
+      "parody": "Parodie",
+      "group": "Gruppe",
+      "language": "Sprache",
+      "category": "Kategorie"
+    }
   }
 }
