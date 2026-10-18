@@ -1,0 +1,7 @@
+{
+  "name": "mangaloide",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
