@@ -6,8 +6,36 @@
     </ion-buttons>
     <ion-title>{{ gallery()?.title?.pretty || ('GALLERY.TITLE' | transloco) }}</ion-title>
     <ion-buttons slot="end">
-      <!-- Two buttons rather than one with changing aria attributes: ion-button copies
-           them to its inner button only when it first renders. -->
+      <!-- One button per state rather than one with changing aria attributes: ion-button
+           copies them to its inner button only when it first renders. -->
+      @switch (downloadState()) {
+        @case ('downloaded') {
+          <ion-button data-action="download" data-state="downloaded" [attr.aria-label]="'GALLERY.DOWNLOADED' | transloco" (click)="deleteDownload()">
+            <ion-icon slot="icon-only" name="checkmark-circle" color="success" aria-hidden="true"></ion-icon>
+          </ion-button>
+        }
+        @case ('failed') {
+          <ion-button data-action="download" data-state="failed" [attr.aria-label]="'GALLERY.DOWNLOAD_FAILED' | transloco" (click)="retryDownload()">
+            <ion-icon slot="icon-only" name="alert-circle-outline" color="danger" aria-hidden="true"></ion-icon>
+          </ion-button>
+        }
+        @case (null) {
+          <ion-button
+            data-action="download"
+            data-state="none"
+            [disabled]="!gallery() || gallery()!.pages.length === 0"
+            [attr.aria-label]="'GALLERY.DOWNLOAD' | transloco"
+            (click)="startDownload()"
+          >
+            <ion-icon slot="icon-only" name="download-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        }
+        @default {
+          <ion-button data-action="download" data-state="active" [attr.aria-label]="'GALLERY.DOWNLOADING' | transloco" (click)="showDownloads()">
+            <ion-icon slot="icon-only" name="hourglass-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        }
+      }
       @if (isFavorite()) {
         <ion-button
           data-action="favorite"

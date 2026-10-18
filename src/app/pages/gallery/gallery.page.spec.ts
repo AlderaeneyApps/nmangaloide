@@ -3,13 +3,14 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { AlertController, NavController, ToastController } from '@ionic/angular';
 
 import { GalleryDetailResponse, PageInfo, TagResponse } from '../../api';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { GalleryPage } from './gallery.page';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { DOWNLOAD_SLEEP } from '../../services/download.service';
 
 const API = 'https://nhentai.net/api/v2';
 
@@ -56,6 +57,10 @@ describe('GalleryPage', () => {
   let fixture: ComponentFixture<GalleryPage>;
   let http: HttpTestingController;
   let navigateRoot: ReturnType<typeof vi.fn>;
+  let navigateForward: ReturnType<typeof vi.fn>;
+  let toastCreate: ReturnType<typeof vi.fn>;
+  let alertCreate: ReturnType<typeof vi.fn>;
+  let alertRole: string;
 
   async function settle() {
     await new Promise((resolve) => setTimeout(resolve));
@@ -66,6 +71,13 @@ describe('GalleryPage', () => {
   beforeEach(async () => {
     db = new FakeDatabase();
     navigateRoot = vi.fn().mockResolvedValue(true);
+    navigateForward = vi.fn().mockResolvedValue(true);
+    toastCreate = vi.fn().mockResolvedValue({ present: vi.fn().mockResolvedValue(undefined) });
+    alertRole = 'cancel';
+    alertCreate = vi.fn().mockImplementation(async () => ({
+      present: vi.fn().mockResolvedValue(undefined),
+      onDidDismiss: vi.fn().mockImplementation(async () => ({ role: alertRole })),
+    }));
     await TestBed.configureTestingModule({
       imports: [GalleryPage, getTranslocoTestingModule()],
       providers: [
@@ -73,7 +85,10 @@ describe('GalleryPage', () => {
         provideFakeDatabase(db),
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: NavController, useValue: { navigateRoot } },
+        { provide: NavController, useValue: { navigateRoot, navigateForward } },
+        { provide: ToastController, useValue: { create: toastCreate } },
+        { provide: AlertController, useValue: { create: alertCreate } },
+        { provide: DOWNLOAD_SLEEP, useValue: async () => undefined },
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -234,6 +249,75 @@ describe('GalleryPage', () => {
       other.detectChanges();
       http.expectNone(`${API}/galleries/7`);
       expect(other.nativeElement.querySelector('.english')?.textContent).toBe('An English title');
+    });
+  });
+  describe('download button', () => {
+    const button = () => el().querySelector('ion-toolbar [data-action="download"]') as HTMLIonButtonElement;
+    const icon = () => button().querySelector('ion-icon')?.getAttribute('name');
+    const image = () => new Blob(['img'], { type: 'image/webp' });
+
+    async function startDownload() {
+      flush();
+      await settle();
+      button().click();
+      await settle();
+      http.expectOne('https://t.example/galleries/100/cover.webp').flush(image());
+      await vi.waitFor(() => expect(db.saved.get(42)?.['download_status']).toBe('queued'));
+      await settle();
+    }
+
+    async function answerPage(number: number) {
+      await vi.waitFor(() => {
+        const requests = http.match(`https://i.example/galleries/100/${number}.webp`);
+        if (!requests.length) throw new Error('waiting');
+        requests.forEach((r) => r.flush(image()));
+      });
+    }
+
+    it('sits just left of the favorite button', async () => {
+      flush();
+      await settle();
+      const buttons = [...el().querySelectorAll('ion-toolbar ion-buttons[slot="end"] > ion-button')] as HTMLElement[];
+      expect(buttons.map((b) => b.dataset['action'])).toEqual(['download', 'favorite']);
+      expect(button().dataset['state']).toBe('none');
+      expect(icon()).toBe('download-outline');
+    });
+
+    it('queues the download without making it a favorite, and shows it as downloading', async () => {
+      await startDownload();
+      expect(db.saved.get(42)).toMatchObject({ is_favorite: 0, title_english: 'An English title' });
+      expect(db.saved.get(42)!['cover_base64']).toContain('data:image/webp;base64,');
+      expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'Download started. Follow it in Downloading.', color: 'success' }));
+      expect(button().dataset['state']).toBe('active');
+      expect((el().querySelector('[data-action="favorite"]') as HTMLElement).dataset['state']).toBe('off');
+
+      button().click();
+      expect(navigateForward).toHaveBeenCalledWith('/downloading');
+
+      for (const n of [1, 2, 3]) await answerPage(n);
+      await vi.waitFor(() => expect(db.saved.get(42)?.['is_downloaded']).toBe(1));
+      await settle();
+      expect(button().dataset['state']).toBe('downloaded');
+      expect(icon()).toBe('checkmark-circle');
+    });
+
+    it('asks before deleting a download', async () => {
+      await startDownload();
+      for (const n of [1, 2, 3]) await answerPage(n);
+      await vi.waitFor(() => expect(db.saved.get(42)?.['is_downloaded']).toBe(1));
+      await settle();
+
+      button().click();
+      await settle();
+      expect(alertCreate).toHaveBeenCalledWith(expect.objectContaining({ header: 'Delete download?' }));
+      expect(db.saved.has(42)).toBe(true);
+
+      alertRole = 'destructive';
+      button().click();
+      await vi.waitFor(() => expect(db.saved.has(42)).toBe(false));
+      expect(db.pages.size).toBe(0);
+      await settle();
+      expect(button().dataset['state']).toBe('none');
     });
   });
 });

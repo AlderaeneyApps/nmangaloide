@@ -3,7 +3,8 @@
     "TAGS": "Etiquetas",
     "FAVORITES": "Favoritos",
     "DOWNLOADED": "Descargados",
-    "SETTINGS": "Ajustes"
+    "SETTINGS": "Ajustes",
+    "DOWNLOADING": "Descargando"
   },
   "HOME": {
     "TITLE": "Inicio",
@@ -103,7 +104,17 @@
     "SEARCH_TAG": "Mostrar galerías con {{tag}}",
     "FAVORITE_ADD": "Añadir a favoritos",
     "FAVORITE_REMOVE": "Quitar de favoritos",
-    "FAVORITE_ERROR": "No se pudieron actualizar tus favoritos."
+    "FAVORITE_ERROR": "No se pudieron actualizar tus favoritos.",
+    "DOWNLOAD": "Descargar",
+    "DOWNLOAD_STARTED": "Descarga iniciada. Síguela en Descargando.",
+    "DOWNLOAD_ERROR": "No se pudo iniciar la descarga.",
+    "DOWNLOADING": "Descargando: ver progreso",
+    "DOWNLOAD_FAILED": "La descarga falló: reintentar",
+    "DOWNLOADED": "Descargada: eliminar descarga",
+    "DELETE_DOWNLOAD_TITLE": "¿Eliminar la descarga?",
+    "DELETE_DOWNLOAD_MESSAGE": "Las páginas descargadas se eliminarán de este dispositivo.",
+    "DELETE": "Eliminar",
+    "CANCEL": "Cancelar"
   },
   "READER": {
     "TITLE": "Lector",
@@ -119,5 +130,24 @@
     "EMPTY_HINT": "Toca el corazón de una galería para guardarla aquí.",
     "ERROR": "No se pudieron cargar tus favoritos.",
     "RETRY": "Reintentar"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "No se está descargando nada.",
+    "HINT": "Las descargas continúan mientras la app está abierta, una página cada 2 segundos.",
+    "PROGRESS": "{{done}} / {{total}} páginas",
+    "STATUS": {
+      "queued": "En espera",
+      "downloading": "Descargando",
+      "failed": "Fallida"
+    },
+    "RETRY": "Reintentar descarga",
+    "CANCEL": "Cancelar descarga"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Aún no hay descargas.",
+    "EMPTY_HINT": "Toca el botón de descarga de una galería para leerla sin conexión.",
+    "ERROR": "No se pudieron cargar tus descargas.",
+    "RETRY": "Reintentar",
+    "IN_PROGRESS": "Descargando ({{count}})"
   }
 }

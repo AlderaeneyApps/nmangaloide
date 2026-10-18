@@ -18,6 +18,7 @@ import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { CdnService, GalleryDetailResponse } from '../../api';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { AppSettingsService } from '../../services/app-settings.service';
+import { DownloadService } from '../../services/download.service';
 import { GalleryDetailsService } from '../../services/gallery-details.service';
 
 export interface ReaderPageImage {
@@ -61,6 +62,9 @@ export class ReaderPage {
   private readonly details = inject(GalleryDetailsService);
   private readonly cdn = inject(CdnService);
   private readonly settings = inject(AppSettingsService);
+  private readonly downloads = inject(DownloadService);
+  /** Pages saved on the device (downloads), by number; shown instead of the CDN images. */
+  private readonly offlinePages = signal<ReadonlyMap<number, string>>(new Map());
 
   /** The gallery id, from the `gallery/:id/read` route. */
   readonly id = input.required<string>();
@@ -79,7 +83,7 @@ export class ReaderPage {
       .sort((a, b) => a.number - b.number)
       .map((page) => ({
         number: page.number,
-        url: this.cdn.imageUrl(page.path),
+        url: this.offlinePages().get(page.number) ?? this.cdn.imageUrl(page.path),
         ratio: page.width > 0 && page.height > 0 ? `${page.width} / ${page.height}` : '2 / 3',
       })),
   );
@@ -118,12 +122,15 @@ export class ReaderPage {
     this.loading.set(true);
     this.error.set(false);
     try {
-      const [gallery] = await Promise.all([
+      const [gallery, offline] = await Promise.all([
         this.details.get(id),
+        // Downloaded pages work offline; missing ones come from the CDN.
+        this.downloads.getPages(id).catch(() => new Map<number, string>()),
         this.cdn.load().catch(() => undefined),
         // Fall back to the default mode if the setting can't be read.
         this.settings.load().catch(() => undefined),
       ]);
+      this.offlinePages.set(offline);
       this.gallery.set(gallery);
       const start = Number(this.page()) - 1;
       this.index.set(Number.isInteger(start) ? Math.min(Math.max(start, 0), Math.max(gallery.pages.length - 1, 0)) : 0);

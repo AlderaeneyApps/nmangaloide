@@ -37,18 +37,19 @@ describe('AppComponent', () => {
     await fixture.whenStable();
     const app = fixture.nativeElement;
     const menuItems = app.querySelectorAll('ion-label');
-    expect(menuItems.length).toEqual(4);
+    expect(menuItems.length).toEqual(5);
     expect(menuItems[0].innerHTML).toContain('Tags');
     expect(menuItems[1].innerHTML).toContain('Favorites');
     expect(menuItems[2].innerHTML).toContain('Downloaded');
-    expect(menuItems[3].innerHTML).toContain('Settings');
+    expect(menuItems[3].innerHTML).toContain('Downloading');
+    expect(menuItems[4].innerHTML).toContain('Settings');
   });
 
   it('should have urls', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.nativeElement;
-    expect(app.querySelectorAll('ion-item').length).toEqual(4);
+    expect(app.querySelectorAll('ion-item').length).toEqual(5);
     // Ionic applies the rendered href through its own async write queue, so
     // reading the DOM attribute is flaky (FW-6264). Assert the routerLink
     // binding directly, which resolves synchronously.
@@ -56,11 +57,12 @@ describe('AppComponent', () => {
     const links = fixture.debugElement
       .queryAll(By.directive(RouterLink))
       .map((el) => el.injector.get(RouterLink));
-    expect(links.length).toEqual(4);
+    expect(links.length).toEqual(5);
     expect(router.serializeUrl(links[0].urlTree!)).toEqual('/tags');
     expect(router.serializeUrl(links[1].urlTree!)).toEqual('/favorites');
     expect(router.serializeUrl(links[2].urlTree!)).toEqual('/downloaded');
-    expect(router.serializeUrl(links[3].urlTree!)).toEqual('/settings');
+    expect(router.serializeUrl(links[3].urlTree!)).toEqual('/downloading');
+    expect(router.serializeUrl(links[4].urlTree!)).toEqual('/settings');
   });
 
   it('should link the sidebar straight to each page, without a back parameter', async () => {
@@ -74,7 +76,7 @@ describe('AppComponent', () => {
       .queryAll(By.directive(RouterLink))
       .map((el) => router.serializeUrl(el.injector.get(RouterLink).urlTree!));
     // Those pages' back buttons always go to the home page.
-    expect(links).toEqual(['/tags', '/favorites', '/downloaded', '/settings']);
+    expect(links).toEqual(['/tags', '/favorites', '/downloaded', '/downloading', '/settings']);
   });
 
   it('should link the subtitle to the GitHub repository', () => {

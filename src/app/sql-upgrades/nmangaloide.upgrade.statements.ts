@@ -59,6 +59,24 @@ export const NMANGALOIDE_UPGRADES: capSQLiteVersionUpgrade[] = [
       `CREATE INDEX IF NOT EXISTS idx_saved_galleries_favorites ON saved_galleries (is_favorite, favorited_at);`,
     ],
   },
+  {
+    toVersion: 4,
+    statements: [
+      // A download in progress ('queued') or stopped by errors ('failed'); NULL otherwise.
+      `ALTER TABLE saved_galleries ADD COLUMN download_status TEXT CHECK (download_status IN ('queued', 'failed'));`,
+      // One row per downloaded page, so pages are saved (and resumed) one at a time
+      // instead of rewriting one huge column. saved_galleries.downloaded_files stays unused.
+      `CREATE TABLE IF NOT EXISTS downloaded_pages (
+        gallery_id INTEGER NOT NULL,
+        page_number INTEGER NOT NULL,
+        data_base64 TEXT NOT NULL,
+        width INTEGER NOT NULL DEFAULT 0,
+        height INTEGER NOT NULL DEFAULT 0,
+        downloaded_at INTEGER NOT NULL,
+        PRIMARY KEY (gallery_id, page_number)
+      );`,
+    ],
+  },
 ];
 
 /** The schema version the app expects. */

@@ -5,6 +5,14 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ 'MENU.DOWNLOADED' | transloco }}</ion-title>
+    @if (inProgress() > 0) {
+      <ion-buttons slot="end">
+        <ion-button routerLink="/downloading" data-action="in-progress">
+          <ion-icon slot="start" name="cloud-download-outline" aria-hidden="true"></ion-icon>
+          {{ 'DOWNLOADED.IN_PROGRESS' | transloco: { count: inProgress() } }}
+        </ion-button>
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 
@@ -14,4 +22,29 @@
       <ion-title size="large">{{ 'MENU.DOWNLOADED' | transloco }}</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  @if (loading() && items().length === 0) {
+    <div class="state"><ion-spinner></ion-spinner></div>
+  } @else if (error()) {
+    <div class="state">
+      <ion-text color="medium"><p>{{ 'DOWNLOADED.ERROR' | transloco }}</p></ion-text>
+      <ion-button fill="outline" (click)="load()">{{ 'DOWNLOADED.RETRY' | transloco }}</ion-button>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="state">
+      <ion-icon name="download-outline" class="empty-icon" aria-hidden="true"></ion-icon>
+      <ion-text color="medium">
+        <p>{{ 'DOWNLOADED.EMPTY' | transloco }}</p>
+        <p>{{ 'DOWNLOADED.EMPTY_HINT' | transloco }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <div class="gallery-grid">
+      @for (item of items(); track item.gallery.id) {
+        <a class="card-link" [routerLink]="['/gallery', item.gallery.id]" [queryParams]="backParams">
+          <app-gallery-card [gallery]="item.gallery" [coverSrc]="item.cover"></app-gallery-card>
+        </a>
+      }
+    </div>
+  }
 </ion-content>

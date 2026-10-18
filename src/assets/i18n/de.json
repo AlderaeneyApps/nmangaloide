@@ -3,7 +3,8 @@
     "TAGS": "Tags",
     "FAVORITES": "Favoriten",
     "DOWNLOADED": "Heruntergeladen",
-    "SETTINGS": "Einstellungen"
+    "SETTINGS": "Einstellungen",
+    "DOWNLOADING": "Wird heruntergeladen"
   },
   "HOME": {
     "TITLE": "Startseite",
@@ -103,7 +104,17 @@
     "SEARCH_TAG": "Galerien mit {{tag}} anzeigen",
     "FAVORITE_ADD": "Zu Favoriten hinzufügen",
     "FAVORITE_REMOVE": "Aus Favoriten entfernen",
-    "FAVORITE_ERROR": "Deine Favoriten konnten nicht aktualisiert werden."
+    "FAVORITE_ERROR": "Deine Favoriten konnten nicht aktualisiert werden.",
+    "DOWNLOAD": "Herunterladen",
+    "DOWNLOAD_STARTED": "Download gestartet. Verfolge ihn unter „Wird heruntergeladen“.",
+    "DOWNLOAD_ERROR": "Der Download konnte nicht gestartet werden.",
+    "DOWNLOADING": "Wird heruntergeladen: Fortschritt anzeigen",
+    "DOWNLOAD_FAILED": "Download fehlgeschlagen: erneut versuchen",
+    "DOWNLOADED": "Heruntergeladen: Download löschen",
+    "DELETE_DOWNLOAD_TITLE": "Download löschen?",
+    "DELETE_DOWNLOAD_MESSAGE": "Die heruntergeladenen Seiten werden von diesem Gerät entfernt.",
+    "DELETE": "Löschen",
+    "CANCEL": "Abbrechen"
   },
   "READER": {
     "TITLE": "Reader",
@@ -119,5 +130,24 @@
     "EMPTY_HINT": "Tippe auf das Herz einer Galerie, um sie hier zu speichern.",
     "ERROR": "Deine Favoriten konnten nicht geladen werden.",
     "RETRY": "Erneut versuchen"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Es wird nichts heruntergeladen.",
+    "HINT": "Downloads laufen weiter, solange die App geöffnet ist, eine Seite alle 2 Sekunden.",
+    "PROGRESS": "{{done}} / {{total}} Seiten",
+    "STATUS": {
+      "queued": "Wartet",
+      "downloading": "Lädt",
+      "failed": "Fehlgeschlagen"
+    },
+    "RETRY": "Download erneut versuchen",
+    "CANCEL": "Download abbrechen"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Noch keine Downloads.",
+    "EMPTY_HINT": "Tippe auf den Download-Button einer Galerie, um sie offline zu lesen.",
+    "ERROR": "Deine Downloads konnten nicht geladen werden.",
+    "RETRY": "Erneut versuchen",
+    "IN_PROGRESS": "Lädt ({{count}})"
   }
 }

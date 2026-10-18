@@ -20,6 +20,8 @@ import { addIcons } from 'ionicons';
 import {
   downloadOutline,
   downloadSharp,
+  cloudDownloadOutline,
+  cloudDownloadSharp,
   heartOutline,
   heartSharp,
   pricetagOutline,
@@ -28,6 +30,7 @@ import {
   settingsSharp,
 } from 'ionicons/icons';
 
+import { DownloadService } from './services/download.service';
 import { HardwareBackService } from './services/hardware-back.service';
 import { LanguageService } from './services/language.service';
 import { ThemeService } from './services/theme.service';
@@ -76,6 +79,7 @@ export class AppComponent {
     { title: 'MENU.TAGS', url: '/tags', icon: 'pricetag' },
     { title: 'MENU.FAVORITES', url: '/favorites', icon: 'heart' },
     { title: 'MENU.DOWNLOADED', url: '/downloaded', icon: 'download' },
+    { title: 'MENU.DOWNLOADING', url: '/downloading', icon: 'cloud-download' },
     { title: 'MENU.SETTINGS', url: '/settings', icon: 'settings' },
   ];
 
@@ -87,12 +91,16 @@ export class AppComponent {
       heartSharp,
       downloadOutline,
       downloadSharp,
+      cloudDownloadOutline,
+      cloudDownloadSharp,
       settingsOutline,
       settingsSharp,
     });
     void this.language.init();
     void inject(ThemeService).init();
     inject(HardwareBackService).init();
+    // Resume unfinished downloads in the background.
+    inject(DownloadService).init().catch(() => undefined);
   }
 
 }

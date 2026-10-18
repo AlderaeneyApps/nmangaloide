@@ -3,7 +3,8 @@
     "TAGS": "Tags",
     "FAVORITES": "Favoris",
     "DOWNLOADED": "Téléchargés",
-    "SETTINGS": "Paramètres"
+    "SETTINGS": "Paramètres",
+    "DOWNLOADING": "Téléchargements en cours"
   },
   "HOME": {
     "TITLE": "Accueil",
@@ -103,7 +104,17 @@
     "SEARCH_TAG": "Afficher les galeries avec {{tag}}",
     "FAVORITE_ADD": "Ajouter aux favoris",
     "FAVORITE_REMOVE": "Retirer des favoris",
-    "FAVORITE_ERROR": "Impossible de mettre à jour vos favoris."
+    "FAVORITE_ERROR": "Impossible de mettre à jour vos favoris.",
+    "DOWNLOAD": "Télécharger",
+    "DOWNLOAD_STARTED": "Téléchargement lancé. Suivez-le dans Téléchargements en cours.",
+    "DOWNLOAD_ERROR": "Impossible de lancer le téléchargement.",
+    "DOWNLOADING": "Téléchargement en cours : voir la progression",
+    "DOWNLOAD_FAILED": "Échec du téléchargement : réessayer",
+    "DOWNLOADED": "Téléchargée : supprimer le téléchargement",
+    "DELETE_DOWNLOAD_TITLE": "Supprimer le téléchargement ?",
+    "DELETE_DOWNLOAD_MESSAGE": "Les pages téléchargées seront supprimées de cet appareil.",
+    "DELETE": "Supprimer",
+    "CANCEL": "Annuler"
   },
   "READER": {
     "TITLE": "Lecteur",
@@ -119,5 +130,24 @@
     "EMPTY_HINT": "Touchez le cœur d’une galerie pour l’enregistrer ici.",
     "ERROR": "Impossible de charger vos favoris.",
     "RETRY": "Réessayer"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Aucun téléchargement en cours.",
+    "HINT": "Les téléchargements continuent tant que l’app est ouverte, une page toutes les 2 secondes.",
+    "PROGRESS": "{{done}} / {{total}} pages",
+    "STATUS": {
+      "queued": "En attente",
+      "downloading": "En cours",
+      "failed": "Échec"
+    },
+    "RETRY": "Réessayer le téléchargement",
+    "CANCEL": "Annuler le téléchargement"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Aucun téléchargement pour l’instant.",
+    "EMPTY_HINT": "Touchez le bouton de téléchargement d’une galerie pour la lire hors ligne.",
+    "ERROR": "Impossible de charger vos téléchargements.",
+    "RETRY": "Réessayer",
+    "IN_PROGRESS": "En cours ({{count}})"
   }
 }

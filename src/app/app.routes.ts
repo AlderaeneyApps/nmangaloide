@@ -19,6 +19,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/downloaded/downloaded.page').then((m) => m.DownloadedPage),
   },
   {
+    path: 'downloading',
+    loadComponent: () => import('./pages/downloading/downloading.page').then((m) => m.DownloadingPage),
+  },
+  {
     path: 'settings',
     loadComponent: () => import('./pages/settings/settings.page').then((m) => m.SettingsPage),
   },

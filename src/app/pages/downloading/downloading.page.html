@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button target="home"></app-back-button>
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'MENU.DOWNLOADING' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'MENU.DOWNLOADING' | transloco }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  @if (downloads.jobs().length === 0) {
+    <div class="state">
+      <ion-text color="medium"><p>{{ 'DOWNLOADING.EMPTY' | transloco }}</p></ion-text>
+    </div>
+  } @else {
+    <ion-text color="medium"><p class="hint">{{ 'DOWNLOADING.HINT' | transloco }}</p></ion-text>
+    <ion-list [inset]="true">
+      @for (job of downloads.jobs(); track job.id) {
+        <ion-item [attr.data-id]="job.id" [attr.data-status]="job.status">
+          <ion-label>
+            <a class="title" [routerLink]="['/gallery', job.id]" [queryParams]="backParams">{{ job.title }}</a>
+            <p class="progress">
+              {{ 'DOWNLOADING.PROGRESS' | transloco: { done: job.downloadedPages, total: job.totalPages } }}
+              · {{ 'DOWNLOADING.STATUS.' + job.status | transloco }}
+            </p>
+            <ion-progress-bar
+              [value]="progress(job)"
+              [color]="job.status === 'failed' ? 'danger' : 'primary'"
+              [type]="job.status === 'downloading' && job.downloadedPages === 0 ? 'indeterminate' : 'determinate'"
+            ></ion-progress-bar>
+          </ion-label>
+          @if (job.status === 'failed') {
+            <ion-button slot="end" fill="clear" data-action="retry" [attr.aria-label]="'DOWNLOADING.RETRY' | transloco" (click)="retry(job)">
+              <ion-icon slot="icon-only" name="refresh-outline" aria-hidden="true"></ion-icon>
+            </ion-button>
+          }
+          <ion-button slot="end" fill="clear" color="medium" data-action="cancel" [attr.aria-label]="'DOWNLOADING.CANCEL' | transloco" (click)="cancel(job)">
+            <ion-icon slot="icon-only" name="close-circle-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

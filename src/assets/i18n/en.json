@@ -3,7 +3,8 @@
     "TAGS": "Tags",
     "FAVORITES": "Favorites",
     "DOWNLOADED": "Downloaded",
-    "SETTINGS": "Settings"
+    "SETTINGS": "Settings",
+    "DOWNLOADING": "Downloading"
   },
   "HOME": {
     "TITLE": "Home",
@@ -103,7 +104,17 @@
     "SEARCH_TAG": "Show galleries with {{tag}}",
     "FAVORITE_ADD": "Add to favorites",
     "FAVORITE_REMOVE": "Remove from favorites",
-    "FAVORITE_ERROR": "Could not update your favorites."
+    "FAVORITE_ERROR": "Could not update your favorites.",
+    "DOWNLOAD": "Download",
+    "DOWNLOAD_STARTED": "Download started. Follow it in Downloading.",
+    "DOWNLOAD_ERROR": "Could not start the download.",
+    "DOWNLOADING": "Downloading: see progress",
+    "DOWNLOAD_FAILED": "Download failed: retry",
+    "DOWNLOADED": "Downloaded: delete download",
+    "DELETE_DOWNLOAD_TITLE": "Delete download?",
+    "DELETE_DOWNLOAD_MESSAGE": "The downloaded pages will be removed from this device.",
+    "DELETE": "Delete",
+    "CANCEL": "Cancel"
   },
   "READER": {
     "TITLE": "Reader",
@@ -119,5 +130,24 @@
     "EMPTY_HINT": "Tap the heart on a gallery to save it here.",
     "ERROR": "Could not load your favorites.",
     "RETRY": "Retry"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Nothing is downloading.",
+    "HINT": "Downloads continue while the app is open, one page every 2 seconds.",
+    "PROGRESS": "{{done}} / {{total}} pages",
+    "STATUS": {
+      "queued": "Waiting",
+      "downloading": "Downloading",
+      "failed": "Failed"
+    },
+    "RETRY": "Retry download",
+    "CANCEL": "Cancel download"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "No downloads yet.",
+    "EMPTY_HINT": "Tap the download button on a gallery to read it offline.",
+    "ERROR": "Could not load your downloads.",
+    "RETRY": "Retry",
+    "IN_PROGRESS": "Downloading ({{count}})"
   }
 }

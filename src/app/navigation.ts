@@ -29,12 +29,12 @@ export function parseSingleFilter(query: string): SearchFilter | null {
 }
 
 /** Top-level pages, reached from the side menu: back always goes to the home page. */
-export const TOP_LEVEL_PAGES: readonly string[] = ['tags', 'favorites', 'downloaded', 'settings'];
+export const TOP_LEVEL_PAGES: readonly string[] = ['tags', 'favorites', 'downloaded', 'downloading', 'settings'];
 
 /**
  * Where "back" goes from `url`, the same rules as the header back button:
  * - home page: null (nothing to go back to, so Android's back button closes the app)
- * - Settings, Tags, Downloaded, Favorites: the home page
+ * - Settings, Tags, Downloaded, Downloading, Favorites: the home page
  * - gallery page: the `from` page (e.g. home with its search), else the home page
  * - reader: the `from` page (its gallery page), else that gallery's page
  * - anything else: the home page

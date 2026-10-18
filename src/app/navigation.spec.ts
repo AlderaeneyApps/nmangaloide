@@ -21,7 +21,7 @@ describe('backUrlFor', () => {
   });
 
   it('always goes home from the top-level pages', () => {
-    for (const page of ['/tags', '/favorites', '/downloaded', '/settings', '/settings?from=%2Fgallery%2F5']) {
+    for (const page of ['/tags', '/favorites', '/downloaded', '/downloading', '/settings', '/settings?from=%2Fgallery%2F5']) {
       expect(backUrlFor(page)).toBe('/');
     }
   });

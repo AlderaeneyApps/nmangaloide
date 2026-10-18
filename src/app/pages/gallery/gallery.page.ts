@@ -15,16 +15,28 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  AlertController,
   NavController,
   ToastController,
 } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { bookOutline, documentsOutline, heart, heartOutline, timeOutline } from 'ionicons/icons';
+import {
+  alertCircleOutline,
+  bookOutline,
+  checkmarkCircle,
+  documentsOutline,
+  downloadOutline,
+  heart,
+  heartOutline,
+  hourglassOutline,
+  timeOutline,
+} from 'ionicons/icons';
 
 import { CdnService, GalleryDetailResponse, TAG_TYPES, TagResponse, TagType } from '../../api';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { BACK_PARAM, SEARCH_PARAM } from '../../navigation';
+import { DownloadService } from '../../services/download.service';
 import { GalleryDetailsService } from '../../services/gallery-details.service';
 import { SavedGalleriesService } from '../../services/saved-galleries.service';
 import { buildGallerySearchQuery } from '../../services/tag-preferences.service';
@@ -70,6 +82,8 @@ export class GalleryPage {
   private readonly navController = inject(NavController);
   private readonly toasts = inject(ToastController);
   private readonly saved = inject(SavedGalleriesService);
+  private readonly downloads = inject(DownloadService);
+  private readonly alerts = inject(AlertController);
 
   /** The gallery id, from the `gallery/:id` route. */
   readonly id = input.required<string>();
@@ -81,10 +95,15 @@ export class GalleryPage {
   protected readonly isFavorite = computed(() => this.saved.favoriteIds().has(Number(this.id())));
   protected readonly savingFavorite = signal(false);
 
-  /** A favorite's saved cover works offline; otherwise it comes from the CDN. */
+  /** 'downloaded', 'queued', 'downloading', 'failed' or null (not downloaded). */
+  protected readonly downloadState = computed(() => this.downloads.stateOf(Number(this.id())));
+
+  /** A saved cover (favorite or download) works offline; otherwise it comes from the CDN. */
   protected readonly coverUrl = computed(() => {
     const id = Number(this.id());
-    const saved = this.saved.favorites().find((gallery) => gallery.id === id)?.cover_base64;
+    const saved =
+      this.saved.favorites().find((gallery) => gallery.id === id)?.cover_base64 ??
+      this.downloads.downloaded().find((gallery) => gallery.id === id)?.cover_base64;
     return saved || this.cdn.thumbnailUrl(this.gallery()?.cover.path);
   });
   protected readonly coverRatio = computed(() => {
@@ -120,11 +139,66 @@ export class GalleryPage {
   protected readonly readerParams = computed(() => ({ [BACK_PARAM]: this.router.url }));
 
   constructor() {
-    addIcons({ bookOutline, documentsOutline, heart, heartOutline, timeOutline });
+    addIcons({
+      alertCircleOutline,
+      bookOutline,
+      checkmarkCircle,
+      documentsOutline,
+      downloadOutline,
+      heart,
+      heartOutline,
+      hourglassOutline,
+      timeOutline,
+    });
     this.saved.load().catch(() => undefined);
+    this.downloads.init().catch(() => undefined);
     effect(() => {
       void this.load(Number(this.id()));
     });
+  }
+
+  /** Queues the gallery's pages for download in the background. */
+  protected async startDownload(): Promise<void> {
+    const gallery = this.gallery();
+    if (!gallery) {
+      return;
+    }
+    try {
+      await this.downloads.download(gallery);
+      await this.toast('GALLERY.DOWNLOAD_STARTED', 'success');
+    } catch {
+      await this.toast('GALLERY.DOWNLOAD_ERROR', 'danger');
+    }
+  }
+
+  protected showDownloads(): void {
+    void this.navController.navigateForward('/downloading');
+  }
+
+  protected retryDownload(): void {
+    void this.downloads.retry(Number(this.id()));
+  }
+
+  /** Asks, then removes the downloaded pages (the gallery stays if it's a favorite). */
+  protected async deleteDownload(): Promise<void> {
+    const alert = await this.alerts.create({
+      header: this.transloco.translate('GALLERY.DELETE_DOWNLOAD_TITLE'),
+      message: this.transloco.translate('GALLERY.DELETE_DOWNLOAD_MESSAGE'),
+      buttons: [
+        { text: this.transloco.translate('GALLERY.CANCEL'), role: 'cancel' },
+        { text: this.transloco.translate('GALLERY.DELETE'), role: 'destructive' },
+      ],
+    });
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    if (role === 'destructive') {
+      await this.downloads.remove(Number(this.id()));
+    }
+  }
+
+  private async toast(key: string, color: 'success' | 'danger'): Promise<void> {
+    const toast = await this.toasts.create({ message: this.transloco.translate(key), duration: 3000, color });
+    await toast.present();
   }
 
   /** Adds the gallery to the favorites (saving its details and cover on the device), or removes it. */

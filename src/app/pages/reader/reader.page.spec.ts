@@ -61,8 +61,9 @@ describe('ReaderPage', () => {
     fixture.detectChanges();
   }
 
-  async function open(mode: 'scroll' | 'paged', startPage?: string) {
+  async function open(mode: 'scroll' | 'paged', startPage?: string, seed?: (db: FakeDatabase) => void) {
     db = new FakeDatabase();
+    seed?.(db);
     db.settings.set('reader_mode', mode);
     await TestBed.configureTestingModule({
       imports: [ReaderPage, getTranslocoTestingModule()],
@@ -119,6 +120,18 @@ describe('ReaderPage', () => {
     button('previous').click();
     await settle();
     expect(counter()).toBe('2 / 3');
+  });
+
+  it('uses the pages saved on the device for a downloaded gallery', async () => {
+    await open('scroll', undefined, (fake) => {
+      fake.seedPage(42, 1, 'data:image/webp;base64,ONE');
+      fake.seedPage(42, 2, 'data:image/webp;base64,TWO');
+    });
+    expect(images()).toEqual([
+      'data:image/webp;base64,ONE',
+      'data:image/webp;base64,TWO',
+      'https://i.example/galleries/100/3.webp',
+    ]);
   });
 
   it('turns the page when tapping the image: left third back, the rest forward', async () => {

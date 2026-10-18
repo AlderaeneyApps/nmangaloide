@@ -3,7 +3,8 @@
     "TAGS": "Etiquetes",
     "FAVORITES": "Preferits",
     "DOWNLOADED": "Descarregats",
-    "SETTINGS": "Configuració"
+    "SETTINGS": "Configuració",
+    "DOWNLOADING": "Descarregant"
   },
   "HOME": {
     "TITLE": "Inici",
@@ -103,7 +104,17 @@
     "SEARCH_TAG": "Mostra les galeries amb {{tag}}",
     "FAVORITE_ADD": "Afegeix als preferits",
     "FAVORITE_REMOVE": "Treu dels preferits",
-    "FAVORITE_ERROR": "No s'han pogut actualitzar els teus preferits."
+    "FAVORITE_ERROR": "No s'han pogut actualitzar els teus preferits.",
+    "DOWNLOAD": "Descarrega",
+    "DOWNLOAD_STARTED": "Descàrrega iniciada. Segueix-la a Descarregant.",
+    "DOWNLOAD_ERROR": "No s'ha pogut iniciar la descàrrega.",
+    "DOWNLOADING": "Descarregant: mostra el progrés",
+    "DOWNLOAD_FAILED": "La descàrrega ha fallat: torna-ho a provar",
+    "DOWNLOADED": "Descarregada: elimina la descàrrega",
+    "DELETE_DOWNLOAD_TITLE": "Vols eliminar la descàrrega?",
+    "DELETE_DOWNLOAD_MESSAGE": "Les pàgines descarregades s'eliminaran d'aquest dispositiu.",
+    "DELETE": "Elimina",
+    "CANCEL": "Cancel·la"
   },
   "READER": {
     "TITLE": "Lector",
@@ -119,5 +130,24 @@
     "EMPTY_HINT": "Toca el cor d'una galeria per desar-la aquí.",
     "ERROR": "No s'han pogut carregar els teus preferits.",
     "RETRY": "Torna-ho a provar"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "No s'està descarregant res.",
+    "HINT": "Les descàrregues continuen mentre l'app està oberta, una pàgina cada 2 segons.",
+    "PROGRESS": "{{done}} / {{total}} pàgines",
+    "STATUS": {
+      "queued": "En espera",
+      "downloading": "Descarregant",
+      "failed": "Fallida"
+    },
+    "RETRY": "Torna a provar la descàrrega",
+    "CANCEL": "Cancel·la la descàrrega"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Encara no hi ha descàrregues.",
+    "EMPTY_HINT": "Toca el botó de descàrrega d'una galeria per llegir-la sense connexió.",
+    "ERROR": "No s'han pogut carregar les teves descàrregues.",
+    "RETRY": "Torna-ho a provar",
+    "IN_PROGRESS": "Descarregant ({{count}})"
   }
 }

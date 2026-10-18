@@ -5,6 +5,7 @@ import { Share } from '@capacitor/share';
 import { CACHE_FILES, FILE_SAVER } from '../native/file-saver';
 import { DatabaseService } from '../sql-services/database.service';
 import { AppSettingsService } from './app-settings.service';
+import { DownloadService } from './download.service';
 import { SavedGalleriesService } from './saved-galleries.service';
 import { TagPreferencesService } from './tag-preferences.service';
 
@@ -21,6 +22,7 @@ export class BackupService {
   private readonly tagPreferences = inject(TagPreferencesService);
   private readonly settings = inject(AppSettingsService);
   private readonly savedGalleries = inject(SavedGalleriesService);
+  private readonly downloads = inject(DownloadService);
   private readonly fileSaver = inject(FILE_SAVER);
   private readonly cacheFiles = inject(CACHE_FILES);
 
@@ -56,6 +58,8 @@ export class BackupService {
   /** Replaces the database with the backup in `file`, then reloads what the app shows. */
   async importFromFile(file: Blob): Promise<void> {
     await this.database.importJson(await file.text());
+    // Backups don't contain downloaded pages, so imported downloads are cleared.
+    await this.downloads.resetAfterImport();
     await Promise.all([this.tagPreferences.reload(), this.settings.reload(), this.savedGalleries.reload()]);
   }
 }
