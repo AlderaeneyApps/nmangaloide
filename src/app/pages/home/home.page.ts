@@ -27,7 +27,6 @@ import { closeCircle, pricetagsOutline } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 
 import { CdnService, GalleriesService, GalleryListItem, PaginatedGalleryListItemResponse, SearchService } from '../../api';
-import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { GalleryCardComponent } from '../../components/gallery-card/gallery-card.component';
 import { BACK_PARAM, SEARCH_PARAM, parseSingleFilter } from '../../navigation';
 import { TagPreferencesService } from '../../services/tag-preferences.service';
@@ -57,7 +56,6 @@ const PER_PAGE = 25;
     IonIcon,
     IonLabel,
     TranslocoPipe,
-    BackButtonComponent,
     GalleryCardComponent,
   ],
 })

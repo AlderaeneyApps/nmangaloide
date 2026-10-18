@@ -7,7 +7,13 @@ export type ReaderMode = 'scroll' | 'paged';
 export const READER_MODES: readonly ReaderMode[] = ['scroll', 'paged'];
 export const DEFAULT_READER_MODE: ReaderMode = 'scroll';
 
+/** The app's colours: follow the phone, always light, always dark, or dark on pure black. */
+export type AppTheme = 'system' | 'light' | 'dark' | 'oled';
+export const APP_THEMES: readonly AppTheme[] = ['system', 'light', 'dark', 'oled'];
+export const DEFAULT_THEME: AppTheme = 'system';
+
 const READER_MODE_KEY = 'reader_mode';
+const THEME_KEY = 'theme';
 
 interface SettingRow {
   key: string;
@@ -19,9 +25,11 @@ interface SettingRow {
 export class AppSettingsService {
   private readonly db = inject(DatabaseService);
   private readonly _readerMode = signal<ReaderMode>(DEFAULT_READER_MODE);
+  private readonly _theme = signal<AppTheme>(DEFAULT_THEME);
   private loading: Promise<void> | null = null;
 
   readonly readerMode = this._readerMode.asReadonly();
+  readonly theme = this._theme.asReadonly();
 
   /** Reads the settings from the database (once; later calls reuse the result). */
   load(): Promise<void> {
@@ -30,6 +38,8 @@ export class AppSettingsService {
         const settings = new Map(rows.map((row) => [row.key, row.value]));
         const mode = settings.get(READER_MODE_KEY);
         this._readerMode.set(isReaderMode(mode) ? mode : DEFAULT_READER_MODE);
+        const theme = settings.get(THEME_KEY);
+        this._theme.set(isTheme(theme) ? theme : DEFAULT_THEME);
       },
       (error) => {
         this.loading = null;
@@ -53,6 +63,14 @@ export class AppSettingsService {
     this._readerMode.set(mode);
   }
 
+  async setTheme(theme: AppTheme): Promise<void> {
+    if (!isTheme(theme)) {
+      throw new Error(`Unknown theme: ${theme}`);
+    }
+    await this.save(THEME_KEY, theme);
+    this._theme.set(theme);
+  }
+
   private save(key: string, value: string): Promise<void> {
     return this.db.run(
       `INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?)
@@ -64,4 +82,8 @@ export class AppSettingsService {
 
 function isReaderMode(value: unknown): value is ReaderMode {
   return READER_MODES.includes(value as ReaderMode);
+}
+
+function isTheme(value: unknown): value is AppTheme {
+  return APP_THEMES.includes(value as AppTheme);
 }

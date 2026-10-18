@@ -1,11 +1,13 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 
 import { TagResponse } from '../../api';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { TagsPage, TagsTab } from './tags.page';
 
@@ -259,5 +261,11 @@ describe('TagsPage', () => {
     db.failNext = new Error('locked');
     await setUp();
     expect(el().textContent).toContain('Could not load your saved tags.');
+  });
+
+  it('has a back button that always goes to the home page', async () => {
+    await setUp();
+    const back = fixture.debugElement.query(By.directive(BackButtonComponent)).componentInstance as BackButtonComponent;
+    expect(back.target()).toBe('home');
   });
 });

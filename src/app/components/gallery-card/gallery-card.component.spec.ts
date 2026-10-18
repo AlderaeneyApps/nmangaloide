@@ -59,6 +59,14 @@ describe('GalleryCardComponent', () => {
     expect((el.querySelector('.cover') as HTMLElement).style.aspectRatio).toBe('250 / 350');
   });
 
+  it('can show a saved cover instead of the CDN thumbnail', async () => {
+    const fixture = TestBed.createComponent(GalleryCardComponent);
+    fixture.componentRef.setInput('gallery', GALLERY);
+    fixture.componentRef.setInput('coverSrc', 'data:image/webp;base64,AAA');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('img').getAttribute('src')).toBe('data:image/webp;base64,AAA');
+  });
+
   it('should not render an image until the CDN servers are known', async () => {
     const el = await create(GALLERY, null);
     expect(el.querySelector('img')).toBeNull();

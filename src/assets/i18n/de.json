@@ -20,7 +20,7 @@
     "LANGUAGE": "Sprache",
     "DATA": "Daten",
     "EXPORT": "Datenbank exportieren",
-    "EXPORT_HINT": "Speichere eine Sicherung deiner Tags als JSON-Datei.",
+    "EXPORT_HINT": "Speichere die Sicherung als JSON-Datei auf deinem Gerät oder teile sie.",
     "IMPORT": "Datenbank importieren",
     "IMPORT_HINT": "Stelle eine mit Exportieren erstellte Sicherung wieder her.",
     "IMPORT_CONFIRM_TITLE": "Deine Daten ersetzen?",
@@ -42,7 +42,17 @@
       "paged": "Tippe, um zwischen den Seiten zu wechseln."
     },
     "SETTINGS_LOAD_ERROR": "Deine Einstellungen konnten nicht geladen werden.",
-    "SETTINGS_SAVE_ERROR": "Die Einstellung konnte nicht gespeichert werden."
+    "SETTINGS_SAVE_ERROR": "Die Einstellung konnte nicht gespeichert werden.",
+    "THEME": "Design",
+    "THEMES": {
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "oled": "OLED-Schwarz"
+    },
+    "EXPORT_TO_DEVICE": "Auf dem Gerät speichern…",
+    "EXPORT_SHARE": "Teilen…",
+    "EXPORT_SAVED": "Sicherung gespeichert."
   },
   "COMMON": {
     "BACK": "Zurück"
@@ -90,7 +100,10 @@
     "ERROR": "Diese Galerie konnte nicht geladen werden.",
     "RETRY": "Erneut versuchen",
     "SCANLATOR": "Übersetzt von {{name}}",
-    "SEARCH_TAG": "Galerien mit {{tag}} anzeigen"
+    "SEARCH_TAG": "Galerien mit {{tag}} anzeigen",
+    "FAVORITE_ADD": "Zu Favoriten hinzufügen",
+    "FAVORITE_REMOVE": "Aus Favoriten entfernen",
+    "FAVORITE_ERROR": "Deine Favoriten konnten nicht aktualisiert werden."
   },
   "READER": {
     "TITLE": "Reader",
@@ -100,5 +113,11 @@
     "PAGE_OF": "{{page}} / {{total}}",
     "PREVIOUS": "Vorherige Seite",
     "NEXT": "Nächste Seite"
+  },
+  "FAVORITES": {
+    "EMPTY": "Noch keine Favoriten.",
+    "EMPTY_HINT": "Tippe auf das Herz einer Galerie, um sie hier zu speichern.",
+    "ERROR": "Deine Favoriten konnten nicht geladen werden.",
+    "RETRY": "Erneut versuchen"
   }
 }

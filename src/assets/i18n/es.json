@@ -20,7 +20,7 @@
     "LANGUAGE": "Idioma",
     "DATA": "Datos",
     "EXPORT": "Exportar base de datos",
-    "EXPORT_HINT": "Guarda una copia de tus etiquetas en un archivo JSON.",
+    "EXPORT_HINT": "Guarda la copia como archivo JSON en tu dispositivo o compártela.",
     "IMPORT": "Importar base de datos",
     "IMPORT_HINT": "Restaura una copia hecha con Exportar.",
     "IMPORT_CONFIRM_TITLE": "¿Reemplazar tus datos?",
@@ -42,7 +42,17 @@
       "paged": "Toca para pasar de una página a otra."
     },
     "SETTINGS_LOAD_ERROR": "No se pudieron cargar tus ajustes.",
-    "SETTINGS_SAVE_ERROR": "No se pudo guardar el ajuste."
+    "SETTINGS_SAVE_ERROR": "No se pudo guardar el ajuste.",
+    "THEME": "Tema",
+    "THEMES": {
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "oled": "Negro OLED"
+    },
+    "EXPORT_TO_DEVICE": "Guardar en el dispositivo…",
+    "EXPORT_SHARE": "Compartir…",
+    "EXPORT_SAVED": "Copia guardada."
   },
   "COMMON": {
     "BACK": "Atrás"
@@ -90,7 +100,10 @@
     "ERROR": "No se pudo cargar esta galería.",
     "RETRY": "Reintentar",
     "SCANLATOR": "Traducida por {{name}}",
-    "SEARCH_TAG": "Mostrar galerías con {{tag}}"
+    "SEARCH_TAG": "Mostrar galerías con {{tag}}",
+    "FAVORITE_ADD": "Añadir a favoritos",
+    "FAVORITE_REMOVE": "Quitar de favoritos",
+    "FAVORITE_ERROR": "No se pudieron actualizar tus favoritos."
   },
   "READER": {
     "TITLE": "Lector",
@@ -100,5 +113,11 @@
     "PAGE_OF": "{{page}} / {{total}}",
     "PREVIOUS": "Página anterior",
     "NEXT": "Página siguiente"
+  },
+  "FAVORITES": {
+    "EMPTY": "Aún no tienes favoritos.",
+    "EMPTY_HINT": "Toca el corazón de una galería para guardarla aquí.",
+    "ERROR": "No se pudieron cargar tus favoritos.",
+    "RETRY": "Reintentar"
   }
 }

@@ -54,4 +54,35 @@ describe('AppSettingsService', () => {
     await service.reload();
     expect(service.readerMode()).toBe('paged');
   });
+
+  describe('theme', () => {
+    it('defaults to the system theme', async () => {
+      await service.load();
+      expect(service.theme()).toBe('system');
+    });
+
+    it('loads and saves the theme', async () => {
+      db.settings.set('theme', 'oled');
+      await service.load();
+      expect(service.theme()).toBe('oled');
+
+      await service.setTheme('light');
+      expect(db.settings.get('theme')).toBe('light');
+      expect(service.theme()).toBe('light');
+    });
+
+    it('ignores an unknown saved theme and rejects unknown ones', async () => {
+      db.settings.set('theme', 'neon');
+      await service.load();
+      expect(service.theme()).toBe('system');
+      await expect(service.setTheme('neon' as never)).rejects.toThrow('Unknown theme');
+    });
+
+    it('keeps the reader mode and theme independent', async () => {
+      await service.setTheme('dark');
+      await service.setReaderMode('paged');
+      expect(db.settings.get('theme')).toBe('dark');
+      expect(db.settings.get('reader_mode')).toBe('paged');
+    });
+  });
 });

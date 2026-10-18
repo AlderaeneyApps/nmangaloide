@@ -1,11 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 
+import { CACHE_FILES, FILE_SAVER } from '../native/file-saver';
 import { DatabaseService } from '../sql-services/database.service';
 import { AppSettingsService } from './app-settings.service';
+import { SavedGalleriesService } from './saved-galleries.service';
 import { TagPreferencesService } from './tag-preferences.service';
+
+/**
+ * Where an export goes on Android/iOS: `device` opens the system "Save as" picker
+ * (any folder on the phone, an SD card, iCloud/Drive…), `share` the share sheet.
+ */
+export type ExportDestination = 'device' | 'share';
 
 /** Exports the database to a JSON file and imports it back. */
 @Injectable({ providedIn: 'root' })
@@ -13,23 +20,33 @@ export class BackupService {
   private readonly database = inject(DatabaseService);
   private readonly tagPreferences = inject(TagPreferencesService);
   private readonly settings = inject(AppSettingsService);
+  private readonly savedGalleries = inject(SavedGalleriesService);
+  private readonly fileSaver = inject(FILE_SAVER);
+  private readonly cacheFiles = inject(CACHE_FILES);
 
   /**
-   * Exports the database. On Android/iOS the file is written to the app's cache
-   * and handed to the share sheet (save to Files, send, ...); in the browser it's
+   * Exports the database. On Android/iOS it's saved where the user picks
+   * (`device`) or handed to the share sheet (`share`); in the browser it's
    * downloaded. Resolves with the file name.
    */
-  async exportToFile(now = new Date()): Promise<string> {
+  async exportToFile(destination: ExportDestination = 'device', now = new Date()): Promise<string> {
     const json = await this.database.exportJson();
     const fileName = backupFileName(now);
     if (Capacitor.isNativePlatform()) {
-      const { uri } = await Filesystem.writeFile({
-        path: fileName,
-        data: json,
-        directory: Directory.Cache,
-        encoding: Encoding.UTF8,
-      });
-      await Share.share({ title: fileName, files: [uri] });
+      // Both paths hand the native side a file in the cache, never the contents:
+      // a large plugin call can crash Android while another app is open on top.
+      const uri = await this.cacheFiles.write(fileName, json);
+      if (destination === 'device') {
+        try {
+          await this.fileSaver.saveAs({ fileName, sourceUri: uri, mimeType: 'application/json' });
+        } finally {
+          // Copied (or cancelled) by now. Shared files are left for the cache to clear:
+          // the receiving app may still be reading them after the share sheet closes.
+          await this.cacheFiles.remove(fileName).catch(() => undefined);
+        }
+      } else {
+        await Share.share({ title: fileName, files: [uri] });
+      }
     } else {
       downloadFile(fileName, json);
     }
@@ -39,7 +56,7 @@ export class BackupService {
   /** Replaces the database with the backup in `file`, then reloads what the app shows. */
   async importFromFile(file: Blob): Promise<void> {
     await this.database.importJson(await file.text());
-    await Promise.all([this.tagPreferences.reload(), this.settings.reload()]);
+    await Promise.all([this.tagPreferences.reload(), this.settings.reload(), this.savedGalleries.reload()]);
   }
 }
 

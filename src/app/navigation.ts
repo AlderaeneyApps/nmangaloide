@@ -27,3 +27,31 @@ export function parseSingleFilter(query: string): SearchFilter | null {
   const match = /^([a-z]+):"([^"]+)"$/.exec(query.trim());
   return match ? { type: match[1], name: match[2] } : null;
 }
+
+/** Top-level pages, reached from the side menu: back always goes to the home page. */
+export const TOP_LEVEL_PAGES: readonly string[] = ['tags', 'favorites', 'downloaded', 'settings'];
+
+/**
+ * Where "back" goes from `url`, the same rules as the header back button:
+ * - home page: null (nothing to go back to, so Android's back button closes the app)
+ * - Settings, Tags, Downloaded, Favorites: the home page
+ * - gallery page: the `from` page (e.g. home with its search), else the home page
+ * - reader: the `from` page (its gallery page), else that gallery's page
+ * - anything else: the home page
+ */
+export function backUrlFor(url: string): string | null {
+  const parsed = new URL(url, 'https://app.invalid');
+  const segments = parsed.pathname.split('/').filter(Boolean);
+  const from = safeBackUrl(parsed.searchParams.get(BACK_PARAM));
+
+  if (segments.length === 0) {
+    return null;
+  }
+  if (segments[0] === 'gallery' && segments.length === 2) {
+    return from ?? '/';
+  }
+  if (segments[0] === 'gallery' && segments.length === 3 && segments[2] === 'read') {
+    return from ?? `/gallery/${segments[1]}`;
+  }
+  return '/';
+}

@@ -1,10 +1,35 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <app-back-button></app-back-button>
+      <app-back-button fallback="/"></app-back-button>
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ gallery()?.title?.pretty || ('GALLERY.TITLE' | transloco) }}</ion-title>
+    <ion-buttons slot="end">
+      <!-- Two buttons rather than one with changing aria attributes: ion-button copies
+           them to its inner button only when it first renders. -->
+      @if (isFavorite()) {
+        <ion-button
+          data-action="favorite"
+          data-state="on"
+          [disabled]="savingFavorite()"
+          [attr.aria-label]="'GALLERY.FAVORITE_REMOVE' | transloco"
+          (click)="toggleFavorite()"
+        >
+          <ion-icon slot="icon-only" name="heart" color="danger" aria-hidden="true"></ion-icon>
+        </ion-button>
+      } @else {
+        <ion-button
+          data-action="favorite"
+          data-state="off"
+          [disabled]="!gallery() || savingFavorite()"
+          [attr.aria-label]="'GALLERY.FAVORITE_ADD' | transloco"
+          (click)="toggleFavorite()"
+        >
+          <ion-icon slot="icon-only" name="heart-outline" aria-hidden="true"></ion-icon>
+        </ion-button>
+      }
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

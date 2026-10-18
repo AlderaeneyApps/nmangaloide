@@ -1,12 +1,14 @@
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 
 import { BackupService } from '../../services/backup.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { SettingsPage } from './settings.page';
 
@@ -16,9 +18,16 @@ describe('SettingsPage', () => {
   let alertRole: string;
   let alertCreate: ReturnType<typeof vi.fn>;
   let db: FakeDatabase;
+  let sheetChoice: { role?: string; data?: string };
+  let actionSheetCreate: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     db = new FakeDatabase();
+    sheetChoice = { data: 'device' };
+    actionSheetCreate = vi.fn().mockImplementation(async () => ({
+      present: vi.fn().mockResolvedValue(undefined),
+      onDidDismiss: vi.fn().mockImplementation(async () => sheetChoice),
+    }));
     backup = {
       exportToFile: vi.fn().mockResolvedValue('nmangaloide-backup.json'),
       importFromFile: vi.fn().mockResolvedValue(undefined),
@@ -36,6 +45,7 @@ describe('SettingsPage', () => {
         { provide: BackupService, useValue: backup },
         { provide: ToastController, useValue: { create: toastCreate } },
         { provide: AlertController, useValue: { create: alertCreate } },
+        { provide: ActionSheetController, useValue: { create: actionSheetCreate } },
         provideFakeDatabase(db),
       ],
     }).compileComponents();
@@ -48,8 +58,8 @@ describe('SettingsPage', () => {
     fixture.detectChanges();
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('ion-title')?.textContent).toContain('Settings');
-    expect((el.querySelector('ion-select') as HTMLIonSelectElement).label).toBe('Language');
-    const options = [...el.querySelectorAll('ion-select-option')].map((o) => o.textContent?.trim());
+    expect((el.querySelector('[data-setting="language"] ion-select') as HTMLIonSelectElement).label).toBe('Language');
+    const options = [...el.querySelectorAll('[data-setting="language"] ion-select-option')].map((o) => o.textContent?.trim());
     expect(options).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch']);
   });
 
@@ -57,7 +67,7 @@ describe('SettingsPage', () => {
     const fixture = TestBed.createComponent(SettingsPage);
     fixture.detectChanges();
 
-    const select = fixture.nativeElement.querySelector('ion-select') as HTMLElement;
+    const select = fixture.nativeElement.querySelector('[data-setting="language"] ion-select') as HTMLElement;
     select.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'fr' } }));
 
     await vi.waitFor(() => expect(localStorage.getItem('CapacitorStorage.lang')).toBe('fr'));
@@ -199,6 +209,109 @@ describe('SettingsPage', () => {
       await settle();
       expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'Could not save the setting.' }));
       expect(db.settings.has('reader_mode')).toBe(false);
+    });
+  });
+
+  describe('theme', () => {
+    const settle = () => new Promise((resolve) => setTimeout(resolve));
+
+    async function render() {
+      const fixture = TestBed.createComponent(SettingsPage);
+      fixture.detectChanges();
+      await settle();
+      fixture.detectChanges();
+      return fixture;
+    }
+
+    const select = (el: HTMLElement) => el.querySelector('[data-setting="theme"] ion-select') as HTMLIonSelectElement;
+
+    it('offers System, Light, Dark and OLED black, under the language', async () => {
+      const el: HTMLElement = (await render()).nativeElement;
+      const rows = [...el.querySelectorAll('ion-list:first-of-type > ion-item')].map((item) => item.getAttribute('data-setting'));
+      expect(rows).toEqual(['language', 'theme']);
+      expect(select(el).label).toBe('Theme');
+      const options = [...el.querySelectorAll('[data-setting="theme"] ion-select-option')].map((o) => o.textContent?.trim());
+      expect(options).toEqual(['System', 'Light', 'Dark', 'OLED black']);
+      expect(select(el).value).toBe('system');
+    });
+
+    it('saves the chosen theme', async () => {
+      const fixture = await render();
+      select(fixture.nativeElement).dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'oled' } }));
+      await settle();
+      fixture.detectChanges();
+      expect(db.settings.get('theme')).toBe('oled');
+      expect(select(fixture.nativeElement).value).toBe('oled');
+    });
+
+    it('reports a failed save', async () => {
+      const fixture = await render();
+      db.failNext = new Error('disk full');
+      select(fixture.nativeElement).dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'dark' } }));
+      await settle();
+      expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'Could not save the setting.' }));
+      expect(db.settings.has('theme')).toBe(false);
+    });
+  });
+
+  it('has a back button that always goes to the home page', () => {
+    const fixture = TestBed.createComponent(SettingsPage);
+    fixture.detectChanges();
+    const back = fixture.debugElement.query(By.directive(BackButtonComponent)).componentInstance as BackButtonComponent;
+    expect(back.target()).toBe('home');
+  });
+
+  describe('export on a phone', () => {
+    const settle = () => new Promise((resolve) => setTimeout(resolve));
+    async function exportOnPhone() {
+      const fixture = TestBed.createComponent(SettingsPage);
+      fixture.detectChanges();
+      await (fixture.componentInstance as unknown as { exportDatabase(native: boolean): Promise<void> }).exportDatabase(true);
+      await settle();
+      return fixture;
+    }
+    const toastMessages = () => toastCreate.mock.calls.map(([options]) => options.message);
+
+    it('asks where to put the backup: save to the device or share', async () => {
+      await exportOnPhone();
+      const options = actionSheetCreate.mock.calls[0][0];
+      expect(options.header).toBe('Export database');
+      expect(options.buttons.map((b: { text: string }) => b.text)).toEqual(['Save to device…', 'Share…', 'Cancel']);
+    });
+
+    it('saves to the device', async () => {
+      sheetChoice = { data: 'device' };
+      await exportOnPhone();
+      expect(backup.exportToFile).toHaveBeenCalledWith('device');
+      expect(toastMessages()).toEqual(['Backup saved.']);
+    });
+
+    it('shares', async () => {
+      sheetChoice = { data: 'share' };
+      await exportOnPhone();
+      expect(backup.exportToFile).toHaveBeenCalledWith('share');
+      expect(toastMessages()).toEqual(['Database exported.']);
+    });
+
+    it('does nothing when the choice is cancelled', async () => {
+      sheetChoice = { role: 'cancel' };
+      await exportOnPhone();
+      expect(backup.exportToFile).not.toHaveBeenCalled();
+    });
+
+    it('stays quiet when the save picker is closed', async () => {
+      backup.exportToFile.mockRejectedValue(Object.assign(new Error('Save cancelled'), { code: 'CANCELLED' }));
+      await exportOnPhone();
+      expect(toastMessages()).toEqual([]);
+    });
+
+    it('skips the question in the browser and downloads', async () => {
+      const fixture = TestBed.createComponent(SettingsPage);
+      fixture.detectChanges();
+      (fixture.nativeElement.querySelector('[data-action="export"]') as HTMLElement).click();
+      await settle();
+      expect(actionSheetCreate).not.toHaveBeenCalled();
+      expect(backup.exportToFile).toHaveBeenCalledWith('device');
     });
   });
 });

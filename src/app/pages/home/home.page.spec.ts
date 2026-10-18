@@ -1,12 +1,14 @@
 import { HttpRequest, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 
 import { GalleryListItem } from '../../api';
 import { TagPreferencesService } from '../../services/tag-preferences.service';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { HomePage } from './home.page';
 
@@ -339,5 +341,12 @@ describe('HomePage', () => {
       expect(el().querySelector('[data-filter="saved-tags"]')).toBeNull();
       expect(el().querySelectorAll('app-gallery-card').length).toBe(1);
     });
+  });
+
+  it('has no back button: it is where the others go back to', async () => {
+    http.expectOne(`${BASE}/galleries?page=1&per_page=25`).flush({ result: [], num_pages: 0, per_page: 25, total: 0 });
+    flushCdn();
+    await settle();
+    expect(fixture.debugElement.query(By.directive(BackButtonComponent))).toBeNull();
   });
 });

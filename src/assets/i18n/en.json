@@ -20,7 +20,7 @@
     "LANGUAGE": "Language",
     "DATA": "Data",
     "EXPORT": "Export database",
-    "EXPORT_HINT": "Save a backup of your saved tags as a JSON file.",
+    "EXPORT_HINT": "Save the backup as a JSON file on your device, or share it.",
     "IMPORT": "Import database",
     "IMPORT_HINT": "Restore a backup made with Export.",
     "IMPORT_CONFIRM_TITLE": "Replace your data?",
@@ -42,7 +42,17 @@
       "paged": "Tap to move between pages."
     },
     "SETTINGS_LOAD_ERROR": "Could not load your settings.",
-    "SETTINGS_SAVE_ERROR": "Could not save the setting."
+    "SETTINGS_SAVE_ERROR": "Could not save the setting.",
+    "THEME": "Theme",
+    "THEMES": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark",
+      "oled": "OLED black"
+    },
+    "EXPORT_TO_DEVICE": "Save to device…",
+    "EXPORT_SHARE": "Share…",
+    "EXPORT_SAVED": "Backup saved."
   },
   "COMMON": {
     "BACK": "Back"
@@ -90,7 +100,10 @@
     "ERROR": "Could not load this gallery.",
     "RETRY": "Retry",
     "SCANLATOR": "Scanlated by {{name}}",
-    "SEARCH_TAG": "Show galleries with {{tag}}"
+    "SEARCH_TAG": "Show galleries with {{tag}}",
+    "FAVORITE_ADD": "Add to favorites",
+    "FAVORITE_REMOVE": "Remove from favorites",
+    "FAVORITE_ERROR": "Could not update your favorites."
   },
   "READER": {
     "TITLE": "Reader",
@@ -100,5 +113,11 @@
     "PAGE_OF": "{{page}} / {{total}}",
     "PREVIOUS": "Previous page",
     "NEXT": "Next page"
+  },
+  "FAVORITES": {
+    "EMPTY": "No favorites yet.",
+    "EMPTY_HINT": "Tap the heart on a gallery to save it here.",
+    "ERROR": "Could not load your favorites.",
+    "RETRY": "Retry"
   }
 }

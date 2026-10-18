@@ -33,5 +33,31 @@
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+/* Dark mode is switched by ThemeService (Settings → Theme) with the .ion-palette-dark class. */
+@import "@ionic/angular/css/palettes/dark.class.css";
+
+/**
+ * OLED black theme: the dark palette with pure black page backgrounds, while
+ * toolbars, the side menu, cards, list rows and pop-ups keep dark grey surfaces
+ * so they stand out.
+ */
+.ion-palette-dark.oled-black {
+  --ion-background-color: #000000;
+  --ion-background-color-rgb: 0, 0, 0;
+  --ion-toolbar-background: #1f1f1f;
+  --ion-tab-bar-background: #1f1f1f;
+  --ion-item-background: #141414;
+  --ion-card-background: #1c1c1d;
+  --ion-overlay-background-color: #1c1c1d;
+
+  ion-menu ion-content,
+  ion-menu ion-item {
+    --background: #161616;
+  }
+
+  ion-modal,
+  ion-popover {
+    --background: #1c1c1d;
+  }
+}

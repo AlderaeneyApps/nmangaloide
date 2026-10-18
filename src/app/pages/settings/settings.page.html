@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <app-back-button></app-back-button>
+      <app-back-button target="home"></app-back-button>
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ 'SETTINGS.TITLE' | transloco }}</ion-title>
@@ -16,7 +16,7 @@
   </ion-header>
 
   <ion-list [inset]="true">
-    <ion-item>
+    <ion-item data-setting="language">
       <ion-select
         [label]="'SETTINGS.LANGUAGE' | transloco"
         interface="popover"
@@ -25,6 +25,18 @@
       >
         @for (option of language.options; track option.code) {
           <ion-select-option [value]="option.code">{{ option.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    <ion-item data-setting="theme">
+      <ion-select
+        [label]="'SETTINGS.THEME' | transloco"
+        interface="popover"
+        [value]="settings.theme()"
+        (ionChange)="onThemeChange($event)"
+      >
+        @for (theme of themes; track theme) {
+          <ion-select-option [value]="theme">{{ 'SETTINGS.THEMES.' + theme | transloco }}</ion-select-option>
         }
       </ion-select>
     </ion-item>

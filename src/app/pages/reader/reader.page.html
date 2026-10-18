@@ -1,7 +1,7 @@
 <ion-header [translucent]="true" class="reader-header" [class.hidden]="headerHidden()">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <app-back-button></app-back-button>
+      <app-back-button [fallback]="'/gallery/' + id()"></app-back-button>
     </ion-buttons>
     <ion-title>{{ gallery()?.title?.pretty || ('READER.TITLE' | transloco) }}</ion-title>
   </ion-toolbar>

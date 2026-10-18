@@ -16,15 +16,17 @@ import {
   IonTitle,
   IonToolbar,
   NavController,
+  ToastController,
 } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { bookOutline, documentsOutline, heartOutline, timeOutline } from 'ionicons/icons';
+import { bookOutline, documentsOutline, heart, heartOutline, timeOutline } from 'ionicons/icons';
 
 import { CdnService, GalleryDetailResponse, TAG_TYPES, TagResponse, TagType } from '../../api';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { BACK_PARAM, SEARCH_PARAM } from '../../navigation';
 import { GalleryDetailsService } from '../../services/gallery-details.service';
+import { SavedGalleriesService } from '../../services/saved-galleries.service';
 import { buildGallerySearchQuery } from '../../services/tag-preferences.service';
 
 export interface TagGroup {
@@ -66,6 +68,8 @@ export class GalleryPage {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
   private readonly navController = inject(NavController);
+  private readonly toasts = inject(ToastController);
+  private readonly saved = inject(SavedGalleriesService);
 
   /** The gallery id, from the `gallery/:id` route. */
   readonly id = input.required<string>();
@@ -74,7 +78,15 @@ export class GalleryPage {
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
 
-  protected readonly coverUrl = computed(() => this.cdn.thumbnailUrl(this.gallery()?.cover.path));
+  protected readonly isFavorite = computed(() => this.saved.favoriteIds().has(Number(this.id())));
+  protected readonly savingFavorite = signal(false);
+
+  /** A favorite's saved cover works offline; otherwise it comes from the CDN. */
+  protected readonly coverUrl = computed(() => {
+    const id = Number(this.id());
+    const saved = this.saved.favorites().find((gallery) => gallery.id === id)?.cover_base64;
+    return saved || this.cdn.thumbnailUrl(this.gallery()?.cover.path);
+  });
   protected readonly coverRatio = computed(() => {
     const cover = this.gallery()?.cover;
     return cover && cover.width > 0 && cover.height > 0 ? `${cover.width} / ${cover.height}` : '2 / 3';
@@ -108,10 +120,32 @@ export class GalleryPage {
   protected readonly readerParams = computed(() => ({ [BACK_PARAM]: this.router.url }));
 
   constructor() {
-    addIcons({ bookOutline, documentsOutline, heartOutline, timeOutline });
+    addIcons({ bookOutline, documentsOutline, heart, heartOutline, timeOutline });
+    this.saved.load().catch(() => undefined);
     effect(() => {
       void this.load(Number(this.id()));
     });
+  }
+
+  /** Adds the gallery to the favorites (saving its details and cover on the device), or removes it. */
+  protected async toggleFavorite(): Promise<void> {
+    const gallery = this.gallery();
+    if (!gallery || this.savingFavorite()) {
+      return;
+    }
+    this.savingFavorite.set(true);
+    try {
+      await this.saved.toggleFavorite(gallery);
+    } catch {
+      const toast = await this.toasts.create({
+        message: this.transloco.translate('GALLERY.FAVORITE_ERROR'),
+        duration: 3000,
+        color: 'danger',
+      });
+      await toast.present();
+    } finally {
+      this.savingFavorite.set(false);
+    }
   }
 
   /** Goes back to the home page, searching for galleries with this one tag, artist, group… */

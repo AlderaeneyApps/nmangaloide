@@ -33,8 +33,10 @@ export class GalleryCardComponent {
   private readonly cdn = inject(CdnService);
 
   readonly gallery = input.required<GalleryListItem>();
+  /** Optional image to show instead of the CDN thumbnail, e.g. a cover saved as a `data:` URL. */
+  readonly coverSrc = input<string | null>(null);
 
-  protected readonly imageUrl = computed(() => this.cdn.thumbnailUrl(this.gallery().thumbnail));
+  protected readonly imageUrl = computed(() => this.coverSrc() || this.cdn.thumbnailUrl(this.gallery().thumbnail));
   /** The full title, kept for the tooltip and the image's alt text. */
   protected readonly title = computed(() => this.gallery().english_title || this.gallery().japanese_title || '');
   protected readonly shortTitle = computed(() => truncateTitle(this.title()));

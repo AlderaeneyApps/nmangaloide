@@ -22,6 +22,7 @@ import { DatabaseService } from './app/sql-services/database.service';
 import { DbnameVersionService } from './app/sql-services/dbname-version.service';
 import { InitializeAppService } from './app/sql-services/initialize.app.service';
 import { SQLiteService } from './app/sql-services/sqlite.service';
+import { PrivacyScreenService } from './app/services/privacy-screen.service';
 
 /** On the web, SQLite runs in the <jeep-sqlite> element, which must exist before the plugin starts. */
 async function setUpWebSqlite(): Promise<void> {
@@ -53,6 +54,9 @@ setUpWebSqlite()
         DatabaseService,
         InitializeAppService,
         provideAppInitializer(() => inject(InitializeAppService).initializeApp()),
+        // Hide the app's content in the app switcher on every page (Android/iOS only).
+        // Not awaited: it shouldn't delay startup.
+        provideAppInitializer(() => void inject(PrivacyScreenService).enable()),
         provideTransloco({
           config: {
             availableLangs: AVAILABLE_LANGS,

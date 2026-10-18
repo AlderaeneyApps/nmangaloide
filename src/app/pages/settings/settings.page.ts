@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import {
+  ActionSheetController,
   AlertController,
   IonButtons,
   IonContent,
@@ -20,13 +21,15 @@ import {
   IonToolbar,
   ToastController,
 } from '@ionic/angular';
+import { Capacitor } from '@capacitor/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { cloudDownloadOutline, cloudUploadOutline } from 'ionicons/icons';
+import { cloudDownloadOutline, cloudUploadOutline, folderOpenOutline, shareOutline } from 'ionicons/icons';
 
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
-import { AppSettingsService, READER_MODES, ReaderMode } from '../../services/app-settings.service';
-import { BackupService } from '../../services/backup.service';
+import { APP_THEMES, AppSettingsService, AppTheme, READER_MODES, ReaderMode } from '../../services/app-settings.service';
+import { isCancelled } from '../../native/file-saver';
+import { BackupService, ExportDestination } from '../../services/backup.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
 
@@ -59,8 +62,10 @@ export class SettingsPage implements OnInit {
   protected readonly language = inject(LanguageService);
   protected readonly settings = inject(AppSettingsService);
   protected readonly readerModes = READER_MODES;
+  protected readonly themes = APP_THEMES;
   private readonly backup = inject(BackupService);
   private readonly alerts = inject(AlertController);
+  private readonly actionSheets = inject(ActionSheetController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
 
@@ -70,11 +75,23 @@ export class SettingsPage implements OnInit {
   protected readonly busy = signal<'export' | 'import' | null>(null);
 
   constructor() {
-    addIcons({ cloudUploadOutline, cloudDownloadOutline });
+    addIcons({ cloudUploadOutline, cloudDownloadOutline, folderOpenOutline, shareOutline });
   }
 
   ngOnInit(): void {
     this.settings.load().catch(() => this.toast('SETTINGS.SETTINGS_LOAD_ERROR', 'danger'));
+  }
+
+  protected async onThemeChange(event: Event): Promise<void> {
+    const theme = (event as CustomEvent<{ value: AppTheme }>).detail.value;
+    if (theme === this.settings.theme()) {
+      return;
+    }
+    try {
+      await this.settings.setTheme(theme);
+    } catch {
+      await this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger');
+    }
   }
 
   protected async onReaderModeChange(event: Event): Promise<void> {
@@ -89,22 +106,48 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  protected async exportDatabase(): Promise<void> {
+  /**
+   * On Android/iOS, asks where the backup goes: saved to a place the user picks
+   * on the device, or shared (Drive, iCloud, messages…). The browser downloads it.
+   */
+  protected async exportDatabase(isNative = Capacitor.isNativePlatform()): Promise<void> {
     if (this.busy()) {
       return;
     }
+    let destination: ExportDestination = 'device';
+    if (isNative) {
+      const choice = await this.chooseExportDestination();
+      if (!choice) {
+        return;
+      }
+      destination = choice;
+    }
     this.busy.set('export');
     try {
-      await this.backup.exportToFile();
-      await this.toast('SETTINGS.EXPORT_DONE', 'success');
+      await this.backup.exportToFile(destination);
+      await this.toast(destination === 'device' && isNative ? 'SETTINGS.EXPORT_SAVED' : 'SETTINGS.EXPORT_DONE', 'success');
     } catch (error) {
-      // Closing the share sheet without picking anything isn't an error.
-      if (!isShareCancelled(error)) {
+      // Closing the picker or the share sheet without choosing isn't an error.
+      if (!isCancelled(error)) {
         await this.toast('SETTINGS.EXPORT_ERROR', 'danger');
       }
     } finally {
       this.busy.set(null);
     }
+  }
+
+  private async chooseExportDestination(): Promise<ExportDestination | null> {
+    const sheet = await this.actionSheets.create({
+      header: this.transloco.translate('SETTINGS.EXPORT'),
+      buttons: [
+        { text: this.transloco.translate('SETTINGS.EXPORT_TO_DEVICE'), icon: 'folder-open-outline', data: 'device' },
+        { text: this.transloco.translate('SETTINGS.EXPORT_SHARE'), icon: 'share-outline', data: 'share' },
+        { text: this.transloco.translate('SETTINGS.CANCEL'), role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+    const { data, role } = await sheet.onDidDismiss<ExportDestination>();
+    return role === 'cancel' || !data ? null : data;
   }
 
   /** Asks for confirmation, then opens the file picker. */
@@ -156,9 +199,4 @@ export class SettingsPage implements OnInit {
       await this.language.setLanguage(lang);
     }
   }
-}
-
-function isShareCancelled(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error);
-  return /cancel/i.test(message);
 }

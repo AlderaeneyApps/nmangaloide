@@ -1,10 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 
 import { GalleryDetailResponse, PageInfo, TagResponse } from '../../api';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { ReaderPage } from './reader.page';
 
@@ -201,5 +203,12 @@ describe('ReaderPage', () => {
       await scrollTo(400);
       expect(header().classList.contains('hidden')).toBe(false);
     });
+  });
+
+  it('goes back to the gallery page it came from', async () => {
+    await open('scroll');
+    const back = fixture.debugElement.query(By.directive(BackButtonComponent)).componentInstance as BackButtonComponent;
+    expect(back.target()).toBe('previous');
+    expect(back.fallback()).toBe('/gallery/42');
   });
 });

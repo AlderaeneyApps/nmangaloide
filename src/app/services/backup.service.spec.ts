@@ -1,14 +1,20 @@
 import { TestBed } from '@angular/core/testing';
+import { Capacitor } from '@capacitor/core';
 
+import { CACHE_FILES, FILE_SAVER } from '../native/file-saver';
 import { DatabaseService } from '../sql-services/database.service';
 import { BackupService, backupFileName } from './backup.service';
 import { AppSettingsService } from './app-settings.service';
+import { SavedGalleriesService } from './saved-galleries.service';
 import { TagPreferencesService } from './tag-preferences.service';
 
 describe('BackupService', () => {
   let database: { exportJson: ReturnType<typeof vi.fn>; importJson: ReturnType<typeof vi.fn> };
   let tags: { reload: ReturnType<typeof vi.fn> };
   let settings: { reload: ReturnType<typeof vi.fn> };
+  let savedGalleries: { reload: ReturnType<typeof vi.fn> };
+  let saveAs: ReturnType<typeof vi.fn>;
+  let cacheFiles: { write: ReturnType<typeof vi.fn>; remove: ReturnType<typeof vi.fn> };
   let service: BackupService;
 
   beforeEach(() => {
@@ -18,11 +24,20 @@ describe('BackupService', () => {
     };
     tags = { reload: vi.fn().mockResolvedValue(undefined) };
     settings = { reload: vi.fn().mockResolvedValue(undefined) };
+    savedGalleries = { reload: vi.fn().mockResolvedValue(undefined) };
+    saveAs = vi.fn().mockResolvedValue({ uri: 'content://picked/backup.json' });
+    cacheFiles = {
+      write: vi.fn().mockResolvedValue('file:///data/user/0/com.alderaeney/cache/nmangaloide-backup-2026-10-18.json'),
+      remove: vi.fn().mockResolvedValue(undefined),
+    };
     TestBed.configureTestingModule({
       providers: [
         { provide: DatabaseService, useValue: database },
         { provide: TagPreferencesService, useValue: tags },
         { provide: AppSettingsService, useValue: settings },
+        { provide: SavedGalleriesService, useValue: savedGalleries },
+        { provide: FILE_SAVER, useValue: { saveAs } },
+        { provide: CACHE_FILES, useValue: cacheFiles },
       ],
     });
     service = TestBed.inject(BackupService);
@@ -42,7 +57,7 @@ describe('BackupService', () => {
       clicked = this;
     });
 
-    const name = await service.exportToFile(new Date(2026, 9, 18));
+    const name = await service.exportToFile('device', new Date(2026, 9, 18));
 
     expect(name).toBe('nmangaloide-backup-2026-10-18.json');
     const blob = createObjectURL.mock.calls[0][0] as Blob;
@@ -52,11 +67,37 @@ describe('BackupService', () => {
     expect(clicked!.href).toBe('blob:backup');
   });
 
-  it('imports a file and reloads the saved tags and settings', async () => {
+  it('on a phone, saves the export where the user picks, through a cache file', async () => {
+    vi.spyOn(Capacitor, 'isNativePlatform').mockReturnValue(true);
+
+    const name = await service.exportToFile('device', new Date(2026, 9, 18));
+
+    expect(cacheFiles.write).toHaveBeenCalledWith('nmangaloide-backup-2026-10-18.json', '{"version":1}');
+    // Only the file's address crosses to the native side, never the contents.
+    expect(saveAs).toHaveBeenCalledWith({
+      fileName: 'nmangaloide-backup-2026-10-18.json',
+      sourceUri: 'file:///data/user/0/com.alderaeney/cache/nmangaloide-backup-2026-10-18.json',
+      mimeType: 'application/json',
+    });
+    expect(JSON.stringify(saveAs.mock.calls[0][0])).not.toContain('version');
+    expect(cacheFiles.remove).toHaveBeenCalledWith('nmangaloide-backup-2026-10-18.json');
+    expect(name).toBe('nmangaloide-backup-2026-10-18.json');
+  });
+
+  it('passes on a cancelled save picker', async () => {
+    vi.spyOn(Capacitor, 'isNativePlatform').mockReturnValue(true);
+    saveAs.mockRejectedValue(Object.assign(new Error('Save cancelled'), { code: 'CANCELLED' }));
+    await expect(service.exportToFile('device')).rejects.toMatchObject({ code: 'CANCELLED' });
+    // The cache copy is cleaned up either way.
+    expect(cacheFiles.remove).toHaveBeenCalled();
+  });
+
+  it('imports a file and reloads the saved tags, settings and favorites', async () => {
     await service.importFromFile(new Blob(['{"tables":[]}'], { type: 'application/json' }));
     expect(database.importJson).toHaveBeenCalledWith('{"tables":[]}');
     expect(tags.reload).toHaveBeenCalled();
     expect(settings.reload).toHaveBeenCalled();
+    expect(savedGalleries.reload).toHaveBeenCalled();
   });
 
   it('does not reload when the import fails', async () => {

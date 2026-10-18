@@ -1,12 +1,15 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 
 import { GalleryDetailResponse, PageInfo, TagResponse } from '../../api';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { GalleryPage } from './gallery.page';
+import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 
 const API = 'https://nhentai.net/api/v2';
 
@@ -49,6 +52,7 @@ const GALLERY: GalleryDetailResponse = {
 };
 
 describe('GalleryPage', () => {
+  let db: FakeDatabase;
   let fixture: ComponentFixture<GalleryPage>;
   let http: HttpTestingController;
   let navigateRoot: ReturnType<typeof vi.fn>;
@@ -60,11 +64,13 @@ describe('GalleryPage', () => {
   }
 
   beforeEach(async () => {
+    db = new FakeDatabase();
     navigateRoot = vi.fn().mockResolvedValue(true);
     await TestBed.configureTestingModule({
       imports: [GalleryPage, getTranslocoTestingModule()],
       providers: [
         provideRouter([{ path: '**', children: [] }]),
+        provideFakeDatabase(db),
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: NavController, useValue: { navigateRoot } },
@@ -164,5 +170,70 @@ describe('GalleryPage', () => {
     http.expectOne(`${API}/galleries/42`).flush(GALLERY);
     await settle();
     expect(el().querySelector('.english')?.textContent).toBe('An English title');
+  });
+
+  it('goes back to the previous page, or the home page when opened directly', async () => {
+    flush();
+    await settle();
+    const back = fixture.debugElement.query(By.directive(BackButtonComponent)).componentInstance as BackButtonComponent;
+    expect(back.target()).toBe('previous');
+    expect(back.fallback()).toBe('/');
+  });
+
+  describe('favorite button', () => {
+    const heart = () => el().querySelector('ion-toolbar [data-action="favorite"]') as HTMLIonButtonElement;
+    /** ion-button moves its aria-label onto the native button it renders. */
+    const label = () => heart().shadowRoot?.querySelector('button')?.getAttribute('aria-label') ?? heart().getAttribute('aria-label');
+
+    async function answerCover() {
+      await settle();
+      http.expectOne('https://t.example/galleries/100/cover.webp').flush(new Blob(['img'], { type: 'image/webp' }));
+      await settle();
+    }
+
+    it('sits on the right of the header and starts as "add"', async () => {
+      flush();
+      await settle();
+      expect(heart().closest('ion-buttons')?.getAttribute('slot')).toBe('end');
+      expect(heart().dataset['state']).toBe('off');
+      expect(label()).toBe('Add to favorites');
+      expect(heart().querySelector('ion-icon')?.getAttribute('name')).toBe('heart-outline');
+    });
+
+    it('saves the gallery with its cover in the database, and removes it again', async () => {
+      flush();
+      await settle();
+
+      heart().click();
+      await answerCover();
+      // Converting the cover to base64 is asynchronous; wait for the row to be written.
+      await vi.waitFor(() => expect(db.saved.get(42)).toBeDefined());
+      await settle();
+      expect(db.saved.get(42)).toMatchObject({ is_favorite: 1, title_english: 'An English title' });
+      expect(db.saved.get(42)!['cover_base64']).toContain('data:image/webp;base64,');
+      expect(heart().dataset['state']).toBe('on');
+      expect(label()).toBe('Remove from favorites');
+      expect(heart().querySelector('ion-icon')?.getAttribute('name')).toBe('heart');
+
+      heart().click();
+      await settle();
+      expect(db.saved.has(42)).toBe(false);
+      expect(heart().dataset['state']).toBe('off');
+      expect(label()).toBe('Add to favorites');
+    });
+
+    it('shows a favorite from the database without calling the API', async () => {
+      // A fresh page for a gallery that is already a favorite.
+      flush();
+      await settle();
+      db.seedSaved({ id: 7, details_json: JSON.stringify({ ...GALLERY, id: 7 }), cover_base64: 'data:image/webp;base64,AAA' });
+      const other = TestBed.createComponent(GalleryPage);
+      other.componentRef.setInput('id', '7');
+      other.detectChanges();
+      await new Promise((resolve) => setTimeout(resolve));
+      other.detectChanges();
+      http.expectNone(`${API}/galleries/7`);
+      expect(other.nativeElement.querySelector('.english')?.textContent).toBe('An English title');
+    });
   });
 });

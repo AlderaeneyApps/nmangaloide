@@ -20,7 +20,7 @@
     "LANGUAGE": "Idioma",
     "DATA": "Dades",
     "EXPORT": "Exporta la base de dades",
-    "EXPORT_HINT": "Desa una còpia de les teves etiquetes en un fitxer JSON.",
+    "EXPORT_HINT": "Desa la còpia com a fitxer JSON al dispositiu o comparteix-la.",
     "IMPORT": "Importa la base de dades",
     "IMPORT_HINT": "Restaura una còpia feta amb Exporta.",
     "IMPORT_CONFIRM_TITLE": "Vols substituir les teves dades?",
@@ -42,7 +42,17 @@
       "paged": "Toca per passar d'una pàgina a una altra."
     },
     "SETTINGS_LOAD_ERROR": "No s'ha pogut carregar la configuració.",
-    "SETTINGS_SAVE_ERROR": "No s'ha pogut desar el canvi."
+    "SETTINGS_SAVE_ERROR": "No s'ha pogut desar el canvi.",
+    "THEME": "Tema",
+    "THEMES": {
+      "system": "Sistema",
+      "light": "Clar",
+      "dark": "Fosc",
+      "oled": "Negre OLED"
+    },
+    "EXPORT_TO_DEVICE": "Desa al dispositiu…",
+    "EXPORT_SHARE": "Comparteix…",
+    "EXPORT_SAVED": "Còpia desada."
   },
   "COMMON": {
     "BACK": "Enrere"
@@ -90,7 +100,10 @@
     "ERROR": "No s'ha pogut carregar aquesta galeria.",
     "RETRY": "Torna-ho a provar",
     "SCANLATOR": "Traduïda per {{name}}",
-    "SEARCH_TAG": "Mostra les galeries amb {{tag}}"
+    "SEARCH_TAG": "Mostra les galeries amb {{tag}}",
+    "FAVORITE_ADD": "Afegeix als preferits",
+    "FAVORITE_REMOVE": "Treu dels preferits",
+    "FAVORITE_ERROR": "No s'han pogut actualitzar els teus preferits."
   },
   "READER": {
     "TITLE": "Lector",
@@ -100,5 +113,11 @@
     "PAGE_OF": "{{page}} / {{total}}",
     "PREVIOUS": "Pàgina anterior",
     "NEXT": "Pàgina següent"
+  },
+  "FAVORITES": {
+    "EMPTY": "Encara no tens preferits.",
+    "EMPTY_HINT": "Toca el cor d'una galeria per desar-la aquí.",
+    "ERROR": "No s'han pogut carregar els teus preferits.",
+    "RETRY": "Torna-ho a provar"
   }
 }
