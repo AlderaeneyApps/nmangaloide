@@ -1,7 +1,7 @@
 {
-  "name": "mangaloide",
+  "name": "nmangaloide",
   "version": "0.0.1",
-  "author": "Ionic Framework",
+  "author": "Alderaeney",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
@@ -19,12 +19,18 @@
     "@angular/forms": "22.1.7",
     "@angular/platform-browser": "22.1.7",
     "@angular/router": "22.1.7",
+    "@capacitor-community/sqlite": "^8.1.1",
+    "@capacitor/android": "^8.5.3",
     "@capacitor/app": "8.1.2",
     "@capacitor/core": "8.5.3",
     "@capacitor/haptics": "8.0.2",
+    "@capacitor/ios": "^8.5.3",
     "@capacitor/keyboard": "8.0.6",
     "@capacitor/status-bar": "8.0.4",
+    "@capacitor/toast": "^8.0.1",
     "@ionic/angular": "^9.0.0",
+    "@ngx-translate/core": "^18.0.0",
+    "@ngx-translate/http-loader": "^18.0.0",
     "ionicons": "^8.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -43,5 +49,5 @@
     "typescript-eslint": "^8.61.0",
     "vitest": "~4.0.18"
   },
-  "description": "An Ionic project"
+  "description": "nhentai reader"
 }
