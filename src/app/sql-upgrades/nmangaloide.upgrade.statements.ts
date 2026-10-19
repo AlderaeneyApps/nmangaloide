@@ -88,6 +88,14 @@ export const NMANGALOIDE_UPGRADES: capSQLiteVersionUpgrade[] = [
         WHERE is_downloaded = 1 OR download_status IS NOT NULL;`,
     ],
   },
+  {
+    toVersion: 6,
+    statements: [
+      // 'japanese', 'chinese' or 'english' (shown as a flag on the cards), '' for others.
+      // NULL until filled from details_json (SavedGalleriesService.fillLanguages).
+      `ALTER TABLE saved_galleries ADD COLUMN language TEXT;`,
+    ],
+  },
 ];
 
 /** The schema version the app expects. */

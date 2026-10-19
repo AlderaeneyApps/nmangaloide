@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { CdnService, GalleryDetailResponse, GalleryListItem } from '../api';
 import { DatabaseService } from '../sql-services/database.service';
+import { GalleryLanguage, isFlagLanguage, languageOfDetails } from './gallery-language.service';
 
 /**
  * A row of the `saved_galleries` table, without the large columns
@@ -27,6 +28,13 @@ export interface SavedGallery {
   favorited_at: number | null;
   is_downloaded: number;
   downloaded_at: number | null;
+  /** 'japanese', 'chinese' or 'english' (shown as a flag), '' for other languages. */
+  language: string | null;
+}
+
+/** A saved gallery's language for the card's flag, or null. */
+export function flagLanguageOf(saved: Pick<SavedGallery, 'language'>): GalleryLanguage | null {
+  return isFlagLanguage(saved.language) ? saved.language : null;
 }
 
 export const SUMMARY_COLUMNS = [
@@ -46,6 +54,7 @@ export const SUMMARY_COLUMNS = [
   'favorited_at',
   'is_downloaded',
   'downloaded_at',
+  'language',
 ].join(', ');
 
 /** The summary columns of a gallery about to be saved (not a favorite or download yet). */
@@ -67,6 +76,7 @@ export function summaryOf(gallery: GalleryDetailResponse, cover: string | null):
     favorited_at: null,
     is_downloaded: 0,
     downloaded_at: null,
+    language: languageOfDetails(gallery) ?? '',
   };
 }
 
@@ -107,9 +117,12 @@ export class SavedGalleriesService {
 
   /** Reads the favorites from the database (once; later calls reuse the result). */
   load(): Promise<void> {
-    this.loading ??= this.db
-      .query<SavedGallery>(
-        `SELECT ${SUMMARY_COLUMNS} FROM saved_galleries WHERE is_favorite = 1 ORDER BY favorited_at DESC`,
+    this.loading ??= this.fillLanguages()
+      .catch(() => undefined)
+      .then(() =>
+        this.db.query<SavedGallery>(
+          `SELECT ${SUMMARY_COLUMNS} FROM saved_galleries WHERE is_favorite = 1 ORDER BY favorited_at DESC`,
+        ),
       )
       .then(
         (rows) => this._favorites.set(rows),
@@ -129,6 +142,25 @@ export class SavedGalleriesService {
 
   isFavorite(id: number): boolean {
     return this.favoriteIds().has(id);
+  }
+
+  /**
+   * Fills the `language` column of galleries saved before it existed, from their saved
+   * details. Quick when there's nothing to fill.
+   */
+  async fillLanguages(): Promise<void> {
+    const rows = await this.db.query<{ id: number; details_json: string }>(
+      'SELECT id, details_json FROM saved_galleries WHERE language IS NULL',
+    );
+    for (const row of rows) {
+      let language = '';
+      try {
+        language = languageOfDetails(JSON.parse(row.details_json) as GalleryDetailResponse) ?? '';
+      } catch {
+        // Unreadable details: no flag.
+      }
+      await this.db.run('UPDATE saved_galleries SET language = ? WHERE id = ?', [language, row.id]);
+    }
   }
 
   /** The full details saved with a gallery, or null when it isn't saved. */
@@ -178,8 +210,8 @@ export class SavedGalleriesService {
     await this.db.run(
       `INSERT INTO saved_galleries (
          id, media_id, title_english, title_japanese, title_pretty, num_pages, num_favorites, upload_date,
-         details_json, cover_path, cover_width, cover_height, cover_base64, updated_at
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         details_json, cover_path, cover_width, cover_height, cover_base64, language, updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
          media_id = excluded.media_id, title_english = excluded.title_english,
          title_japanese = excluded.title_japanese, title_pretty = excluded.title_pretty,
@@ -187,7 +219,7 @@ export class SavedGalleriesService {
          upload_date = excluded.upload_date, details_json = excluded.details_json,
          cover_path = excluded.cover_path, cover_width = excluded.cover_width, cover_height = excluded.cover_height,
          cover_base64 = COALESCE(excluded.cover_base64, saved_galleries.cover_base64),
-         updated_at = excluded.updated_at`,
+         language = excluded.language, updated_at = excluded.updated_at`,
       [
         gallery.id,
         gallery.media_id,
@@ -202,6 +234,7 @@ export class SavedGalleriesService {
         gallery.cover.width,
         gallery.cover.height,
         cover,
+        languageOfDetails(gallery) ?? '',
         Date.now(),
       ],
     );

@@ -193,5 +193,12 @@
     "TITLE_ONE": "1 Comic wird heruntergeladen",
     "TITLE_OTHER": "{{count}} Comics werden heruntergeladen",
     "BODY": "{{done}} / {{total}} Seiten · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japanisch",
+      "chinese": "Chinesisch",
+      "english": "Englisch"
+    }
   }
 }

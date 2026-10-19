@@ -16,9 +16,11 @@ export class FakeDatabase {
   readonly runs: { statement: string; values: unknown[] }[] = [];
   /** When set, the next query/run rejects with this error. */
   failNext: Error | null = null;
+  /** When set, the next query/run whose statement matches rejects with the error. */
+  failMatching: { pattern: RegExp; error: Error } | null = null;
 
   async query<T>(statement: string, values: unknown[] = []): Promise<T[]> {
-    this.maybeFail();
+    this.maybeFail(statement);
     const savedQuery = this.querySaved(statement.trim(), values);
     if (savedQuery) {
       return savedQuery as T[];
@@ -35,7 +37,7 @@ export class FakeDatabase {
   }
 
   async run(statement: string, values: unknown[] = []): Promise<void> {
-    this.maybeFail();
+    this.maybeFail(statement);
     this.runs.push({ statement, values });
     const sql = statement.trim();
     if (this.runSaved(sql, values)) {
@@ -79,6 +81,7 @@ export class FakeDatabase {
       downloaded_at: null,
       downloaded_files: null,
       download_status: null,
+      language: null,
       updated_at: 0,
       ...row,
     });
@@ -114,6 +117,11 @@ export class FakeDatabase {
           .sort((a, b) => Number(a['updated_at']) - Number(b['updated_at'])),
         match[1],
       );
+    }
+    if (sql1 === 'SELECT id, details_json FROM saved_galleries WHERE language IS NULL') {
+      return [...this.saved.values()]
+        .filter((row) => row['language'] === null || row['language'] === undefined)
+        .map((row) => ({ id: row['id'], details_json: row['details_json'] }));
     }
     if (sql === 'SELECT details_json FROM saved_galleries WHERE id = ?') {
       const row = this.saved.get(values[0] as number);
@@ -157,6 +165,9 @@ export class FakeDatabase {
         if (this.saved.get(values[0] as number)?.['is_favorite'] === 0) {
           this.saved.delete(values[0] as number);
         }
+        return true;
+      case 'UPDATE saved_galleries SET language = ? WHERE id = ?':
+        update(values[1], { language: values[0] });
         return true;
       case 'UPDATE saved_galleries SET cover_base64 = ? WHERE id = ? AND cover_base64 IS NULL':
         if (this.saved.get(values[1] as number)?.['cover_base64'] == null) {
@@ -212,7 +223,12 @@ export class FakeDatabase {
     return false;
   }
 
-  private maybeFail(): void {
+  private maybeFail(statement: string): void {
+    if (this.failMatching?.pattern.test(statement)) {
+      const { error } = this.failMatching;
+      this.failMatching = null;
+      throw error;
+    }
     if (this.failNext) {
       const error = this.failNext;
       this.failNext = null;

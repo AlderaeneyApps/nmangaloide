@@ -150,9 +150,13 @@ export class DownloadService {
 
   /** Reads the finished downloads (once; later calls reuse the result). */
   loadDownloaded(): Promise<void> {
-    this.loadingDownloaded ??= this.db
-      .query<SavedGallery>(
-        `SELECT ${SUMMARY_COLUMNS} FROM saved_galleries WHERE is_downloaded = 1 ORDER BY downloaded_at DESC`,
+    this.loadingDownloaded ??= this.saved
+      .fillLanguages()
+      .catch(() => undefined)
+      .then(() =>
+        this.db.query<SavedGallery>(
+          `SELECT ${SUMMARY_COLUMNS} FROM saved_galleries WHERE is_downloaded = 1 ORDER BY downloaded_at DESC`,
+        ),
       )
       .then(
         (rows) => this._downloaded.set(rows),

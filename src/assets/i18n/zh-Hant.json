@@ -193,5 +193,12 @@
     "TITLE_ONE": "正在下載 1 部漫畫",
     "TITLE_OTHER": "正在下載 {{count}} 部漫畫",
     "BODY": "{{done}} / {{total}} 頁 · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "日語",
+      "chinese": "中文",
+      "english": "英語"
+    }
   }
 }

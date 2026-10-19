@@ -10,16 +10,32 @@
 }
 
 .cover {
+  position: relative;
   width: 100%;
   overflow: hidden;
   background: var(--ion-color-step-100, var(--ion-background-color-step-100, #e6e6e6));
 }
 
-.cover img {
+.cover img:not(.language-flag) {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.language-flag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+  // Stands out on light and dark covers.
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 1px 3px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
 }
 
 .title {

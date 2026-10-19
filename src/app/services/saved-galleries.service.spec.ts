@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { GalleryDetailResponse } from '../api';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
-import { SavedGalleriesService, toGalleryListItem } from './saved-galleries.service';
+import { SavedGalleriesService, flagLanguageOf, toGalleryListItem } from './saved-galleries.service';
 
 import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
 
@@ -150,7 +150,37 @@ describe('SavedGalleriesService', () => {
         favorited_at: 1,
         is_downloaded: 0,
         downloaded_at: null,
+        language: 'english',
       }),
     ).toMatchObject({ id: 42, english_title: 'English', thumbnail: 'galleries/100/cover.webp', thumbnail_width: 350 });
+  });
+
+  describe('language', () => {
+    const withLanguage = (name: string): GalleryDetailResponse => ({
+      ...GALLERY,
+      tags: [...GALLERY.tags, { id: 9, name, slug: name, type: 'language', url: `/language/${name}/`, count: 1 }],
+    });
+
+    it('saves the flag language with the gallery', async () => {
+      let saving = service.saveGallery(withLanguage('japanese'));
+      await answerCover();
+      await saving;
+      expect(db.saved.get(42)!['language']).toBe('japanese');
+      saving = service.saveGallery(withLanguage('korean'));
+      await answerCover();
+      await saving;
+      expect(db.saved.get(42)!['language']).toBe('');
+    });
+
+    it('fills the language of galleries saved before it was stored', async () => {
+      db.seedSaved({ id: 1, details_json: JSON.stringify(withLanguage('chinese')) });
+      db.seedSaved({ id: 2, details_json: JSON.stringify({ ...withLanguage('english'), id: 2 }) });
+      db.seedSaved({ id: 3, details_json: 'not json' });
+      db.seedSaved({ id: 4, details_json: JSON.stringify(GALLERY), language: 'japanese' });
+      await service.load();
+      expect([1, 2, 3, 4].map((id) => db.saved.get(id)!['language'])).toEqual(['chinese', 'english', '', 'japanese']);
+      expect(flagLanguageOf(service.favorites().find((g) => g.id === 1)!)).toBe('chinese');
+      expect(flagLanguageOf({ language: '' })).toBeNull();
+    });
   });
 });

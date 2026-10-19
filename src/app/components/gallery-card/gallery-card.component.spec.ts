@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { CdnService, GalleryListItem, resolveMediaUrl } from '../../api';
+import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { GalleryCardComponent, truncateTitle } from './gallery-card.component';
 
 import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
@@ -24,6 +25,7 @@ const GALLERY: GalleryListItem = {
 describe('GalleryCardComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [getTranslocoTestingModule()],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
   });
@@ -44,6 +46,40 @@ describe('GalleryCardComponent', () => {
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
   }
+
+  describe('language flag', () => {
+    const flag = (el: HTMLElement) => el.querySelector('img.language-flag') as HTMLImageElement | null;
+
+    it('shows a small flag for Japanese, Chinese and English galleries', async () => {
+      for (const [id, language, src, name] of [
+        [6346, 'japanese', '/assets/flags/jp.svg', 'Japanese'],
+        [29963, 'chinese', '/assets/flags/cn.svg', 'Chinese'],
+        [12227, 'english', '/assets/flags/gb.svg', 'English'],
+      ] as const) {
+        const el = await create({ ...GALLERY, tag_ids: [5, id, 17] }, null);
+        expect(flag(el)?.getAttribute('src')).toBe(src);
+        expect(flag(el)?.dataset['language']).toBe(language);
+        expect(flag(el)?.getAttribute('alt')).toBe(name);
+        // In the cover, which holds it in its top right corner.
+        expect(flag(el)?.parentElement?.classList).toContain('cover');
+      }
+    });
+
+    it('shows no flag for other languages', async () => {
+      expect(flag(await create({ ...GALLERY, tag_ids: [5, 17] }, null))).toBeNull();
+    });
+
+    it('uses the language given by the page (saved galleries have no tag ids)', async () => {
+      const fixture = TestBed.createComponent(GalleryCardComponent);
+      fixture.componentRef.setInput('gallery', GALLERY);
+      fixture.componentRef.setInput('language', 'chinese');
+      fixture.detectChanges();
+      expect(flag(fixture.nativeElement)?.dataset['language']).toBe('chinese');
+      fixture.componentRef.setInput('language', null);
+      fixture.detectChanges();
+      expect(flag(fixture.nativeElement)).toBeNull();
+    });
+  });
 
   it('should show the thumbnail from the CDN and the title', async () => {
     const el = await create(GALLERY, ['https://t1.example.net']);

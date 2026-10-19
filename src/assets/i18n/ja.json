@@ -193,5 +193,12 @@
     "TITLE_ONE": "1 作品をダウンロード中",
     "TITLE_OTHER": "{{count}} 作品をダウンロード中",
     "BODY": "{{done}} / {{total}} ページ · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "日本語",
+      "chinese": "中国語",
+      "english": "英語"
+    }
   }
 }

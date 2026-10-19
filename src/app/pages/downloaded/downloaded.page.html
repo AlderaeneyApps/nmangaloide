@@ -42,7 +42,7 @@
     <div class="gallery-grid">
       @for (item of items(); track item.gallery.id) {
         <a class="card-link" [routerLink]="['/gallery', item.gallery.id]" [queryParams]="backParams">
-          <app-gallery-card [gallery]="item.gallery" [coverSrc]="item.cover"></app-gallery-card>
+          <app-gallery-card [gallery]="item.gallery" [coverSrc]="item.cover" [language]="item.language"></app-gallery-card>
         </a>
       }
     </div>

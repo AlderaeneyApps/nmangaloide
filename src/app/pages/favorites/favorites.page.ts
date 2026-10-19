@@ -19,7 +19,7 @@ import { heartOutline } from 'ionicons/icons';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { GalleryCardComponent } from '../../components/gallery-card/gallery-card.component';
 import { BACK_PARAM } from '../../navigation';
-import { SavedGalleriesService, toGalleryListItem } from '../../services/saved-galleries.service';
+import { SavedGalleriesService, flagLanguageOf, toGalleryListItem } from '../../services/saved-galleries.service';
 
 /** The galleries saved as favorites, read from the device (no API calls). */
 @Component({
@@ -49,7 +49,11 @@ export class FavoritesPage implements OnInit {
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
   protected readonly items = computed(() =>
-    this.saved.favorites().map((gallery) => ({ gallery: toGalleryListItem(gallery), cover: gallery.cover_base64 })),
+    this.saved.favorites().map((gallery) => ({
+      gallery: toGalleryListItem(gallery),
+      cover: gallery.cover_base64,
+      language: flagLanguageOf(gallery),
+    })),
   );
   /** Gallery pages come back here. */
   protected readonly backParams = { [BACK_PARAM]: '/favorites' };

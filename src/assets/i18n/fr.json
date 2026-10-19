@@ -193,5 +193,12 @@
     "TITLE_ONE": "Téléchargement d’1 bande dessinée",
     "TITLE_OTHER": "Téléchargement de {{count}} bandes dessinées",
     "BODY": "{{done}} / {{total}} pages · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japonais",
+      "chinese": "Chinois",
+      "english": "Anglais"
+    }
   }
 }

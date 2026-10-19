@@ -193,5 +193,12 @@
     "TITLE_ONE": "Baixant 1 còmic",
     "TITLE_OTHER": "Baixant {{count}} còmics",
     "BODY": "{{done}} / {{total}} pàgines · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japonès",
+      "chinese": "Xinès",
+      "english": "Anglès"
+    }
   }
 }

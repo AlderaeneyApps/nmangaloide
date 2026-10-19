@@ -3,6 +3,15 @@
     @if (imageUrl(); as url) {
       <img [src]="url" [alt]="title()" loading="lazy" decoding="async" />
     }
+    @if (flagSrc(); as flag) {
+      <img
+        class="language-flag"
+        [src]="flag"
+        [alt]="'CARD.LANGUAGE.' + flagLanguage() | transloco"
+        [title]="'CARD.LANGUAGE.' + flagLanguage() | transloco"
+        [attr.data-language]="flagLanguage()"
+      />
+    }
   </div>
   <p class="title" [title]="title()">{{ shortTitle() }}</p>
 </ion-card>

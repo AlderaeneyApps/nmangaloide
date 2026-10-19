@@ -193,5 +193,12 @@
     "TITLE_ONE": "Downloading 1 comic",
     "TITLE_OTHER": "Downloading {{count}} comics",
     "BODY": "{{done}} / {{total}} pages · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japanese",
+      "chinese": "Chinese",
+      "english": "English"
+    }
   }
 }

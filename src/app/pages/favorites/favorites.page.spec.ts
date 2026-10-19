@@ -65,8 +65,18 @@ describe('FavoritesPage', () => {
     expect(el.textContent).toContain('Tap the heart on a gallery to save it here.');
   });
 
+  it('shows each favorite’s language flag', async () => {
+    db.seedSaved({ id: 1, details_json: JSON.stringify({ id: 1, tags: [{ type: 'language', name: 'japanese' }] }) });
+    db.seedSaved({ id: 2, language: 'english' });
+    db.seedSaved({ id: 3, language: '' });
+    const el = await render();
+    expect([...el.querySelectorAll('app-gallery-card')].map((card) => card.querySelector('.language-flag')?.getAttribute('data-language') ?? null)).toEqual(
+      expect.arrayContaining(['japanese', 'english', null]),
+    );
+  });
+
   it('shows an error with retry when the favorites cannot be read', async () => {
-    db.failNext = new Error('locked');
+    db.failMatching = { pattern: /WHERE is_favorite = 1/, error: new Error('locked') };
     const el = await render();
     expect(el.textContent).toContain('Could not load your favorites.');
 

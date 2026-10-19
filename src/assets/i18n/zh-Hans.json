@@ -193,5 +193,12 @@
     "TITLE_ONE": "正在下载 1 部漫画",
     "TITLE_OTHER": "正在下载 {{count}} 部漫画",
     "BODY": "{{done}} / {{total}} 页 · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "日语",
+      "chinese": "中文",
+      "english": "英语"
+    }
   }
 }

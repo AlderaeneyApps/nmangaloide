@@ -193,5 +193,12 @@
     "TITLE_ONE": "Descargando 1 cómic",
     "TITLE_OTHER": "Descargando {{count}} cómics",
     "BODY": "{{done}} / {{total}} páginas · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japonés",
+      "chinese": "Chino",
+      "english": "Inglés"
+    }
   }
 }
