@@ -1,6 +1,7 @@
 import { Injectable, Injector, computed, effect, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 
+import { NATIVE_DOWNLOADER, NativeDownloadLabels } from '../native/background-downloads';
 import {
   APP_ACTIVE_LISTENER,
   APP_PLATFORM,
@@ -23,9 +24,10 @@ export interface DownloadProgress {
 /**
  * Shows download progress in a notification and keeps downloads going in the background.
  *
- * - Android: a foreground service runs while comics are downloading; its notification
- *   ("Downloading 2 comics", "12 / 40 pages · title", with a progress bar) is updated for
- *   every page, and removed when the queue is done.
+ * - Android: the native downloader's foreground service runs while comics are downloading
+ *   and keeps its own notification ("Downloading 2 comics", "12 / 40 pages · title", with a
+ *   progress bar), updated for every page even while the app is closed. Here it's only given
+ *   the texts in the app's language, and notification permission is asked.
  * - iOS: there are no foreground services, so downloads continue only while the app is
  *   open, plus the short extra time iOS gives on leaving it. The notification is shown
  *   while the app is in the background, updated when the comic or the count changes
@@ -36,6 +38,7 @@ export interface DownloadProgress {
 export class DownloadNotificationService {
   private readonly downloads = inject(DownloadService);
   private readonly keepAlive = inject(DOWNLOAD_KEEP_ALIVE);
+  private readonly native = inject(NATIVE_DOWNLOADER);
   private readonly notifications = inject(PROGRESS_NOTIFICATIONS);
   private readonly platform = inject(APP_PLATFORM);
   private readonly listenForActive = inject(APP_ACTIVE_LISTENER);
@@ -61,6 +64,8 @@ export class DownloadNotificationService {
   private keepAliveRunning = false;
   /** What the iOS notification currently shows (null when there's none). */
   private shownKey: string | null = null;
+  /** The texts last given to the native downloader (Android). */
+  private labelsKey: string | null = null;
   private dirty = false;
   private applying = false;
 
@@ -81,6 +86,8 @@ export class DownloadNotificationService {
       },
       { injector: this.injector },
     );
+    // The language changed, or its translations finished loading.
+    this.transloco.events$.subscribe(() => this.refresh());
   }
 
   /** Applies the latest progress; updates are applied one at a time, skipping stale ones. */
@@ -104,6 +111,10 @@ export class DownloadNotificationService {
   }
 
   private async apply(progress: DownloadProgress | null): Promise<void> {
+    if (this.platform === 'android') {
+      await this.applyAndroid(progress);
+      return;
+    }
     if (!progress) {
       if (this.keepAliveRunning) {
         this.keepAliveRunning = false;
@@ -135,7 +146,6 @@ export class DownloadNotificationService {
       });
       this.keepAliveRunning = true;
     } catch {
-      // Android doesn't allow starting it from the background: tried again when the app is opened.
       this.keepAliveRunning = false;
     }
     if (this.platform === 'ios') {
@@ -148,6 +158,28 @@ export class DownloadNotificationService {
           await this.notifications.show(DOWNLOAD_NOTIFICATION_ID, title, body);
         }
       }
+    }
+  }
+
+  /** The native downloader shows the notification; it needs the permission and the texts. */
+  private async applyAndroid(progress: DownloadProgress | null): Promise<void> {
+    if (!progress || !this.native) {
+      return;
+    }
+    if (!this.askedPermission) {
+      this.askedPermission = true;
+      await this.notifications.requestPermission().catch(() => false);
+    }
+    const labels: NativeDownloadLabels = {
+      titleOne: this.transloco.translate('NOTIFICATION.TITLE_ONE', { count: '{count}' }),
+      titleOther: this.transloco.translate('NOTIFICATION.TITLE_OTHER', { count: '{count}' }),
+      body: this.transloco.translate('NOTIFICATION.BODY', { done: '{done}', total: '{total}', title: '{title}' }),
+      channel: this.transloco.translate('NOTIFICATION.CHANNEL'),
+    };
+    const key = JSON.stringify(labels);
+    if (key !== this.labelsKey) {
+      await this.native.setLabels(labels);
+      this.labelsKey = key;
     }
   }
 

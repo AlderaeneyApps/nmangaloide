@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
 
+import { NATIVE_DOWNLOADER } from '../native/background-downloads';
 import { APP_ACTIVE_LISTENER, APP_PLATFORM, DOWNLOAD_KEEP_ALIVE, PROGRESS_NOTIFICATIONS } from '../native/download-keep-alive';
 import { getTranslocoTestingModule } from '../testing/transloco-testing';
 import { DOWNLOAD_NOTIFICATION_ID, DownloadNotificationService } from './download-notification.service';
@@ -26,12 +27,14 @@ describe('DownloadNotificationService', () => {
     show: ReturnType<typeof vi.fn>;
     cancel: ReturnType<typeof vi.fn>;
   };
+  let native: { setLabels: ReturnType<typeof vi.fn> };
   let setActive: (active: boolean) => void;
 
   function setUp(platform: string) {
     jobs = signal<DownloadJob[]>([]);
     folderReady = signal(true);
     keepAlive = { update: vi.fn().mockResolvedValue(undefined), stop: vi.fn().mockResolvedValue(undefined) };
+    native = { setLabels: vi.fn().mockResolvedValue(undefined) };
     notifications = {
       requestPermission: vi.fn().mockResolvedValue(true),
       show: vi.fn().mockResolvedValue(undefined),
@@ -42,6 +45,7 @@ describe('DownloadNotificationService', () => {
       providers: [
         { provide: DownloadService, useValue: { jobs, folderReady } },
         { provide: DOWNLOAD_KEEP_ALIVE, useValue: keepAlive },
+        { provide: NATIVE_DOWNLOADER, useValue: platform === 'android' ? native : null },
         { provide: PROGRESS_NOTIFICATIONS, useValue: notifications },
         { provide: APP_PLATFORM, useValue: platform },
         { provide: APP_ACTIVE_LISTENER, useValue: (listener: (active: boolean) => void) => (setActive = listener) },
@@ -60,86 +64,52 @@ describe('DownloadNotificationService', () => {
   describe('on Android', () => {
     beforeEach(() => setUp('android'));
 
-    it('starts the background service with the count of comics and the current comic’s pages', async () => {
+    it('leaves the notification to the native downloader, giving it the texts once downloads start', async () => {
       await settle();
-      expect(keepAlive.update).not.toHaveBeenCalled();
+      expect(native.setLabels).not.toHaveBeenCalled();
 
       jobs.set([job(1, 'downloading', 3), job(2, 'queued')]);
       await settle();
       expect(notifications.requestPermission).toHaveBeenCalledTimes(1);
-      expect(keepAlive.update).toHaveBeenLastCalledWith({
-        title: 'Downloading 2 comics',
-        body: '3 / 40 pages · Comic 1',
-        done: 3,
-        total: 40,
-        channelName: 'Downloads',
+      expect(native.setLabels).toHaveBeenCalledWith({
+        titleOne: 'Downloading 1 comic',
+        titleOther: 'Downloading {count} comics',
+        body: '{done} / {total} pages · {title}',
+        channel: 'Downloads',
       });
-    });
-
-    it('updates the notification for every page', async () => {
-      jobs.set([job(1, 'downloading', 3)]);
+      // The native side updates the notification for every page, even with the app closed.
+      jobs.set([job(1, 'downloading', 4), job(2, 'queued')]);
       await settle();
-      jobs.set([job(1, 'downloading', 4)]);
-      await settle();
-      jobs.set([job(1, 'downloading', 5)]);
-      await settle();
-      expect(keepAlive.update.mock.calls.map(([progress]) => progress.body)).toEqual([
-        '3 / 40 pages · Comic 1',
-        '4 / 40 pages · Comic 1',
-        '5 / 40 pages · Comic 1',
-      ]);
-      expect(keepAlive.update).toHaveBeenLastCalledWith(expect.objectContaining({ title: 'Downloading 1 comic' }));
-      // Permission is asked only once.
+      expect(native.setLabels).toHaveBeenCalledTimes(1);
       expect(notifications.requestPermission).toHaveBeenCalledTimes(1);
+      expect(keepAlive.update).not.toHaveBeenCalled();
+      expect(keepAlive.stop).not.toHaveBeenCalled();
+      expect(notifications.show).not.toHaveBeenCalled();
     });
 
-    it('stops when nothing is left to download, failed downloads included', async () => {
-      jobs.set([job(1, 'downloading', 3), job(2, 'failed')]);
-      await settle();
-      expect(keepAlive.update).toHaveBeenLastCalledWith(expect.objectContaining({ title: 'Downloading 1 comic' }));
-
-      jobs.set([job(2, 'failed')]);
-      await settle();
-      expect(keepAlive.stop).toHaveBeenCalledTimes(1);
-
-      jobs.set([]);
-      await settle();
-      expect(keepAlive.stop).toHaveBeenCalledTimes(1);
-    });
-
-    it('shows nothing while downloads wait for a folder to be chosen', async () => {
+    it('does nothing while downloads wait for a folder to be chosen', async () => {
       folderReady.set(false);
       jobs.set([job(1, 'queued')]);
       await settle();
-      expect(keepAlive.update).not.toHaveBeenCalled();
-
-      folderReady.set(true);
-      await settle();
-      expect(keepAlive.update).toHaveBeenCalledTimes(1);
+      expect(native.setLabels).not.toHaveBeenCalled();
+      expect(notifications.requestPermission).not.toHaveBeenCalled();
     });
 
-    it('tries again when the app is opened if Android refused to start the service in the background', async () => {
-      keepAlive.update.mockRejectedValueOnce(Object.assign(new Error('not allowed'), { code: 'NOT_ALLOWED' }));
+    it('uses the app language, and follows when it changes', async () => {
+      const transloco = TestBed.inject(TranslocoService);
+      transloco.setActiveLang('es');
       jobs.set([job(1, 'downloading', 3)]);
       await settle();
-      expect(keepAlive.update).toHaveBeenCalledTimes(1);
+      expect(native.setLabels).toHaveBeenLastCalledWith({
+        titleOne: 'Descargando 1 cómic',
+        titleOther: 'Descargando {count} cómics',
+        body: '{done} / {total} páginas · {title}',
+        channel: 'Descargas',
+      });
 
-      setActive(true);
+      transloco.setActiveLang('en');
       await settle();
-      expect(keepAlive.update).toHaveBeenCalledTimes(2);
-      // It wasn't running, so there's nothing to stop yet; once running, finishing stops it.
-      jobs.set([]);
-      await settle();
-      expect(keepAlive.stop).toHaveBeenCalledTimes(1);
-    });
-
-    it('uses the app language', async () => {
-      TestBed.inject(TranslocoService).setActiveLang('es');
-      jobs.set([job(1, 'downloading', 3), job(2, 'queued')]);
-      await settle();
-      expect(keepAlive.update).toHaveBeenLastCalledWith(
-        expect.objectContaining({ title: 'Descargando 2 cómics', body: '3 / 40 páginas · Comic 1', channelName: 'Descargas' }),
-      );
+      expect(native.setLabels).toHaveBeenLastCalledWith(expect.objectContaining({ channel: 'Downloads' }));
     });
   });
 

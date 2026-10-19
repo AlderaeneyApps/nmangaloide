@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, InjectionToken, computed, inject, signal } from '@angular/core';
+import { Injectable, InjectionToken, Injector, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { CdnService, GalleryDetailResponse } from '../api';
+import { NATIVE_DOWNLOADER, NativeDownloadState } from '../native/background-downloads';
 import { ZipWriter, base64ToBytes, bytesToBase64, comicInfoXml, readZip } from '../native/cbz';
 import {
   APP_FILES,
@@ -13,6 +14,7 @@ import {
   mimeTypeOf,
   stripDataUrl,
 } from '../native/download-folder';
+import { APP_ACTIVE_LISTENER } from '../native/download-keep-alive';
 import { DatabaseService } from '../sql-services/database.service';
 import { DownloadFolderService } from './download-folder.service';
 import { SUMMARY_COLUMNS, SavedGalleriesService, SavedGallery, blobToDataUrl } from './saved-galleries.service';
@@ -83,8 +85,13 @@ interface QueueRow {
 }
 
 /**
- * Downloads galleries in the background while the app is open: one gallery at a
- * time, one page at a time, waiting DOWNLOAD_PAGE_DELAY between pages.
+ * Downloads galleries in the background: one gallery at a time, one page at a time,
+ * waiting DOWNLOAD_PAGE_DELAY between pages.
+ *
+ * On Android the downloading itself is handed over to a native foreground service
+ * (NATIVE_DOWNLOADER), which goes on with the app in the background, the screen off or
+ * the app closed; this service hands it the queue and follows its progress. Elsewhere
+ * (iOS, the browser) the pages are downloaded here, while the app is open.
  *
  * Pages are first saved in the app's private storage (APP_FILES `staging`, never seen
  * by the gallery or Files apps), so an interrupted download resumes where it stopped.
@@ -111,6 +118,8 @@ export class DownloadService {
   private readonly files = inject(APP_FILES);
   private readonly pageDelay = inject(DOWNLOAD_PAGE_DELAY);
   private readonly sleep = inject(DOWNLOAD_SLEEP);
+  private readonly native = inject(NATIVE_DOWNLOADER);
+  private readonly injector = inject(Injector);
 
   private readonly _jobs = signal<DownloadJob[]>([]);
   private readonly _downloaded = signal<SavedGallery[]>([]);
@@ -119,6 +128,10 @@ export class DownloadService {
   private worker: Promise<void> | null = null;
   private initializing: Promise<void> | null = null;
   private loadingDownloaded: Promise<void> | null = null;
+  /** Android: the queue being handed over to the native downloader, and whether to do it again. */
+  private handingOver: Promise<void> | null = null;
+  private handOverAgain = false;
+  private followingNative = false;
 
   /** Galleries downloading or waiting, in order, with live page counts. */
   readonly jobs = this._jobs.asReadonly();
@@ -132,6 +145,7 @@ export class DownloadService {
   /** Loads the download folder and unfinished downloads, scans the folder, and resumes. Safe to call repeatedly. */
   init(): Promise<void> {
     this.initializing ??= (async () => {
+      this.followNative();
       // Pages left unpacked if the app was closed while reading.
       await this.files.remove('reader').catch(() => undefined);
       await this.folders.load();
@@ -212,6 +226,7 @@ export class DownloadService {
     this.cancelled.add(id);
     this._jobs.update((jobs) => jobs.filter((job) => job.id !== id));
     this._downloaded.update((rows) => rows.filter((row) => row.id !== id));
+    await this.native?.cancel(id).catch(() => undefined);
     await this.deleteFiles(id);
     await this.forget(id);
   }
@@ -256,6 +271,7 @@ export class DownloadService {
   async resetAfterImport(): Promise<void> {
     for (const job of this._jobs()) {
       this.cancelled.add(job.id);
+      await this.native?.cancel(job.id).catch(() => undefined);
     }
     this._jobs.set([]);
     this._downloaded.set([]);
@@ -293,6 +309,12 @@ export class DownloadService {
       const match = entry.type === 'file' ? CBZ_FILE.exec(entry.name) : null;
       if (match) {
         cbzFiles.set(Number(match[1]), entry);
+      }
+    }
+    for (const id of cbzFiles.keys()) {
+      if (this.activeIds().has(id) && !this.cancelled.has(id)) {
+        // Finished while the app was closed (the native downloader goes on without it).
+        await this.complete(id);
       }
     }
     this.loadingDownloaded = null;
@@ -384,6 +406,10 @@ export class DownloadService {
     if (!this.folders.ready()) {
       return;
     }
+    if (this.native) {
+      this.handOver();
+      return;
+    }
     this.worker ??= this.work().finally(() => {
       this.worker = null;
       // Something may have been queued while the worker was finishing.
@@ -446,19 +472,124 @@ export class DownloadService {
         await this.deleteFiles(id);
         return;
       }
-      await this.markDownloaded(id);
-      await this.files.remove('staging', dir).catch(() => undefined);
-      this.details.delete(id);
-      this._jobs.update((jobs) => jobs.filter((item) => item.id !== id));
-      this.loadingDownloaded = null;
-      await this.loadDownloaded().catch(() => undefined);
+      await this.complete(id);
     } catch {
       if (!this.cancelled.has(id)) {
-        await this.db
-          .run('UPDATE saved_galleries SET download_status = ?, updated_at = ? WHERE id = ?', ['failed', Date.now(), id])
-          .catch(() => undefined);
-        this.updateJob(id, { status: 'failed' });
+        await this.fail(id);
       }
+    }
+  }
+
+  /** A download whose CBZ is written: it's listed as downloaded and its private pages go. */
+  private async complete(id: number): Promise<void> {
+    await this.markDownloaded(id);
+    await this.files.remove('staging', String(id)).catch(() => undefined);
+    this.details.delete(id);
+    this._jobs.update((jobs) => jobs.filter((item) => item.id !== id));
+    this.loadingDownloaded = null;
+    await this.loadDownloaded().catch(() => undefined);
+  }
+
+  private async fail(id: number): Promise<void> {
+    await this.db
+      .run('UPDATE saved_galleries SET download_status = ?, updated_at = ? WHERE id = ?', ['failed', Date.now(), id])
+      .catch(() => undefined);
+    this.updateJob(id, { status: 'failed' });
+  }
+
+  // --- Native downloader (Android) ---
+
+  /** Follows the native downloader's progress, and hands the queue over again whenever the app is opened. */
+  private followNative(): void {
+    if (!this.native || this.followingNative) {
+      return;
+    }
+    this.followingNative = true;
+    this.native.onProgress((state) => void this.onNativeProgress(state).catch(() => undefined));
+    // Android may have refused to start the service while the app was in the background.
+    this.injector.get(APP_ACTIVE_LISTENER)((active) => {
+      if (active) {
+        this.kick();
+      }
+    });
+  }
+
+  /** Hands every waiting download to the native downloader (again: it keeps the progress of those it has). */
+  private handOver(): void {
+    this.handOverAgain = true;
+    this.handingOver ??= (async () => {
+      while (this.handOverAgain) {
+        this.handOverAgain = false;
+        for (const job of this._jobs()) {
+          if (job.status !== 'failed' && !this.cancelled.has(job.id) && this.folders.ready()) {
+            await this.enqueueNative(job.id);
+          }
+        }
+      }
+    })().finally(() => {
+      this.handingOver = null;
+      if (this.handOverAgain) {
+        this.handOver();
+      }
+    });
+  }
+
+  private async enqueueNative(id: number): Promise<void> {
+    try {
+      const gallery = this.details.get(id) ?? (await this.saved.getDetails(id));
+      if (!gallery) {
+        throw new Error(`No saved details for gallery ${id}`);
+      }
+      await this.cdn.load();
+      const sorted = [...gallery.pages].sort((a, b) => a.number - b.number);
+      const pages = sorted.map((page) => {
+        const url = this.cdn.imageUrl(page.path);
+        if (!url) {
+          throw new Error('No image server for the page');
+        }
+        return { number: page.number, url, fileName: pageFileName(page.number, sorted.length, page.path) };
+      });
+      const state = await this.native!.enqueue({
+        id,
+        title: titleOf(gallery),
+        folderUri: this.folders.root()!,
+        detailsJson: JSON.stringify(gallery, null, 2),
+        comicInfoXml: comicInfoXml(gallery),
+        delayMs: this.pageDelay,
+        pages,
+      });
+      await this.onNativeProgress(state);
+    } catch (error) {
+      if ((error as { code?: string } | null)?.code === 'NOT_ALLOWED') {
+        // Queued natively, but the service couldn't start now: tried again when the app is opened.
+        return;
+      }
+      if (!this.cancelled.has(id)) {
+        await this.fail(id);
+      }
+    }
+  }
+
+  private async onNativeProgress(state: NativeDownloadState): Promise<void> {
+    const job = this._jobs().find((item) => item.id === state.id);
+    if (!job || this.cancelled.has(state.id)) {
+      return;
+    }
+    switch (state.status) {
+      case 'queued':
+      case 'downloading':
+        this.updateJob(state.id, {
+          status: state.status,
+          downloadedPages: state.done,
+          totalPages: state.total || job.totalPages,
+        });
+        break;
+      case 'failed':
+        await this.fail(state.id);
+        break;
+      case 'finished':
+        await this.complete(state.id);
+        break;
     }
   }
 

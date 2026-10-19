@@ -1,10 +1,19 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Provider } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { GalleryDetailResponse } from '../api';
+import {
+  NATIVE_DOWNLOADER,
+  NativeDownloadJob,
+  NativeDownloadLabels,
+  NativeDownloadState,
+  NativeDownloader,
+} from '../native/background-downloads';
 import { ZipWriter, base64ToBytes, bytesToBase64, concat, readZip } from '../native/cbz';
 import { textToBase64 } from '../native/download-folder';
+import { APP_ACTIVE_LISTENER } from '../native/download-keep-alive';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 import {
   FakeAppFiles,
@@ -80,7 +89,7 @@ describe('DownloadService', () => {
   let events: string[];
   let sleep: ReturnType<typeof vi.fn>;
 
-  function setUp({ folderChosen = true } = {}) {
+  function setUp({ folderChosen = true, providers = [] as Provider[] } = {}) {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
@@ -89,6 +98,7 @@ describe('DownloadService', () => {
         provideFakeDownloads(storage, preferences, folderChosen, appFiles),
         { provide: DOWNLOAD_PAGE_DELAY, useValue: 2000 },
         { provide: DOWNLOAD_SLEEP, useValue: sleep },
+        ...providers,
       ],
     });
     http = TestBed.inject(HttpTestingController);
@@ -508,4 +518,176 @@ describe('DownloadService', () => {
       expect(appFiles.files.size).toBe(0);
     });
   });
+  describe('on Android, with the native downloader', () => {
+    let native: FakeNativeDownloader;
+    let setActive: (active: boolean) => void;
+
+    function setUpNative() {
+      native = new FakeNativeDownloader();
+      setUp({
+        providers: [
+          { provide: NATIVE_DOWNLOADER, useValue: native },
+          { provide: APP_ACTIVE_LISTENER, useValue: (listener: (active: boolean) => void) => (setActive = listener) },
+        ],
+      });
+    }
+
+    /** What the native side does when a comic is complete: the CBZ is in the folder, the staged pages gone. */
+    async function finishNatively(id: number, pages: number) {
+      storage.seed(ROOT, `${id}.cbz`, cbzOf(gallery(id, pages), Array.from({ length: pages }, (_, i) => i + 1)));
+      await appFiles.remove('staging', String(id));
+      native.emit({ id, done: pages, total: pages, status: 'finished' });
+    }
+
+    it('hands a new download over, with everything needed to write the CBZ, instead of downloading it here', async () => {
+      setUpNative();
+      const started = service.download(gallery(1, 2));
+      await cdn();
+      await respond(coverUrl(1), image());
+      await started;
+
+      await vi.waitFor(() => expect(native.jobs).toHaveLength(1));
+      const job = native.jobs[0];
+      expect(job).toMatchObject({
+        id: 1,
+        title: 'Gallery 1',
+        folderUri: ROOT,
+        delayMs: 2000,
+        pages: [
+          { number: 1, url: pageUrl(1, 1), fileName: '001.webp' },
+          { number: 2, url: pageUrl(1, 2), fileName: '002.webp' },
+        ],
+      });
+      expect(JSON.parse(job.detailsJson)).toMatchObject({ id: 1, title: { english: 'Gallery 1' } });
+      expect(job.comicInfoXml).toContain('<Title>Gallery 1</Title>');
+      // The app itself downloads no pages.
+      http.expectNone(pageUrl(1, 1));
+      expect(db.saved.get(1)).toMatchObject({ download_status: 'queued' });
+    });
+
+    it('follows the native progress, and lists the comic as downloaded once its CBZ is written', async () => {
+      setUpNative();
+      const started = service.download(gallery(1, 2));
+      await cdn();
+      await respond(coverUrl(1), image());
+      await started;
+      await vi.waitFor(() => expect(native.jobs).toHaveLength(1));
+
+      native.emit({ id: 1, done: 1, total: 2, status: 'downloading' });
+      await vi.waitFor(() => expect(service.jobs()).toEqual([expect.objectContaining({ id: 1, status: 'downloading', downloadedPages: 1 })]));
+
+      await finishNatively(1, 2);
+      await vi.waitFor(() => expect(service.stateOf(1)).toBe('downloaded'));
+      expect(service.jobs()).toEqual([]);
+      expect(db.saved.get(1)).toMatchObject({ is_downloaded: 1, download_status: null });
+    });
+
+    it('marks a download failed when the native side gives up, and hands it over again on retry', async () => {
+      db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 2)) });
+      setUpNative();
+      await service.init();
+      await cdn();
+      await vi.waitFor(() => expect(native.jobs).toHaveLength(1));
+
+      native.emit({ id: 1, done: 0, total: 2, status: 'failed' });
+      await vi.waitFor(() => expect(service.stateOf(1)).toBe('failed'));
+      expect(db.saved.get(1)!['download_status']).toBe('failed');
+
+      await service.retry(1);
+      await vi.waitFor(() => expect(native.jobs).toHaveLength(2));
+      expect(service.stateOf(1)).toBe('queued');
+    });
+
+    it('resumes on launch: hands over waiting downloads and keeps failed ones aside', async () => {
+      db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', updated_at: 1, details_json: JSON.stringify(gallery(1, 3)) });
+      db.seedSaved({ id: 2, is_favorite: 0, download_status: 'failed', updated_at: 2, details_json: JSON.stringify(gallery(2, 1)) });
+      await appFiles.write('staging', '1', '001.webp', btoa('page 1'));
+      setUpNative();
+      await service.init();
+      await cdn();
+
+      await vi.waitFor(() => expect(native.jobs.map((job) => job.id)).toEqual([1]));
+      // Pages already saved stay where the native side looks for them.
+      expect(appFiles.keys('staging')).toEqual(['1/001.webp']);
+    });
+
+    it('lists a comic that finished while the app was closed as downloaded', async () => {
+      db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 1)) });
+      storage.seed(ROOT, '1.cbz', cbzOf(gallery(1, 1), [1]));
+      setUpNative();
+      await service.init();
+
+      expect(service.stateOf(1)).toBe('downloaded');
+      expect(db.saved.get(1)).toMatchObject({ is_downloaded: 1, download_status: null });
+      expect(native.jobs).toEqual([]);
+    });
+
+    it('stops the native download when it is removed', async () => {
+      db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 2)) });
+      setUpNative();
+      await service.init();
+      await cdn();
+      await vi.waitFor(() => expect(native.jobs).toHaveLength(1));
+
+      await service.remove(1);
+      expect(native.cancelled).toEqual([1]);
+      expect(service.jobs()).toEqual([]);
+      expect(db.saved.has(1)).toBe(false);
+      // Late progress from the native side is ignored.
+      await finishNatively(1, 2);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(service.stateOf(1)).toBeNull();
+    });
+
+    it('hands the queue over again when the app is opened if Android refused to start the service', async () => {
+      db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 2)) });
+      setUpNative();
+      native.enqueueError = Object.assign(new Error('not allowed'), { code: 'NOT_ALLOWED' });
+      await service.init();
+      await cdn();
+      await vi.waitFor(() => expect(native.jobs).toHaveLength(1));
+      // Not a failure: it waits.
+      expect(service.stateOf(1)).toBe('queued');
+
+      setActive(true);
+      await vi.waitFor(() => expect(native.jobs).toHaveLength(2));
+      expect(service.stateOf(1)).toBe('queued');
+    });
+  });
 });
+
+/** The native downloader (Android), recording what it's handed. */
+class FakeNativeDownloader implements NativeDownloader {
+  readonly jobs: NativeDownloadJob[] = [];
+  readonly cancelled: number[] = [];
+  labels: NativeDownloadLabels | null = null;
+  /** Thrown (once) by the next enqueue(), after recording the job. */
+  enqueueError: unknown = null;
+  private listener: ((state: NativeDownloadState) => void) | null = null;
+
+  async enqueue(job: NativeDownloadJob): Promise<NativeDownloadState> {
+    this.jobs.push(job);
+    if (this.enqueueError) {
+      const error = this.enqueueError;
+      this.enqueueError = null;
+      throw error;
+    }
+    return { id: job.id, done: 0, total: job.pages.length, status: 'queued' };
+  }
+
+  async cancel(id: number): Promise<void> {
+    this.cancelled.push(id);
+  }
+
+  async setLabels(labels: NativeDownloadLabels): Promise<void> {
+    this.labels = labels;
+  }
+
+  onProgress(listener: (state: NativeDownloadState) => void): void {
+    this.listener = listener;
+  }
+
+  emit(state: NativeDownloadState): void {
+    this.listener?.(state);
+  }
+}

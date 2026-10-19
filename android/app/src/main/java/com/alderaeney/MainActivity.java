@@ -10,7 +10,7 @@ public class MainActivity extends BridgeActivity {
         // The app's own plugins must be registered before the bridge starts.
         registerPlugin(FileSaverPlugin.class);
         registerPlugin(DownloadFolderPlugin.class);
-        registerPlugin(DownloadKeepAlivePlugin.class);
+        registerPlugin(BackgroundDownloadsPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

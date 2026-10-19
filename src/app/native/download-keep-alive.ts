@@ -14,11 +14,10 @@ export interface KeepAliveProgress {
 }
 
 /**
- * The app's own plugin keeping downloads running in the background:
- * - Android (DownloadKeepAlivePlugin.java): a foreground service whose notification shows
- *   the progress; the first update() must happen with the app in the foreground.
- * - iOS (DownloadKeepAlivePlugin.swift): asks for extra time when the app is backgrounded;
- *   the notification is posted separately (PROGRESS_NOTIFICATIONS).
+ * The app's own iOS plugin (DownloadKeepAlivePlugin.swift) keeping downloads running a
+ * little longer in the background: it asks for extra time when the app is backgrounded;
+ * the notification is posted separately (PROGRESS_NOTIFICATIONS). Android downloads
+ * natively instead, in a foreground service (see background-downloads.ts).
  */
 export interface DownloadKeepAlivePlugin {
   update(progress: KeepAliveProgress): Promise<void>;
