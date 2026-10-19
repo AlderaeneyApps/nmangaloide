@@ -34,3 +34,12 @@
     margin: 0;
   }
 }
+
+ion-searchbar {
+  // Sits in the toolbar where the title was.
+  padding-top: 0;
+  padding-bottom: 0;
+  --box-shadow: none;
+  // A light tint so the field stands out from the toolbar in light and dark themes.
+  --background: rgba(127, 127, 127, 0.14);
+}

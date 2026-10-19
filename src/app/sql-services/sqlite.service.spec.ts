@@ -3,6 +3,8 @@ import { Capacitor } from '@capacitor/core';
 
 import { SQLiteService, generatePassphrase } from './sqlite.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('SQLiteService', () => {
   let service: SQLiteService;
 

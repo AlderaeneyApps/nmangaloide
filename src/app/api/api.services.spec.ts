@@ -14,6 +14,8 @@ import { SearchService } from './search.service';
 import { TagsService } from './tags.service';
 import { UserService } from './user.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const BASE = 'https://nhentai.net/api/v2';
 
 describe('nhentai API services', () => {

@@ -4,6 +4,8 @@ import { TagState } from '../../services/tag-preferences.service';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { TagToggleComponent } from './tag-toggle.component';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('TagToggleComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({

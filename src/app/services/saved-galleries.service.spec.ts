@@ -6,6 +6,8 @@ import { GalleryDetailResponse } from '../api';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 import { SavedGalleriesService, toGalleryListItem } from './saved-galleries.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const API = 'https://nhentai.net/api/v2';
 const COVER_URL = 'https://t.example/galleries/100/cover.webp';
 

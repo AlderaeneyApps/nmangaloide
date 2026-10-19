@@ -4,6 +4,8 @@ import { NavController, Platform } from '@ionic/angular';
 
 import { EXIT_APP, HARDWARE_BACK_PRIORITY, HardwareBackService } from './hardware-back.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('HardwareBackService', () => {
   let handler: (() => void) | null;
   let subscribeWithPriority: ReturnType<typeof vi.fn>;

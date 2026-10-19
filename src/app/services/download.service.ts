@@ -20,7 +20,7 @@ import { SUMMARY_COLUMNS, SavedGalleriesService, SavedGallery, blobToDataUrl } f
 /** Wait between page downloads, so the image servers' rate limit isn't hit. */
 export const DOWNLOAD_PAGE_DELAY = new InjectionToken<number>('DOWNLOAD_PAGE_DELAY', {
   providedIn: 'root',
-  factory: () => 2000,
+  factory: () => 1000,
 });
 
 /** Waits `ms` milliseconds; a token so tests can record the pauses without waiting. */

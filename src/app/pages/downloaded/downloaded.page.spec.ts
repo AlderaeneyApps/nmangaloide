@@ -11,6 +11,8 @@ import { FakeDownloadStorage, TEST_FOLDER, provideFakeDownloads } from '../../te
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { DownloadedPage } from './downloaded.page';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('DownloadedPage', () => {
   let db: FakeDatabase;
   let storage: FakeDownloadStorage;

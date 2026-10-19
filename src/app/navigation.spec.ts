@@ -1,5 +1,7 @@
 import { backUrlFor, parseSingleFilter } from './navigation';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('parseSingleFilter', () => {
   it('reads a single type:"name" filter', () => {
     expect(parseSingleFilter('artist:"someone"')).toEqual({ type: 'artist', name: 'someone' });

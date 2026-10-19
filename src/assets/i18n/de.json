@@ -14,7 +14,10 @@
     "CLEAR_SEARCH": "Suche entfernen und die neuesten Galerien anzeigen",
     "NO_RESULTS": "Keine Galerien entsprechen dieser Suche.",
     "SAVED_TAGS": "Deine Tags ({{count}})",
-    "SAVED_TAGS_HINT": "Galerien gefiltert nach deinen gespeicherten Tags. Öffne die Tags-Seite, um sie zu ändern."
+    "SAVED_TAGS_HINT": "Galerien gefiltert nach deinen gespeicherten Tags. Öffne die Tags-Seite, um sie zu ändern.",
+    "SEARCH_OPEN": "Suchen",
+    "SEARCH_CLOSE": "Suche schließen",
+    "SEARCH_PLACEHOLDER": "Galerien durchsuchen"
   },
   "SETTINGS": {
     "TITLE": "Einstellungen",
@@ -144,7 +147,7 @@
   },
   "DOWNLOADING": {
     "EMPTY": "Es wird nichts heruntergeladen.",
-    "HINT": "Downloads laufen weiter, solange die App geöffnet ist, eine Seite alle 2 Sekunden.",
+    "HINT": "Downloads laufen weiter, während du die App benutzt.",
     "PROGRESS": "{{done}} / {{total}} Seiten",
     "STATUS": {
       "queued": "Wartet",

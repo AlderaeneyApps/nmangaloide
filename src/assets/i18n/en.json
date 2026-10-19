@@ -14,7 +14,10 @@
     "CLEAR_SEARCH": "Clear the search and show the newest galleries",
     "NO_RESULTS": "No galleries match this search.",
     "SAVED_TAGS": "Your tags ({{count}})",
-    "SAVED_TAGS_HINT": "Showing galleries filtered by your saved tags. Open the Tags page to change them."
+    "SAVED_TAGS_HINT": "Showing galleries filtered by your saved tags. Open the Tags page to change them.",
+    "SEARCH_OPEN": "Search",
+    "SEARCH_CLOSE": "Close search",
+    "SEARCH_PLACEHOLDER": "Search galleries"
   },
   "SETTINGS": {
     "TITLE": "Settings",
@@ -144,7 +147,7 @@
   },
   "DOWNLOADING": {
     "EMPTY": "Nothing is downloading.",
-    "HINT": "Downloads continue while the app is open, one page every 2 seconds.",
+    "HINT": "Downloads continue while you keep using the app.",
     "PROGRESS": "{{done}} / {{total}} pages",
     "STATUS": {
       "queued": "Waiting",

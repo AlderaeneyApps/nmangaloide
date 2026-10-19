@@ -1,5 +1,7 @@
 import { isCancelled } from './file-saver';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('isCancelled', () => {
   it('recognises a closed picker or share sheet', () => {
     expect(isCancelled(Object.assign(new Error('whatever'), { code: 'CANCELLED' }))).toBe(true);

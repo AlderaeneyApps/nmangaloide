@@ -19,6 +19,8 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { ReaderPage } from './reader.page';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const API = 'https://nhentai.net/api/v2';
 
 function tag(id: number, name: string, type: string): TagResponse {

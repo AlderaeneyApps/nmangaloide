@@ -7,6 +7,8 @@ import { safeBackUrl } from '../../navigation';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { BackButtonComponent } from './back-button.component';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('BackButtonComponent', () => {
   let queryParams: BehaviorSubject<ParamMap>;
   let navigateBack: ReturnType<typeof vi.fn>;

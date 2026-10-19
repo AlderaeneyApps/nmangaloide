@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 import { TagInfo, TagPreferencesService, buildGallerySearchQuery, nextTagState } from './tag-preferences.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const TAG: TagInfo = { id: 7, name: 'full color', slug: 'full-color', type: 'tag', count: 1234 };
 
 describe('TagPreferencesService', () => {

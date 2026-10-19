@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 import { AppSettingsService } from './app-settings.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('AppSettingsService', () => {
   let db: FakeDatabase;
   let service: AppSettingsService;

@@ -14,7 +14,10 @@
     "CLEAR_SEARCH": "検索をクリアして最新の作品を表示",
     "NO_RESULTS": "この検索に一致する作品はありません。",
     "SAVED_TAGS": "あなたのタグ（{{count}}）",
-    "SAVED_TAGS_HINT": "保存したタグで作品を絞り込んでいます。変更するにはタグページを開いてください。"
+    "SAVED_TAGS_HINT": "保存したタグで作品を絞り込んでいます。変更するにはタグページを開いてください。",
+    "SEARCH_OPEN": "検索",
+    "SEARCH_CLOSE": "検索を閉じる",
+    "SEARCH_PLACEHOLDER": "作品を検索"
   },
   "SETTINGS": {
     "TITLE": "設定",
@@ -144,7 +147,7 @@
   },
   "DOWNLOADING": {
     "EMPTY": "ダウンロード中の作品はありません。",
-    "HINT": "アプリを開いている間、2秒ごとに1ページずつダウンロードします。",
+    "HINT": "アプリを使っている間もダウンロードは続きます。",
     "PROGRESS": "{{done}} / {{total}} ページ",
     "STATUS": {
       "queued": "待機中",

@@ -7,6 +7,8 @@ import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { FavoritesPage } from './favorites.page';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('FavoritesPage', () => {
   let db: FakeDatabase;
   let fixture: ComponentFixture<FavoritesPage>;

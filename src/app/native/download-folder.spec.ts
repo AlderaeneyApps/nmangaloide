@@ -1,5 +1,7 @@
 import { DownloadFolderPlugin, base64ToText, mimeTypeOf, pickedFolderStorage, stripDataUrl, textToBase64 } from './download-folder';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('download folder helpers', () => {
   it('round-trips UTF-8 text through base64', () => {
     const text = JSON.stringify({ title: '日本語のタイトル — ça marche' });

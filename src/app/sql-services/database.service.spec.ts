@@ -6,6 +6,8 @@ import { DatabaseService, InvalidBackupError, NewerBackupError } from './databas
 import { DbnameVersionService } from './dbname-version.service';
 import { SQLiteService } from './sqlite.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const BACKUP = {
   database: 'nmangaloide',
   version: 1,

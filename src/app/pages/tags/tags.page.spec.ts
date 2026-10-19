@@ -11,6 +11,8 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { TagsPage, TagsTab } from './tags.page';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const API = 'https://nhentai.net/api/v2';
 const listUrl = (type: string, page = 1) => `${API}/tags/${type}?sort=name&page=${page}&per_page=100`;
 

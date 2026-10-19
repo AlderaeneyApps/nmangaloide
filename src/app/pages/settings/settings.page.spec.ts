@@ -14,6 +14,8 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { SettingsPage } from './settings.page';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('SettingsPage', () => {
   let backup: { exportToFile: ReturnType<typeof vi.fn>; importFromFile: ReturnType<typeof vi.fn> };
   let toastCreate: ReturnType<typeof vi.fn>;

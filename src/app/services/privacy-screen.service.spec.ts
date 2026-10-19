@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 
 import { PRIVACY_SCREEN_CONFIG, PRIVACY_SCREEN_PLUGIN, PrivacyScreenService } from './privacy-screen.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('PrivacyScreenService', () => {
   let plugin: { enable: ReturnType<typeof vi.fn>; disable: ReturnType<typeof vi.fn>; isEnabled: ReturnType<typeof vi.fn> };
   let service: PrivacyScreenService;

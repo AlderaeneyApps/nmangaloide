@@ -14,7 +14,10 @@
     "CLEAR_SEARCH": "清除搜尋並顯示最新作品",
     "NO_RESULTS": "沒有符合此搜尋的作品。",
     "SAVED_TAGS": "你的標籤（{{count}}）",
-    "SAVED_TAGS_HINT": "正在依你儲存的標籤篩選作品。前往標籤頁面可以修改。"
+    "SAVED_TAGS_HINT": "正在依你儲存的標籤篩選作品。前往標籤頁面可以修改。",
+    "SEARCH_OPEN": "搜尋",
+    "SEARCH_CLOSE": "關閉搜尋",
+    "SEARCH_PLACEHOLDER": "搜尋作品"
   },
   "SETTINGS": {
     "TITLE": "設定",
@@ -144,7 +147,7 @@
   },
   "DOWNLOADING": {
     "EMPTY": "沒有正在下載的內容。",
-    "HINT": "App 開啟時會繼續下載，每 2 秒下載一頁。",
+    "HINT": "你繼續使用 App 時，下載會繼續進行。",
     "PROGRESS": "{{done}} / {{total}} 頁",
     "STATUS": {
       "queued": "等待中",

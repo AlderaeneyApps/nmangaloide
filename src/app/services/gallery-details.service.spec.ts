@@ -5,6 +5,8 @@ import { GalleriesService } from '../api';
 import { GalleryDetailsService } from './gallery-details.service';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('GalleryDetailsService', () => {
   let get: ReturnType<typeof vi.fn>;
   let service: GalleryDetailsService;

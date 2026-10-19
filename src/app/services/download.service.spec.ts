@@ -23,6 +23,8 @@ import {
 } from './download.service';
 import { SavedGalleriesService } from './saved-galleries.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const API = 'https://nhentai.net/api/v2';
 const ROOT = TEST_FOLDER.uri;
 

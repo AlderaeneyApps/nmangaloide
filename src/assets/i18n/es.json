@@ -14,7 +14,10 @@
     "CLEAR_SEARCH": "Quitar la búsqueda y mostrar las galerías más recientes",
     "NO_RESULTS": "Ninguna galería coincide con esta búsqueda.",
     "SAVED_TAGS": "Tus etiquetas ({{count}})",
-    "SAVED_TAGS_HINT": "Mostrando galerías filtradas por tus etiquetas guardadas. Abre la página de etiquetas para cambiarlas."
+    "SAVED_TAGS_HINT": "Mostrando galerías filtradas por tus etiquetas guardadas. Abre la página de etiquetas para cambiarlas.",
+    "SEARCH_OPEN": "Buscar",
+    "SEARCH_CLOSE": "Cerrar búsqueda",
+    "SEARCH_PLACEHOLDER": "Buscar galerías"
   },
   "SETTINGS": {
     "TITLE": "Ajustes",
@@ -144,7 +147,7 @@
   },
   "DOWNLOADING": {
     "EMPTY": "No se está descargando nada.",
-    "HINT": "Las descargas continúan mientras la app está abierta, una página cada 2 segundos.",
+    "HINT": "Las descargas continúan mientras sigues usando la app.",
     "PROGRESS": "{{done}} / {{total}} páginas",
     "STATUS": {
       "queued": "En espera",

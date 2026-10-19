@@ -14,7 +14,10 @@
     "CLEAR_SEARCH": "Treu la cerca i mostra les galeries més recents",
     "NO_RESULTS": "Cap galeria coincideix amb aquesta cerca.",
     "SAVED_TAGS": "Les teves etiquetes ({{count}})",
-    "SAVED_TAGS_HINT": "Es mostren galeries filtrades per les teves etiquetes desades. Obre la pàgina d'etiquetes per canviar-les."
+    "SAVED_TAGS_HINT": "Es mostren galeries filtrades per les teves etiquetes desades. Obre la pàgina d'etiquetes per canviar-les.",
+    "SEARCH_OPEN": "Cerca",
+    "SEARCH_CLOSE": "Tanca la cerca",
+    "SEARCH_PLACEHOLDER": "Cerca galeries"
   },
   "SETTINGS": {
     "TITLE": "Configuració",
@@ -144,7 +147,7 @@
   },
   "DOWNLOADING": {
     "EMPTY": "No s'està descarregant res.",
-    "HINT": "Les descàrregues continuen mentre l'app està oberta, una pàgina cada 2 segons.",
+    "HINT": "Les baixades continuen mentre continues fent servir l'app.",
     "PROGRESS": "{{done}} / {{total}} pàgines",
     "STATUS": {
       "queued": "En espera",

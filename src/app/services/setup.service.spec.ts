@@ -5,6 +5,8 @@ import { DEVICE_PREFERENCES } from '../native/download-folder';
 import { FakePreferences } from '../testing/fake-download-storage';
 import { SetupService, setupDoneGuard, setupPendingGuard } from './setup.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('SetupService', () => {
   let preferences: FakePreferences;
 

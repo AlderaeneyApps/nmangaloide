@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { FakeDownloadStorage, FakePreferences, TEST_FOLDER, provideFakeDownloads } from '../testing/fake-download-storage';
 import { DownloadFolderService } from './download-folder.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('DownloadFolderService', () => {
   let storage: FakeDownloadStorage;
   let preferences: FakePreferences;

@@ -3,7 +3,32 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ 'HOME.TITLE' | transloco }}</ion-title>
+    @if (searchOpen()) {
+      <ion-searchbar
+        data-search="field"
+        [value]="searchText()"
+        [placeholder]="'HOME.SEARCH_PLACEHOLDER' | transloco"
+        [debounce]="0"
+        enterkeyhint="search"
+        inputmode="search"
+        showCancelButton="never"
+        (ionInput)="onSearchInput($event)"
+        (keydown.enter)="submitSearch()"
+      ></ion-searchbar>
+    } @else {
+      <ion-title>{{ 'HOME.TITLE' | transloco }}</ion-title>
+    }
+    <ion-buttons slot="end">
+      @if (searchOpen()) {
+        <ion-button data-action="search" data-state="open" [attr.aria-label]="'HOME.SEARCH_CLOSE' | transloco" (click)="toggleSearch()">
+          <ion-icon slot="icon-only" name="search" color="primary" aria-hidden="true"></ion-icon>
+        </ion-button>
+      } @else {
+        <ion-button data-action="search" data-state="closed" [attr.aria-label]="'HOME.SEARCH_OPEN' | transloco" (click)="toggleSearch()">
+          <ion-icon slot="icon-only" name="search" aria-hidden="true"></ion-icon>
+        </ion-button>
+      }
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -18,14 +43,16 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  @if (query()) {
+  @if (textQuery()) {
+    <!-- The typed search is in the header. -->
+  } @else if (routeQuery()) {
     <div class="search-filter">
       <ion-chip color="primary" (click)="clearSearch()" [attr.aria-label]="'HOME.CLEAR_SEARCH' | transloco">
         <ion-label>
           @if (filter(); as f) {
             {{ 'TAGS.KIND.' + f.type | transloco }}: {{ f.name }}
           } @else {
-            {{ query() }}
+            {{ routeQuery() }}
           }
         </ion-label>
         <ion-icon name="close-circle" aria-hidden="true"></ion-icon>

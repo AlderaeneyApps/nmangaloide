@@ -4,6 +4,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import { getTranslocoTestingModule } from '../testing/transloco-testing';
 import { LanguageService, matchLanguage } from './language.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 // Capacitor Preferences uses localStorage on the web, under the "CapacitorStorage." prefix.
 const SAVED = 'CapacitorStorage.lang';
 

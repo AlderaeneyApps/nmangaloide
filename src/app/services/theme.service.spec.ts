@@ -4,6 +4,8 @@ import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 import { AppSettingsService } from './app-settings.service';
 import { DARK_CLASS, OLED_CLASS, ThemeService } from './theme.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('ThemeService', () => {
   let db: FakeDatabase;
   let systemDark: boolean;

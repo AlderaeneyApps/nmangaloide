@@ -5,6 +5,8 @@ import { DatabaseService } from './database.service';
 import { SQLiteService } from './sqlite.service';
 import { DB_NMANGALOIDE } from '../constants';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('InitializeAppService', () => {
   let service: InitializeAppService;
   let sqliteServiceMock: {

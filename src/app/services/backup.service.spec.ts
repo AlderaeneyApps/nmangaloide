@@ -9,6 +9,8 @@ import { DownloadService } from './download.service';
 import { SavedGalleriesService } from './saved-galleries.service';
 import { TagPreferencesService } from './tag-preferences.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('BackupService', () => {
   let database: { exportJson: ReturnType<typeof vi.fn>; importJson: ReturnType<typeof vi.fn> };
   let tags: { reload: ReturnType<typeof vi.fn> };

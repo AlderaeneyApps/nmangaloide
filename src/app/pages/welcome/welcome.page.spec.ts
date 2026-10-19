@@ -14,6 +14,8 @@ import { FakeDownloadStorage, FakePreferences, provideFakeDownloads } from '../.
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { WelcomePage } from './welcome.page';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('WelcomePage', () => {
   let db: FakeDatabase;
   let storage: FakeDownloadStorage;
@@ -105,10 +107,11 @@ describe('WelcomePage', () => {
     el().querySelector('[data-setting="reader"] ion-radio-group')!.dispatchEvent(
       new CustomEvent('ionChange', { detail: { value: 'paged' } }),
     );
+    // Saving goes through Capacitor Preferences, whose web version loads on first use: wait for it.
+    await vi.waitFor(() => expect(localStorage.getItem('CapacitorStorage.lang')).toBe('es'));
+    await vi.waitFor(() => expect(db.settings.get('reader_mode')).toBe('paged'));
     await settle();
     expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('es');
-    expect(localStorage.getItem('CapacitorStorage.lang')).toBe('es');
-    expect(db.settings.get('reader_mode')).toBe('paged');
     expect(el().querySelector('h1')?.textContent).toContain('Te damos la bienvenida');
   });
 

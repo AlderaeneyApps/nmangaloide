@@ -5,6 +5,8 @@ import { TestBed } from '@angular/core/testing';
 import { CdnService, GalleryListItem, resolveMediaUrl } from '../../api';
 import { GalleryCardComponent, truncateTitle } from './gallery-card.component';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const GALLERY: GalleryListItem = {
   id: 1,
   media_id: '100',

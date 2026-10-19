@@ -8,6 +8,8 @@ import { DownloadJob, DownloadService } from '../../services/download.service';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { DownloadingPage } from './downloading.page';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 describe('DownloadingPage', () => {
   let jobs: ReturnType<typeof signal<DownloadJob[]>>;
   let folderReady: ReturnType<typeof signal<boolean>>;

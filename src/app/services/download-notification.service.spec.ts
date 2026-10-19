@@ -7,6 +7,8 @@ import { getTranslocoTestingModule } from '../testing/transloco-testing';
 import { DOWNLOAD_NOTIFICATION_ID, DownloadNotificationService } from './download-notification.service';
 import { DownloadJob, DownloadService } from './download.service';
 
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
 const job = (id: number, status: DownloadJob['status'], done = 0, total = 40): DownloadJob => ({
   id,
   title: `Comic ${id}`,

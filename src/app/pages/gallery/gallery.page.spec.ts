@@ -13,6 +13,8 @@ import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 import { DOWNLOAD_SLEEP } from '../../services/download.service';
 import { FakeDownloadStorage, FakePreferences, TEST_FOLDER, provideFakeDownloads } from '../../testing/fake-download-storage';
 
+import { describe, beforeEach, it, expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
+
 const API = 'https://nhentai.net/api/v2';
 
 function tag(id: number, name: string, type: string): TagResponse {
