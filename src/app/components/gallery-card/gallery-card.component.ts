@@ -6,7 +6,7 @@ import { CdnService, GalleryListItem } from '../../api';
 import { GalleryLanguage, LANGUAGE_FLAGS, languageOfTagIds } from '../../services/gallery-language.service';
 
 /** Longest title shown on a card; longer ones are cut and end in "...". */
-export const MAX_TITLE_LENGTH = 35;
+export const MAX_TITLE_LENGTH = 40;
 
 /**
  * Cuts `text` to `max` characters (counting what a reader sees as one character,

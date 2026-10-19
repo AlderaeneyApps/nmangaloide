@@ -61,3 +61,27 @@
     --background: #1c1c1d;
   }
 }
+
+/*
+ * Columns of the gallery card grids (home, favorites, downloaded) and the tag grid,
+ * by screen width: phones 2, small tablets 3, big tablets 4, big monitors 6.
+ */
+.gallery-grid,
+.tag-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  // Small tablets: 7–8" Android tablets, iPad mini in portrait.
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // Big tablets: iPad / iPad Air / iPad Pro, 10"+ Android tablets.
+  @media (min-width: 820px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  // Big monitors.
+  @media (min-width: 1440px) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}

@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { CdnService, GalleryListItem, resolveMediaUrl } from '../../api';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
-import { GalleryCardComponent, truncateTitle } from './gallery-card.component';
+import { GalleryCardComponent, MAX_TITLE_LENGTH, truncateTitle } from './gallery-card.component';
 
 import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
 
@@ -87,8 +87,8 @@ describe('GalleryCardComponent', () => {
     expect(img.getAttribute('src')).toBe('https://t1.example.net/galleries/100/thumb.webp');
     expect(img.getAttribute('alt')).toBe(GALLERY.english_title);
     const title = el.querySelector('.title')!;
-    // Cut to 35 characters, with the full title kept in the tooltip.
-    expect(title.textContent?.trim()).toBe('A very long gallery title that shou...');
+    // Cut to MAX_TITLE_LENGTH characters, with the full title kept in the tooltip.
+    expect(title.textContent?.trim()).toBe(`${GALLERY.english_title.slice(0, MAX_TITLE_LENGTH).trimEnd()}...`);
     expect(title.getAttribute('title')).toBe(GALLERY.english_title);
   });
 
@@ -136,27 +136,26 @@ describe('resolveMediaUrl', () => {
 });
 
 describe('truncateTitle', () => {
-  it('keeps titles of up to 35 characters', () => {
-    const exactly35 = 'x'.repeat(35);
-    expect(truncateTitle(exactly35)).toBe(exactly35);
+  it('keeps titles of up to MAX_TITLE_LENGTH characters', () => {
+    const exact = 'x'.repeat(MAX_TITLE_LENGTH);
+    expect(truncateTitle(exact)).toBe(exact);
     expect(truncateTitle('Short title')).toBe('Short title');
     expect(truncateTitle('')).toBe('');
   });
 
-  it('cuts longer titles to 35 characters and adds three dots', () => {
-    const result = truncateTitle('y'.repeat(36));
-    expect(result).toBe('y'.repeat(35) + '...');
+  it('cuts longer titles to MAX_TITLE_LENGTH characters and adds three dots', () => {
+    expect(MAX_TITLE_LENGTH).toBe(40);
+    expect(truncateTitle('y'.repeat(MAX_TITLE_LENGTH + 1))).toBe('y'.repeat(MAX_TITLE_LENGTH) + '...');
+    expect(truncateTitle('y'.repeat(12), 10)).toBe('y'.repeat(10) + '...');
   });
 
   it('drops a trailing space before the dots', () => {
-    expect(truncateTitle('A title with a space right at the cut and more')).toBe('A title with a space right at the c...');
-    expect(truncateTitle(`${'a'.repeat(34)} more words`)).toBe(`${'a'.repeat(34)}...`);
+    expect(truncateTitle(`${'a'.repeat(MAX_TITLE_LENGTH - 1)} more words`)).toBe(`${'a'.repeat(MAX_TITLE_LENGTH - 1)}...`);
+    expect(truncateTitle('A title with a space right at the cut', 21)).toBe('A title with a space...');
   });
 
   it('counts each visible character once, including Japanese and emoji', () => {
-    const japanese = 'あ'.repeat(40);
-    expect(truncateTitle(japanese)).toBe('あ'.repeat(35) + '...');
-    const emoji = '😀'.repeat(36);
-    expect(truncateTitle(emoji)).toBe('😀'.repeat(35) + '...');
+    expect(truncateTitle('あ'.repeat(MAX_TITLE_LENGTH + 5))).toBe('あ'.repeat(MAX_TITLE_LENGTH) + '...');
+    expect(truncateTitle('😀'.repeat(MAX_TITLE_LENGTH + 1))).toBe('😀'.repeat(MAX_TITLE_LENGTH) + '...');
   });
 });

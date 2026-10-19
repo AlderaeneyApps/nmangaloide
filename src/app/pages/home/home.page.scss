@@ -1,6 +1,6 @@
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  // Columns per screen size: see .gallery-grid in global.scss.
   gap: 12px;
   padding: 12px;
 }

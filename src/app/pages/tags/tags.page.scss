@@ -1,6 +1,6 @@
 .tag-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  // Columns per screen size: see .tag-grid in global.scss.
   gap: 8px;
   padding: 0 12px 12px;
 }
