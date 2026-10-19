@@ -1,0 +1,125 @@
+<ion-content class="welcome" [fullscreen]="true">
+  <div class="wrapper" [attr.data-step]="step()">
+    <p class="step-count">{{ 'WELCOME.STEP' | transloco: { step: index() + 1, total: steps.length } }}</p>
+    <div class="dots" aria-hidden="true">
+      @for (s of steps; track s; let i = $index) {
+        <span class="dot" [class.active]="i === index()" [class.done]="i < index()"></span>
+      }
+    </div>
+
+    @switch (step()) {
+      @case ('preferences') {
+        <section>
+          <ion-icon class="hero" name="language-outline" aria-hidden="true"></ion-icon>
+          <h1>{{ 'WELCOME.PREFERENCES_TITLE' | transloco }}</h1>
+          <p class="lead">{{ 'WELCOME.PREFERENCES_TEXT' | transloco }}</p>
+
+          <ion-list [inset]="true" data-setting="language">
+            <ion-list-header>
+              <ion-label>{{ 'WELCOME.LANGUAGE' | transloco }}</ion-label>
+            </ion-list-header>
+            <ion-radio-group
+              #languageList
+              class="language-scroll"
+              [class.at-end]="languageListAtEnd()"
+              [value]="language.current()"
+              (ionChange)="onLanguageChange($event)"
+              (scroll)="onLanguageListScroll()"
+            >
+              @for (option of language.options; track option.code) {
+                <ion-item [attr.data-lang]="option.code" [attr.lang]="option.code">
+                  <ion-radio [value]="option.code" justify="space-between">{{ option.name }}</ion-radio>
+                </ion-item>
+              }
+            </ion-radio-group>
+          </ion-list>
+
+          <ion-list [inset]="true" data-setting="reader">
+            <ion-list-header>
+              <ion-label>{{ 'WELCOME.READER' | transloco }}</ion-label>
+            </ion-list-header>
+            <ion-radio-group [value]="settings.readerMode()" (ionChange)="onReaderModeChange($event)">
+              @for (mode of readerModes; track mode) {
+                <ion-item>
+                  <ion-radio [value]="mode" justify="space-between">
+                    {{ 'SETTINGS.READER_MODE.' + mode | transloco }}
+                    <br />
+                    <ion-note>{{ 'SETTINGS.READER_MODE_HINT.' + mode | transloco }}</ion-note>
+                  </ion-radio>
+                </ion-item>
+              }
+            </ion-radio-group>
+          </ion-list>
+        </section>
+      }
+      @case ('folder') {
+        <section>
+          <ion-icon class="hero" name="folder-open-outline" aria-hidden="true"></ion-icon>
+          <h1>{{ 'WELCOME.FOLDER_TITLE' | transloco }}</h1>
+          <p class="lead">{{ 'WELCOME.FOLDER_TEXT' | transloco }}</p>
+
+          <ion-list [inset]="true">
+            <ion-item button [detail]="false" [disabled]="!!busy()" (click)="chooseFolder()" data-action="choose-folder">
+              <ion-icon slot="start" [name]="folders.folder() ? 'checkmark-circle' : 'folder-open-outline'" [color]="folders.folder() ? 'success' : undefined" aria-hidden="true"></ion-icon>
+              <ion-label>
+                {{ (folders.folder() ? 'WELCOME.FOLDER_CHANGE' : 'WELCOME.FOLDER_CHOOSE') | transloco }}
+                @if (folders.folder(); as folder) {
+                  <p class="chosen">{{ 'WELCOME.FOLDER_CHOSEN' | transloco: { name: folder.name } }}</p>
+                }
+              </ion-label>
+              @if (busy() === 'folder') {
+                <ion-spinner slot="end" name="crescent"></ion-spinner>
+              }
+            </ion-item>
+          </ion-list>
+          @if (!folders.folder()) {
+            <ion-text color="medium"><p class="note">{{ 'WELCOME.FOLDER_LATER' | transloco }}</p></ion-text>
+          }
+        </section>
+      }
+      @case ('import') {
+        <section>
+          <ion-icon class="hero" name="cloud-download-outline" aria-hidden="true"></ion-icon>
+          <h1>{{ 'WELCOME.IMPORT_TITLE' | transloco }}</h1>
+          <p class="lead">{{ 'WELCOME.IMPORT_TEXT' | transloco }}</p>
+
+          <ion-list [inset]="true">
+            <ion-item button [detail]="false" [disabled]="!!busy()" (click)="chooseImportFile()" data-action="import">
+              <ion-icon slot="start" [name]="imported() ? 'checkmark-circle' : 'cloud-download-outline'" [color]="imported() ? 'success' : undefined" aria-hidden="true"></ion-icon>
+              <ion-label>
+                {{ 'WELCOME.IMPORT_BUTTON' | transloco }}
+                @if (imported()) {
+                  <p class="chosen">{{ 'WELCOME.IMPORT_DONE' | transloco }}</p>
+                }
+              </ion-label>
+              @if (busy() === 'import') {
+                <ion-spinner slot="end" name="crescent"></ion-spinner>
+              }
+            </ion-item>
+          </ion-list>
+          <ion-text color="medium"><p class="note">{{ 'WELCOME.IMPORT_DOWNLOADS' | transloco }}</p></ion-text>
+          <input #importFile type="file" accept="application/json,.json" hidden (change)="onImportFileChosen($event)" />
+        </section>
+      }
+    }
+  </div>
+
+  @if (!isFirst()) {
+    <ion-fab slot="fixed" vertical="bottom" horizontal="start">
+      <ion-fab-button color="light" data-action="back" [disabled]="!!busy()" [attr.aria-label]="'WELCOME.BACK' | transloco" (click)="back()">
+        <ion-icon name="arrow-back" aria-hidden="true"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    @if (isLast()) {
+      <ion-fab-button data-action="finish" [disabled]="!!busy()" [attr.aria-label]="'WELCOME.FINISH' | transloco" (click)="forward()">
+        <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon>
+      </ion-fab-button>
+    } @else {
+      <ion-fab-button data-action="next" [disabled]="!!busy()" [attr.aria-label]="'WELCOME.NEXT' | transloco" (click)="forward()">
+        <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon>
+      </ion-fab-button>
+    }
+  </ion-fab>
+</ion-content>

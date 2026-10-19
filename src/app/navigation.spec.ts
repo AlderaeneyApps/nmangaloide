@@ -42,6 +42,10 @@ describe('backUrlFor', () => {
     expect(backUrlFor('/gallery/42/read?from=%2F%2Fevil.example')).toBe('/gallery/42');
   });
 
+  it('has nowhere to go from the welcome pages (Android closes the app)', () => {
+    expect(backUrlFor('/welcome')).toBeNull();
+  });
+
   it('goes home from anything else', () => {
     expect(backUrlFor('/unknown/page')).toBe('/');
   });

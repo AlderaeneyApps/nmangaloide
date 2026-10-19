@@ -35,6 +35,7 @@ import {
 
 import { CdnService, GalleryDetailResponse, TAG_TYPES, TagResponse, TagType } from '../../api';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
+import { isCancelled } from '../../native/file-saver';
 import { BACK_PARAM, SEARCH_PARAM } from '../../navigation';
 import { DownloadService } from '../../services/download.service';
 import { GalleryDetailsService } from '../../services/gallery-details.service';
@@ -164,10 +165,40 @@ export class GalleryPage {
       return;
     }
     try {
+      await this.downloads.init().catch(() => undefined);
+      if (!this.downloads.folderReady() && !(await this.askForFolder())) {
+        return;
+      }
       await this.downloads.download(gallery);
       await this.toast('GALLERY.DOWNLOAD_STARTED', 'success');
     } catch {
       await this.toast('GALLERY.DOWNLOAD_ERROR', 'danger');
+    }
+  }
+
+  /** On Android, downloads need a folder: explains, then shows the folder picker. Resolves with whether one was chosen. */
+  private async askForFolder(): Promise<boolean> {
+    const alert = await this.alerts.create({
+      header: this.transloco.translate('GALLERY.CHOOSE_FOLDER_TITLE'),
+      message: this.transloco.translate('GALLERY.CHOOSE_FOLDER_MESSAGE'),
+      buttons: [
+        { text: this.transloco.translate('GALLERY.CANCEL'), role: 'cancel' },
+        { text: this.transloco.translate('GALLERY.CHOOSE_FOLDER'), role: 'confirm' },
+      ],
+    });
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    if (role !== 'confirm') {
+      return false;
+    }
+    try {
+      await this.downloads.chooseFolder();
+      return true;
+    } catch (error) {
+      if (!isCancelled(error)) {
+        await this.toast('SETTINGS.DOWNLOAD_FOLDER_ERROR', 'danger');
+      }
+      return false;
     }
   }
 
@@ -179,7 +210,7 @@ export class GalleryPage {
     void this.downloads.retry(Number(this.id()));
   }
 
-  /** Asks, then removes the downloaded pages (the gallery stays if it's a favorite). */
+  /** Asks, then deletes the downloaded pages' folder (the gallery stays if it's a favorite). */
   protected async deleteDownload(): Promise<void> {
     const alert = await this.alerts.create({
       header: this.transloco.translate('GALLERY.DELETE_DOWNLOAD_TITLE'),

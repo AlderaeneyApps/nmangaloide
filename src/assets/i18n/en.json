@@ -31,7 +31,7 @@
     "EXPORT_DONE": "Database exported.",
     "EXPORT_ERROR": "Could not export the database.",
     "IMPORT_DONE": "Database imported.",
-    "IMPORT_ERROR": "That file is not a valid nmangaloide backup.",
+    "IMPORT_ERROR": "That file is not a valid nMangaloide backup.",
     "IMPORT_NEWER": "This backup comes from a newer version of the app. Update the app to import it.",
     "READER": "Reader",
     "READER_MODE": {
@@ -53,7 +53,15 @@
     },
     "EXPORT_TO_DEVICE": "Save to device…",
     "EXPORT_SHARE": "Share…",
-    "EXPORT_SAVED": "Backup saved."
+    "EXPORT_SAVED": "Backup saved.",
+    "DOWNLOADS": "Downloads",
+    "DOWNLOAD_FOLDER": "Download folder",
+    "DOWNLOAD_FOLDER_NONE": "Not chosen yet",
+    "DOWNLOAD_FOLDER_HINT": "Each comic is saved as one CBZ file named by its number, which other comic reader apps can open too. Copy the folder to another phone to take your downloads with you.",
+    "DOWNLOAD_FOLDER_CHANGED": "Download folder changed.",
+    "DOWNLOAD_FOLDER_ERROR": "Could not use that folder.",
+    "DOWNLOADS_FILES_APP": "Downloads are saved in the app's folder in the Files app (On My iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Downloads are saved in this browser."
   },
   "COMMON": {
     "BACK": "Back"
@@ -114,7 +122,10 @@
     "DELETE_DOWNLOAD_TITLE": "Delete download?",
     "DELETE_DOWNLOAD_MESSAGE": "The downloaded pages will be removed from this device.",
     "DELETE": "Delete",
-    "CANCEL": "Cancel"
+    "CANCEL": "Cancel",
+    "CHOOSE_FOLDER_TITLE": "Where should downloads go?",
+    "CHOOSE_FOLDER_MESSAGE": "Choose a folder on your phone for downloaded comics. You can change it later in Settings.",
+    "CHOOSE_FOLDER": "Choose folder"
   },
   "READER": {
     "TITLE": "Reader",
@@ -141,7 +152,9 @@
       "failed": "Failed"
     },
     "RETRY": "Retry download",
-    "CANCEL": "Cancel download"
+    "CANCEL": "Cancel download",
+    "NEEDS_FOLDER": "Choose a download folder to start downloading.",
+    "CHOOSE_FOLDER": "Choose folder"
   },
   "DOWNLOADED": {
     "EMPTY": "No downloads yet.",
@@ -149,5 +162,27 @@
     "ERROR": "Could not load your downloads.",
     "RETRY": "Retry",
     "IN_PROGRESS": "Downloading ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Step {{step}} of {{total}}",
+    "BACK": "Back",
+    "NEXT": "Next",
+    "FINISH": "Start using the app",
+    "PREFERENCES_TITLE": "Welcome to nMangaloide",
+    "PREFERENCES_TEXT": "A few things to set up before you start. You can change all of them later in Settings.",
+    "LANGUAGE": "Language",
+    "READER": "How do you want to read?",
+    "FOLDER_TITLE": "Download folder",
+    "FOLDER_TEXT": "Pick a folder for downloaded comics. Each comic is saved as one CBZ file named by its number, so you can copy them to another phone or open them in other comic readers.",
+    "FOLDER_CHOOSE": "Choose folder",
+    "FOLDER_CHANGE": "Change folder",
+    "FOLDER_CHOSEN": "Saving to: {{name}}",
+    "FOLDER_LATER": "You can skip this and choose it later in Settings.",
+    "FOLDER_ERROR": "Could not use that folder.",
+    "IMPORT_TITLE": "Bring your data",
+    "IMPORT_TEXT": "Coming from another phone? Import a backup made with Export in Settings to restore your favorites, tags and settings. This step is optional.",
+    "IMPORT_BUTTON": "Import a backup",
+    "IMPORT_DONE": "Backup imported.",
+    "IMPORT_DOWNLOADS": "Downloads aren't in backups: they live in the download folder, so copy that folder too."
   }
 }

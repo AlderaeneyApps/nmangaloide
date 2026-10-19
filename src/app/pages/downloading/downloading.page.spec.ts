@@ -10,13 +10,24 @@ import { DownloadingPage } from './downloading.page';
 
 describe('DownloadingPage', () => {
   let jobs: ReturnType<typeof signal<DownloadJob[]>>;
-  let downloads: { jobs: typeof jobs; init: ReturnType<typeof vi.fn>; retry: ReturnType<typeof vi.fn>; remove: ReturnType<typeof vi.fn> };
+  let folderReady: ReturnType<typeof signal<boolean>>;
+  let downloads: {
+    jobs: typeof jobs;
+    folderReady: typeof folderReady;
+    init: ReturnType<typeof vi.fn>;
+    retry: ReturnType<typeof vi.fn>;
+    remove: ReturnType<typeof vi.fn>;
+    chooseFolder: ReturnType<typeof vi.fn>;
+  };
   let fixture: ComponentFixture<DownloadingPage>;
 
   beforeEach(async () => {
     jobs = signal<DownloadJob[]>([]);
+    folderReady = signal(true);
     downloads = {
       jobs,
+      folderReady,
+      chooseFolder: vi.fn().mockImplementation(async () => folderReady.set(true)),
       init: vi.fn().mockResolvedValue(undefined),
       retry: vi.fn().mockResolvedValue(undefined),
       remove: vi.fn().mockResolvedValue(undefined),
@@ -80,5 +91,17 @@ describe('DownloadingPage', () => {
     expect(downloads.retry).toHaveBeenCalledWith(3);
     (rows()[0].querySelector('[data-action="cancel"]') as HTMLElement).click();
     expect(downloads.remove).toHaveBeenCalledWith(3);
+  });
+
+  it('asks for a download folder when there is none yet (Android)', () => {
+    folderReady.set(false);
+    jobs.set([{ id: 1, title: 'Waiting', totalPages: 3, downloadedPages: 0, status: 'queued' }]);
+    fixture.detectChanges();
+    expect(el().querySelector('[data-state="needs-folder"]')?.textContent).toContain('Choose a download folder to start downloading.');
+
+    (el().querySelector('[data-action="choose-folder"]') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(downloads.chooseFolder).toHaveBeenCalled();
+    expect(el().querySelector('[data-state="needs-folder"]')).toBeNull();
   });
 });

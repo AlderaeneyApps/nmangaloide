@@ -77,6 +77,17 @@ export const NMANGALOIDE_UPGRADES: capSQLiteVersionUpgrade[] = [
       );`,
     ],
   },
+  {
+    toVersion: 5,
+    statements: [
+      // Pages are now image files in the download folder (one subfolder per gallery),
+      // so downloads can be moved to another phone. Downloads saved in the database
+      // are queued again, to be downloaded into the folder.
+      `DROP TABLE IF EXISTS downloaded_pages;`,
+      `UPDATE saved_galleries SET is_downloaded = 0, downloaded_at = NULL, download_status = 'queued'
+        WHERE is_downloaded = 1 OR download_status IS NOT NULL;`,
+    ],
+  },
 ];
 
 /** The schema version the app expects. */

@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [
+import { setupDoneGuard, setupPendingGuard } from './services/setup.service';
+
+const appRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
@@ -34,4 +36,14 @@ export const routes: Routes = [
     path: 'gallery/:id/read',
     loadComponent: () => import('./pages/reader/reader.page').then((m) => m.ReaderPage),
   },
+];
+
+/** Every page waits for the first-start setup (the welcome pages) to be done. */
+export const routes: Routes = [
+  {
+    path: 'welcome',
+    canActivate: [setupPendingGuard],
+    loadComponent: () => import('./pages/welcome/welcome.page').then((m) => m.WelcomePage),
+  },
+  ...appRoutes.map((route) => ({ ...route, canActivate: [setupDoneGuard] })),
 ];

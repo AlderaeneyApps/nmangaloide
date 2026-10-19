@@ -13,8 +13,6 @@ export class FakeDatabase {
   readonly settings = new Map<string, string>();
   /** saved_galleries rows, by gallery id. */
   readonly saved = new Map<number, Row>();
-  /** downloaded_pages rows, by `${gallery_id}:${page_number}`. */
-  readonly pages = new Map<string, Row>();
   readonly runs: { statement: string; values: unknown[] }[] = [];
   /** When set, the next query/run rejects with this error. */
   failNext: Error | null = null;
@@ -86,17 +84,6 @@ export class FakeDatabase {
     });
   }
 
-  /** Seeds a downloaded page directly. */
-  seedPage(galleryId: number, pageNumber: number, data = `data:image/webp;base64,${galleryId}-${pageNumber}`): void {
-    this.pages.set(`${galleryId}:${pageNumber}`, { gallery_id: galleryId, page_number: pageNumber, data_base64: data });
-  }
-
-  private pagesOf(galleryId: number): Row[] {
-    return [...this.pages.values()]
-      .filter((row) => row['gallery_id'] === galleryId)
-      .sort((a, b) => Number(a['page_number']) - Number(b['page_number']));
-  }
-
   private querySaved(sql: string, values: unknown[]): Row[] | null {
     const pick = (rows: Row[], columns: string) =>
       rows.map((row) => Object.fromEntries(columns.split(',').map((c) => c.trim()).map((c) => [c, row[c] ?? null])));
@@ -127,12 +114,6 @@ export class FakeDatabase {
           .sort((a, b) => Number(a['updated_at']) - Number(b['updated_at'])),
         match[1],
       );
-    }
-    if (sql1 === 'SELECT page_number FROM downloaded_pages WHERE gallery_id = ?') {
-      return this.pagesOf(values[0] as number).map((row) => ({ page_number: row['page_number'] }));
-    }
-    if (sql1 === 'SELECT page_number, data_base64 FROM downloaded_pages WHERE gallery_id = ? ORDER BY page_number') {
-      return this.pagesOf(values[0] as number).map((row) => ({ page_number: row['page_number'], data_base64: row['data_base64'] }));
     }
     if (sql === 'SELECT details_json FROM saved_galleries WHERE id = ?') {
       const row = this.saved.get(values[0] as number);
@@ -177,6 +158,11 @@ export class FakeDatabase {
           this.saved.delete(values[0] as number);
         }
         return true;
+      case 'UPDATE saved_galleries SET cover_base64 = ? WHERE id = ? AND cover_base64 IS NULL':
+        if (this.saved.get(values[1] as number)?.['cover_base64'] == null) {
+          update(values[1], { cover_base64: values[0] });
+        }
+        return true;
       case 'DELETE FROM saved_galleries WHERE is_favorite = 0':
         for (const [id, row] of this.saved) {
           if (row['is_favorite'] === 0) {
@@ -184,28 +170,6 @@ export class FakeDatabase {
           }
         }
         return true;
-      case 'DELETE FROM downloaded_pages WHERE gallery_id = ?':
-        for (const key of [...this.pages.keys()]) {
-          if (key.startsWith(`${values[0]}:`)) {
-            this.pages.delete(key);
-          }
-        }
-        return true;
-      case 'DELETE FROM downloaded_pages':
-        this.pages.clear();
-        return true;
-    }
-    if (sql.startsWith('INSERT OR REPLACE INTO downloaded_pages')) {
-      const [galleryId, pageNumber, data, width, height, at] = values;
-      this.pages.set(`${galleryId}:${pageNumber}`, {
-        gallery_id: galleryId,
-        page_number: pageNumber,
-        data_base64: data,
-        width,
-        height,
-        downloaded_at: at,
-      });
-      return true;
     }
     if (sql.startsWith('INSERT INTO saved_galleries')) {
       // Columns as written in the statement; literal values (is_favorite = 1) are filled in.

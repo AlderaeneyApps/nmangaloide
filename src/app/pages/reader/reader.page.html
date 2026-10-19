@@ -24,7 +24,7 @@
       @for (page of pages(); track page.number) {
         <div class="page" [style.aspect-ratio]="page.ratio">
           @if (page.url) {
-            <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" loading="lazy" decoding="async" />
+            <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" loading="lazy" decoding="async" (error)="onImageError(page.number)" />
           }
         </div>
       }
@@ -32,7 +32,7 @@
   } @else if (current(); as page) {
     <div class="paged" data-mode="paged" (click)="onPageTap($event)">
       @if (page.url) {
-        <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" />
+        <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" (error)="onImageError(page.number)" />
       }
     </div>
   }

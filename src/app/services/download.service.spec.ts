@@ -3,11 +3,28 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { GalleryDetailResponse } from '../api';
+import { ZipWriter, base64ToBytes, bytesToBase64, concat, readZip } from '../native/cbz';
+import { textToBase64 } from '../native/download-folder';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
-import { DOWNLOAD_PAGE_DELAY, DOWNLOAD_SLEEP, DownloadService, PAGE_ATTEMPTS } from './download.service';
+import {
+  FakeAppFiles,
+  FakeDownloadStorage,
+  FakePreferences,
+  TEST_FOLDER,
+  provideFakeDownloads,
+} from '../testing/fake-download-storage';
+import {
+  DOWNLOAD_PAGE_DELAY,
+  DOWNLOAD_SLEEP,
+  DownloadService,
+  PAGE_ATTEMPTS,
+  pageFileName,
+  pageNumberOf,
+} from './download.service';
 import { SavedGalleriesService } from './saved-galleries.service';
 
 const API = 'https://nhentai.net/api/v2';
+const ROOT = TEST_FOLDER.uri;
 
 function gallery(id: number, pageCount = 3): GalleryDetailResponse {
   return {
@@ -34,21 +51,40 @@ function gallery(id: number, pageCount = 3): GalleryDetailResponse {
 }
 
 const pageUrl = (id: number, page: number) => `https://i.example/galleries/${100 + id}/${page}.webp`;
-const image = () => new Blob(['img'], { type: 'image/webp' });
+const coverUrl = (id: number) => `https://t.example/galleries/${100 + id}/cover.webp`;
+const image = (content = 'img') => new Blob([content], { type: 'image/webp' });
+
+/** A CBZ as another phone would have written it. */
+function cbzOf(details: GalleryDetailResponse | null, pages: number[]): string {
+  const zip = new ZipWriter();
+  const parts: Uint8Array[] = [];
+  if (details) {
+    parts.push(zip.add('gallery.json', new TextEncoder().encode(JSON.stringify(details))));
+  }
+  for (const page of pages) {
+    parts.push(zip.add(pageFileName(page, pages.length, '.webp'), new TextEncoder().encode(`page ${page}`)));
+  }
+  parts.push(zip.finish());
+  return bytesToBase64(concat(parts));
+}
 
 describe('DownloadService', () => {
   let db: FakeDatabase;
+  let storage: FakeDownloadStorage;
+  let preferences: FakePreferences;
+  let appFiles: FakeAppFiles;
   let http: HttpTestingController;
   let service: DownloadService;
   let events: string[];
   let sleep: ReturnType<typeof vi.fn>;
 
-  function setUp() {
+  function setUp({ folderChosen = true } = {}) {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         provideFakeDatabase(db),
+        provideFakeDownloads(storage, preferences, folderChosen, appFiles),
         { provide: DOWNLOAD_PAGE_DELAY, useValue: 2000 },
         { provide: DOWNLOAD_SLEEP, useValue: sleep },
       ],
@@ -59,6 +95,9 @@ describe('DownloadService', () => {
 
   beforeEach(() => {
     db = new FakeDatabase();
+    storage = new FakeDownloadStorage();
+    preferences = new FakePreferences();
+    appFiles = new FakeAppFiles();
     events = [];
     sleep = vi.fn(async (ms: number) => {
       events.push(`wait ${ms}`);
@@ -83,38 +122,65 @@ describe('DownloadService', () => {
   async function cdn() {
     await respond(`${API}/cdn`, { thumb_servers: ['https://t.example'], image_servers: ['https://i.example'] });
   }
+  /** The entries of a CBZ in the folder, with their contents as text. */
+  async function cbzContents(id: number, root: string | null = ROOT) {
+    const file = storage.files.get(`${root ?? 'app'}/${id}.cbz`);
+    expect(file).toBeDefined();
+    const entries = readZip(base64ToBytes(file!.data));
+    return Promise.all(entries.map(async (entry) => [entry.name, new TextDecoder().decode(await entry.bytes())]));
+  }
+  async function downloadAll(id: number, pages: number) {
+    for (let page = 1; page <= pages; page++) {
+      await respond(pageUrl(id, page), image(`page ${page}`));
+    }
+    await vi.waitFor(() => expect(service.stateOf(id)).toBe('downloaded'));
+  }
 
-  it('saves the details and cover, then every page in order, waiting 2 seconds between pages', async () => {
+  it('names page files by number, padded to 3 digits', () => {
+    setUp();
+    expect(pageFileName(7, 30, 'galleries/1/7.webp')).toBe('007.webp');
+    expect(pageFileName(12, 1200, 'galleries/1/12.jpg')).toBe('0012.jpg');
+    expect(pageNumberOf('007.webp')).toBe(7);
+    expect(pageNumberOf('0012.JPG')).toBe(12);
+    expect(pageNumberOf('gallery.json')).toBeNull();
+  });
+
+  it('keeps pages private while downloading, then saves the comic as one CBZ file', async () => {
     setUp();
     const started = service.download(gallery(1));
     await cdn();
-    await respond('https://t.example/galleries/101/cover.webp', image());
+    await respond(coverUrl(1), image());
     await started;
 
     expect(db.saved.get(1)).toMatchObject({ title_english: 'Gallery 1', is_favorite: 0, download_status: 'queued' });
     expect(db.saved.get(1)!['cover_base64']).toContain('data:image/webp;base64,');
-    expect(service.jobs()).toEqual([
-      expect.objectContaining({ id: 1, title: 'Gallery 1', totalPages: 3 }),
-    ]);
+    expect(service.jobs()).toEqual([expect.objectContaining({ id: 1, title: 'Gallery 1', totalPages: 3 })]);
 
-    for (const page of [1, 2, 3]) {
-      await respond(pageUrl(1, page), image(), `page ${page}`);
-      await vi.waitFor(() => expect(service.jobs()[0]?.downloadedPages ?? 3).toBeGreaterThanOrEqual(page));
-    }
+    await respond(pageUrl(1, 1), image('page 1'), 'page 1');
+    await vi.waitFor(() => expect(appFiles.keys('staging')).toEqual(['1/001.webp']));
+    // Nothing in the download folder (so nothing in the phone's gallery) until the comic is complete.
+    expect(storage.files.size).toBe(0);
+    await respond(pageUrl(1, 2), image('page 2'), 'page 2');
+    await respond(pageUrl(1, 3), image('page 3'), 'page 3');
     await vi.waitFor(() => expect(service.jobs()).toEqual([]));
 
     expect(events).toEqual(['page 1', 'wait 2000', 'page 2', 'wait 2000', 'page 3']);
-    expect([...db.pages.keys()].sort()).toEqual(['1:1', '1:2', '1:3']);
+    expect([...storage.files.keys()]).toEqual([`${ROOT}/1.cbz`]);
+    const contents = await cbzContents(1);
+    expect(contents.map(([name]) => name)).toEqual(['gallery.json', 'ComicInfo.xml', '001.webp', '002.webp', '003.webp']);
+    expect(contents[2][1]).toBe('page 1');
+    expect(JSON.parse(contents[0][1])).toMatchObject({ id: 1, title: { english: 'Gallery 1' } });
+    expect(contents[1][1]).toContain('<Title>Gallery 1</Title>');
+    expect(appFiles.files.size).toBe(0);
     expect(db.saved.get(1)).toMatchObject({ is_downloaded: 1, download_status: null, is_favorite: 0 });
     expect(service.downloaded().map((g) => g.id)).toEqual([1]);
-    expect(service.stateOf(1)).toBe('downloaded');
   });
 
   it('reports live progress for each page', async () => {
     setUp();
     const started = service.download(gallery(1, 2));
     await cdn();
-    await respond('https://t.example/galleries/101/cover.webp', image());
+    await respond(coverUrl(1), image());
     await started;
 
     await vi.waitFor(() => expect(service.stateOf(1)).toBe('downloading'));
@@ -129,10 +195,10 @@ describe('DownloadService', () => {
     setUp();
     const first = service.download(gallery(1, 1));
     await cdn();
-    await respond('https://t.example/galleries/101/cover.webp', image());
+    await respond(coverUrl(1), image());
     await first;
     const second = service.download(gallery(2, 1));
-    await respond('https://t.example/galleries/102/cover.webp', image());
+    await respond(coverUrl(2), image());
     await second;
 
     expect(service.jobs().map((job) => [job.id, job.status])).toEqual([
@@ -143,6 +209,7 @@ describe('DownloadService', () => {
     await respond(pageUrl(1, 1), image());
     await respond(pageUrl(2, 1), image());
     await vi.waitFor(() => expect(service.downloaded().map((g) => g.id).sort()).toEqual([1, 2]));
+    expect([...storage.files.keys()].sort()).toEqual([`${ROOT}/1.cbz`, `${ROOT}/2.cbz`]);
   });
 
   it('is independent from favorites', async () => {
@@ -150,7 +217,7 @@ describe('DownloadService', () => {
     setUp();
     const started = service.download(gallery(1, 1));
     await cdn();
-    await respond('https://t.example/galleries/101/cover.webp', image());
+    await respond(coverUrl(1), image());
     await started;
 
     // Unfavoriting while it downloads keeps the download.
@@ -163,17 +230,22 @@ describe('DownloadService', () => {
 
   it('resumes unfinished downloads on launch, skipping pages already saved', async () => {
     db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 3)) });
-    db.seedPage(1, 1);
+    await appFiles.write('staging', '1', '001.webp', btoa('page 1'));
     setUp();
 
     await service.init();
     expect(service.jobs()).toEqual([expect.objectContaining({ id: 1, downloadedPages: 1, totalPages: 3 })]);
 
     await cdn();
-    await respond(pageUrl(1, 2), image());
-    await respond(pageUrl(1, 3), image());
+    await respond(pageUrl(1, 2), image('page 2'));
+    await respond(pageUrl(1, 3), image('page 3'));
     await vi.waitFor(() => expect(db.saved.get(1)!['is_downloaded']).toBe(1));
     http.expectNone(pageUrl(1, 1));
+    expect((await cbzContents(1)).slice(2)).toEqual([
+      ['001.webp', 'page 1'],
+      ['002.webp', 'page 2'],
+      ['003.webp', 'page 3'],
+    ]);
   });
 
   it('retries a failing page, then marks the download failed, and can resume it', async () => {
@@ -195,29 +267,27 @@ describe('DownloadService', () => {
     expect(sleep.mock.calls.map(([ms]) => ms)).toEqual([2000, 4000]);
 
     await service.retry(1);
-    await respond(pageUrl(1, 1), image());
-    await respond(pageUrl(1, 2), image());
-    await vi.waitFor(() => expect(service.stateOf(1)).toBe('downloaded'));
+    await downloadAll(1, 2);
   });
 
-  it('removes a download with its pages, keeping the gallery only if it is a favorite', async () => {
+  it('deletes the CBZ when a download is removed, keeping the gallery only if it is a favorite', async () => {
     db.seedSaved({ id: 1, is_favorite: 0, is_downloaded: 1, downloaded_at: 1 });
     db.seedSaved({ id: 2, is_favorite: 1, is_downloaded: 1, downloaded_at: 2 });
-    db.seedPage(1, 1);
-    db.seedPage(2, 1);
+    storage.seed(ROOT, '1.cbz', cbzOf(gallery(1, 1), [1]));
+    storage.seed(ROOT, '2.cbz', cbzOf(gallery(2, 1), [1]));
     setUp();
-    await service.loadDownloaded();
+    await service.init();
 
     await service.remove(1);
     await service.remove(2);
 
     expect(db.saved.has(1)).toBe(false);
     expect(db.saved.get(2)).toMatchObject({ is_favorite: 1, is_downloaded: 0 });
-    expect(db.pages.size).toBe(0);
+    expect(storage.files.size).toBe(0);
     expect(service.downloaded()).toEqual([]);
   });
 
-  it('stops a running download when it is cancelled', async () => {
+  it('stops a running download when it is cancelled, leaving no files behind', async () => {
     db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 3)) });
     setUp();
     await service.init();
@@ -231,32 +301,209 @@ describe('DownloadService', () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(db.saved.has(1)).toBe(false);
-    expect(db.pages.size).toBe(0);
+    expect(storage.files.size).toBe(0);
+    expect(appFiles.files.size).toBe(0);
     expect(service.jobs()).toEqual([]);
   });
 
-  it('returns the saved pages for the reader', async () => {
-    db.seedPage(1, 2, 'data:b');
-    db.seedPage(1, 1, 'data:a');
-    setUp();
-    expect([...(await service.getPages(1))]).toEqual([
-      [1, 'data:a'],
-      [2, 'data:b'],
-    ]);
-    expect((await service.getPages(9)).size).toBe(0);
+  describe('reading a download', () => {
+    it('unpacks the CBZ into a temporary folder and removes it when done', async () => {
+      storage.seed(ROOT, '1.cbz', cbzOf(gallery(1, 2), [2, 1]));
+      setUp();
+
+      expect([...(await service.getPages(1))]).toEqual([
+        [2, 'app-src:reader/1/002.webp'],
+        [1, 'app-src:reader/1/001.webp'],
+      ]);
+      expect(atob(await appFiles.read('reader', '1', '001.webp'))).toBe('page 1');
+      expect(appFiles.keys('reader')).toEqual(['1/001.webp', '1/002.webp']);
+
+      await service.releasePages(1);
+      expect(appFiles.keys('reader')).toEqual([]);
+    });
+
+    it('removes pages unpacked for another comic first', async () => {
+      storage.seed(ROOT, '1.cbz', cbzOf(gallery(1, 1), [1]));
+      storage.seed(ROOT, '2.cbz', cbzOf(gallery(2, 1), [1]));
+      setUp();
+      await service.getPages(1);
+      await service.getPages(2);
+      expect(appFiles.keys('reader')).toEqual(['2/001.webp']);
+    });
+
+    it('has no pages for a gallery that is not downloaded', async () => {
+      setUp();
+      expect((await service.getPages(9)).size).toBe(0);
+      expect(appFiles.files.size).toBe(0);
+    });
+
+    it('cleans up pages left unpacked when the app was closed while reading', async () => {
+      await appFiles.write('reader', '1', '001.webp', 'AAAA');
+      setUp();
+      await service.init();
+      expect(appFiles.keys('reader')).toEqual([]);
+    });
   });
 
-  it('clears downloads after a backup import, keeping favorites', async () => {
-    db.seedSaved({ id: 1, is_favorite: 0, is_downloaded: 1 });
-    db.seedSaved({ id: 2, is_favorite: 1, is_downloaded: 1 });
-    db.seedSaved({ id: 3, is_favorite: 0, download_status: 'queued' });
-    db.seedPage(1, 1);
-    setUp();
+  describe('on Android, without a download folder', () => {
+    beforeEach(() => {
+      db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 1)) });
+    });
 
-    await service.resetAfterImport();
+    it('keeps downloads waiting until a folder is chosen', async () => {
+      setUp({ folderChosen: false });
+      await service.init();
+      expect(service.folderReady()).toBe(false);
+      expect(service.jobs()).toEqual([expect.objectContaining({ id: 1, status: 'queued' })]);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      http.expectNone(`${API}/cdn`);
 
-    expect([...db.saved.keys()]).toEqual([2]);
-    expect(db.saved.get(2)).toMatchObject({ is_downloaded: 0, download_status: null });
-    expect(db.pages.size).toBe(0);
+      await service.chooseFolder();
+      expect(JSON.parse(preferences.values.get('download_folder')!)).toEqual(TEST_FOLDER);
+      await cdn();
+      await downloadAll(1, 1);
+      expect([...storage.files.keys()]).toEqual([`${ROOT}/1.cbz`]);
+    });
+
+    it('forgets a folder the app lost access to', async () => {
+      storage.accessible.clear();
+      setUp();
+      await service.init();
+      expect(service.folderReady()).toBe(false);
+    });
+  });
+
+  it('needs no folder choice on iOS (the app folder in Files)', async () => {
+    storage = new FakeDownloadStorage('files-app');
+    db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 1)) });
+    setUp({ folderChosen: false });
+    await service.init();
+    expect(service.folderReady()).toBe(true);
+    await cdn();
+    await downloadAll(1, 1);
+    expect([...storage.files.keys()]).toEqual(['app/1.cbz']);
+  });
+
+  describe('scanning the download folder', () => {
+    it('lists CBZ files copied from another phone, reading their details from gallery.json', async () => {
+      storage.seed(ROOT, '5.cbz', cbzOf(gallery(5, 2), [1, 2]));
+      storage.seed(ROOT, 'notes.txt'); // not a download
+      setUp();
+      const ready = service.init();
+      await cdn();
+      await respond(coverUrl(5), image());
+      await ready;
+
+      expect(service.downloaded().map((g) => g.id)).toEqual([5]);
+      expect(db.saved.get(5)).toMatchObject({ title_english: 'Gallery 5', is_downloaded: 1, is_favorite: 0 });
+      expect(db.saved.get(5)!['cover_base64']).toContain('data:image/webp;base64,');
+      expect(JSON.parse(db.saved.get(5)!['details_json'] as string).pages).toHaveLength(2);
+    });
+
+    it('uses the first page as the cover when the cover cannot be fetched', async () => {
+      storage.seed(ROOT, '5.cbz', cbzOf(gallery(5, 2), [1, 2]));
+      setUp();
+      const ready = service.init();
+      await vi.waitFor(() => {
+        const requests = http.match(`${API}/cdn`);
+        if (!requests.length) throw new Error('waiting');
+        requests.forEach((r) => r.error(new ProgressEvent('offline')));
+      });
+      await ready;
+
+      expect(db.saved.get(5)!['cover_base64']).toBe(`data:image/webp;base64,${btoa('page 1')}`);
+    });
+
+    it('ignores CBZ files without details, and unfinished ones', async () => {
+      storage.seed(ROOT, '7.cbz', cbzOf(null, [1]));
+      storage.seed(ROOT, '8.cbz.part', cbzOf(gallery(8, 1), [1]));
+      setUp();
+      await service.init();
+      expect(service.downloaded()).toEqual([]);
+      expect(db.saved.size).toBe(0);
+    });
+
+    it('forgets downloads whose CBZ is gone, keeping favorites', async () => {
+      db.seedSaved({ id: 1, is_favorite: 0, is_downloaded: 1, downloaded_at: 1 });
+      db.seedSaved({ id: 2, is_favorite: 1, is_downloaded: 1, downloaded_at: 2 });
+      db.seedSaved({ id: 3, is_favorite: 0, is_downloaded: 1, downloaded_at: 3 });
+      storage.seed(ROOT, '3.cbz', cbzOf(gallery(3, 1), [1]));
+      setUp();
+      await service.init();
+
+      expect(db.saved.has(1)).toBe(false);
+      expect(db.saved.get(2)).toMatchObject({ is_favorite: 1, is_downloaded: 0 });
+      expect(service.downloaded().map((g) => g.id)).toEqual([3]);
+    });
+
+    it('converts gallery folders from the earlier format into CBZ files', async () => {
+      db.seedSaved({ id: 4, is_favorite: 0, is_downloaded: 1, downloaded_at: 1, details_json: JSON.stringify(gallery(4, 2)) });
+      storage.seed(ROOT, '4/gallery.json', textToBase64(JSON.stringify(gallery(4, 2))), 'application/json');
+      storage.seed(ROOT, '4/001.webp', btoa('page 1'));
+      storage.seed(ROOT, '4/002.webp', btoa('page 2'));
+      // Not saved on this phone: the details come from the folder.
+      storage.seed(ROOT, '6/gallery.json', textToBase64(JSON.stringify(gallery(6, 1))), 'application/json');
+      storage.seed(ROOT, '6/001.webp', btoa('page 1'));
+      setUp();
+      const ready = service.init();
+      await cdn();
+      await respond(coverUrl(6), image());
+      await ready;
+
+      await vi.waitFor(() => expect(service.downloaded().map((g) => g.id).sort()).toEqual([4, 6]));
+      // Nothing had to be downloaded again.
+      http.expectNone(pageUrl(4, 1));
+      expect([...storage.files.keys()].sort()).toEqual([`${ROOT}/4.cbz`, `${ROOT}/6.cbz`]);
+      expect((await cbzContents(4)).slice(2)).toEqual([
+        ['001.webp', 'page 1'],
+        ['002.webp', 'page 2'],
+      ]);
+    });
+
+    it('switches to another folder: what is there shows up, the rest is no longer listed', async () => {
+      db.seedSaved({ id: 1, is_favorite: 0, is_downloaded: 1, downloaded_at: 1, cover_base64: 'data:a' });
+      storage.seed(ROOT, '1.cbz', cbzOf(gallery(1, 1), [1]));
+      storage.seed('content://other', '8.cbz', cbzOf(gallery(8, 1), [1]));
+      setUp();
+      await service.init();
+      expect(service.downloaded().map((g) => g.id)).toEqual([1]);
+
+      storage.pickResult = { uri: 'content://other', name: 'Other' };
+      const chosen = service.chooseFolder();
+      await cdn();
+      await respond(coverUrl(8), image());
+      await chosen;
+
+      expect(service.downloaded().map((g) => g.id)).toEqual([8]);
+      expect(db.saved.has(1)).toBe(false);
+      // The old folder's file stays where it is.
+      expect(storage.files.has(`${ROOT}/1.cbz`)).toBe(true);
+    });
+
+    it('rebuilds the downloads from the folder after a backup import', async () => {
+      // The imported database lists another phone's downloads.
+      db.seedSaved({ id: 1, is_favorite: 0, is_downloaded: 1 });
+      db.seedSaved({ id: 2, is_favorite: 1, is_downloaded: 1, cover_base64: 'data:b', details_json: JSON.stringify(gallery(2, 1)) });
+      db.seedSaved({ id: 3, is_favorite: 0, download_status: 'queued' });
+      await appFiles.write('staging', '3', '001.webp', 'AAAA');
+      storage.seed(ROOT, '2.cbz', cbzOf(gallery(2, 1), [1]));
+      setUp();
+
+      // Saved details are reused: no API calls.
+      await service.resetAfterImport();
+
+      expect([...db.saved.keys()]).toEqual([2]);
+      expect(db.saved.get(2)).toMatchObject({ is_favorite: 1, is_downloaded: 1, download_status: null });
+      expect(service.downloaded().map((g) => g.id)).toEqual([2]);
+      expect(service.jobs()).toEqual([]);
+      expect(appFiles.files.size).toBe(0);
+    });
+
+    it('removes private pages of downloads that are no longer queued', async () => {
+      await appFiles.write('staging', '9', '001.webp', 'AAAA');
+      setUp();
+      await service.init();
+      expect(appFiles.files.size).toBe(0);
+    });
   });
 });

@@ -99,11 +99,27 @@ describe('AppComponent', () => {
   });
 
   it('should fall back to English for an unsupported device language and save it', async () => {
-    vi.spyOn(navigator, 'language', 'get').mockReturnValue('ja-JP');
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('ko-KR');
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['ko-KR']);
     TestBed.createComponent(AppComponent);
     const transloco = TestBed.inject(TranslocoService);
 
     await vi.waitFor(() => expect(localStorage.getItem('CapacitorStorage.lang')).toBe('en'));
     expect(transloco.getActiveLang()).toBe('en');
   });
+
+  for (const [device, expected] of [
+    ['zh-TW', 'zh-Hant'],
+    ['zh-CN', 'zh-Hans'],
+    ['ja-JP', 'ja'],
+  ]) {
+    it(`starts in ${expected} on a phone set to ${device}`, async () => {
+      vi.spyOn(navigator, 'language', 'get').mockReturnValue(device);
+      TestBed.createComponent(AppComponent);
+      const transloco = TestBed.inject(TranslocoService);
+
+      await vi.waitFor(() => expect(localStorage.getItem('CapacitorStorage.lang')).toBe(expected));
+      expect(transloco.getActiveLang()).toBe(expected);
+    });
+  }
 });

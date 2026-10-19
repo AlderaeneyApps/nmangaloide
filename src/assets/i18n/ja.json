@@ -1,0 +1,188 @@
+{
+  "MENU": {
+    "TAGS": "タグ",
+    "FAVORITES": "お気に入り",
+    "DOWNLOADED": "ダウンロード済み",
+    "SETTINGS": "設定",
+    "DOWNLOADING": "ダウンロード中"
+  },
+  "HOME": {
+    "TITLE": "ホーム",
+    "ERROR": "作品を読み込めませんでした。",
+    "RETRY": "再試行",
+    "EMPTY": "作品が見つかりません。",
+    "CLEAR_SEARCH": "検索をクリアして最新の作品を表示",
+    "NO_RESULTS": "この検索に一致する作品はありません。",
+    "SAVED_TAGS": "あなたのタグ（{{count}}）",
+    "SAVED_TAGS_HINT": "保存したタグで作品を絞り込んでいます。変更するにはタグページを開いてください。"
+  },
+  "SETTINGS": {
+    "TITLE": "設定",
+    "LANGUAGE": "言語",
+    "DATA": "データ",
+    "EXPORT": "データベースをエクスポート",
+    "EXPORT_HINT": "バックアップを JSON ファイルとして端末に保存するか、共有します。",
+    "IMPORT": "データベースをインポート",
+    "IMPORT_HINT": "「エクスポート」で作成したバックアップを復元します。",
+    "IMPORT_CONFIRM_TITLE": "データを置き換えますか？",
+    "IMPORT_CONFIRM_MESSAGE": "バックアップをインポートすると、アプリに保存されている内容はすべて置き換えられます。",
+    "IMPORT_CONFIRM": "インポート",
+    "CANCEL": "キャンセル",
+    "EXPORT_DONE": "データベースをエクスポートしました。",
+    "EXPORT_ERROR": "データベースをエクスポートできませんでした。",
+    "IMPORT_DONE": "データベースをインポートしました。",
+    "IMPORT_ERROR": "このファイルは有効な nMangaloide のバックアップではありません。",
+    "IMPORT_NEWER": "このバックアップは新しいバージョンのアプリで作成されています。インポートするにはアプリを更新してください。",
+    "READER": "リーダー",
+    "READER_MODE": {
+      "scroll": "無限スクロール",
+      "paged": "1ページずつ"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "すべてのページを1つの縦スクロールで表示します。",
+      "paged": "タップしてページを移動します。"
+    },
+    "SETTINGS_LOAD_ERROR": "設定を読み込めませんでした。",
+    "SETTINGS_SAVE_ERROR": "設定を保存できませんでした。",
+    "THEME": "テーマ",
+    "THEMES": {
+      "system": "システム",
+      "light": "ライト",
+      "dark": "ダーク",
+      "oled": "OLED ブラック"
+    },
+    "EXPORT_TO_DEVICE": "端末に保存…",
+    "EXPORT_SHARE": "共有…",
+    "EXPORT_SAVED": "バックアップを保存しました。",
+    "DOWNLOADS": "ダウンロード",
+    "DOWNLOAD_FOLDER": "ダウンロードフォルダ",
+    "DOWNLOAD_FOLDER_NONE": "未選択",
+    "DOWNLOAD_FOLDER_HINT": "各作品は番号をファイル名にした1つの CBZ ファイルとして保存され、他の漫画リーダーアプリでも開けます。フォルダを別のスマートフォンにコピーすればダウンロードを持ち運べます。",
+    "DOWNLOAD_FOLDER_CHANGED": "ダウンロードフォルダを変更しました。",
+    "DOWNLOAD_FOLDER_ERROR": "このフォルダは使用できません。",
+    "DOWNLOADS_FILES_APP": "ダウンロードは「ファイル」アプリ内のこのアプリのフォルダ（このiPhone内 › nMangaloide）に保存されます。",
+    "DOWNLOADS_BROWSER": "ダウンロードはこのブラウザに保存されます。"
+  },
+  "COMMON": {
+    "BACK": "戻る"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "選択中",
+    "HINT": "タグをタップすると有効、もう一度で無効、さらにもう一度で解除になります。",
+    "STATE_ENABLED": "有効",
+    "STATE_DISABLED": "無効",
+    "STATE_NONE": "未選択",
+    "SELECTED_EMPTY": "まだタグが選択されていません。",
+    "BROWSE_ALL": "タグを探す",
+    "SELECTED_ERROR": "保存したタグを読み込めませんでした。",
+    "ALL_ERROR": "タグを読み込めませんでした。",
+    "RETRY": "再試行",
+    "SAVE_ERROR": "タグを保存できませんでした。",
+    "SEARCH_PLACEHOLDER": "タグを検索",
+    "NO_MATCHES": "検索に一致するタグはありません。",
+    "TYPE_EMPTY": "この種類のタグはありません。",
+    "TYPES": {
+      "tag": "タグ",
+      "artist": "作者",
+      "character": "キャラクター",
+      "parody": "原作",
+      "group": "サークル",
+      "language": "言語",
+      "category": "カテゴリ"
+    },
+    "KIND": {
+      "tag": "タグ",
+      "artist": "作者",
+      "character": "キャラクター",
+      "parody": "原作",
+      "group": "サークル",
+      "language": "言語",
+      "category": "カテゴリ"
+    }
+  },
+  "GALLERY": {
+    "TITLE": "作品",
+    "PAGES": "{{count}} ページ",
+    "FAVORITES": "お気に入り {{count}}",
+    "UPLOADED": "{{date}} にアップロード",
+    "READ": "読む",
+    "ERROR": "この作品を読み込めませんでした。",
+    "RETRY": "再試行",
+    "SCANLATOR": "翻訳：{{name}}",
+    "SEARCH_TAG": "{{tag}} の作品を表示",
+    "FAVORITE_ADD": "お気に入りに追加",
+    "FAVORITE_REMOVE": "お気に入りから削除",
+    "FAVORITE_ERROR": "お気に入りを更新できませんでした。",
+    "DOWNLOAD": "ダウンロード",
+    "DOWNLOAD_STARTED": "ダウンロードを開始しました。進行状況は「ダウンロード中」で確認できます。",
+    "DOWNLOAD_ERROR": "ダウンロードを開始できませんでした。",
+    "DOWNLOADING": "ダウンロード中：進行状況を見る",
+    "DOWNLOAD_FAILED": "ダウンロード失敗：再試行",
+    "DOWNLOADED": "ダウンロード済み：ダウンロードを削除",
+    "DELETE_DOWNLOAD_TITLE": "ダウンロードを削除しますか？",
+    "DELETE_DOWNLOAD_MESSAGE": "ダウンロードしたページはこの端末から削除されます。",
+    "DELETE": "削除",
+    "CANCEL": "キャンセル",
+    "CHOOSE_FOLDER_TITLE": "ダウンロードの保存先は？",
+    "CHOOSE_FOLDER_MESSAGE": "ダウンロードした作品を保存するフォルダをスマートフォン内から選んでください。あとで設定から変更できます。",
+    "CHOOSE_FOLDER": "フォルダを選択"
+  },
+  "READER": {
+    "TITLE": "リーダー",
+    "ERROR": "ページを読み込めませんでした。",
+    "NO_PAGES": "この作品にはページがありません。",
+    "PAGE_ALT": "{{page}} ページ",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "前のページ",
+    "NEXT": "次のページ"
+  },
+  "FAVORITES": {
+    "EMPTY": "お気に入りはまだありません。",
+    "EMPTY_HINT": "作品のハートをタップするとここに保存されます。",
+    "ERROR": "お気に入りを読み込めませんでした。",
+    "RETRY": "再試行"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "ダウンロード中の作品はありません。",
+    "HINT": "アプリを開いている間、2秒ごとに1ページずつダウンロードします。",
+    "PROGRESS": "{{done}} / {{total}} ページ",
+    "STATUS": {
+      "queued": "待機中",
+      "downloading": "ダウンロード中",
+      "failed": "失敗"
+    },
+    "RETRY": "ダウンロードを再試行",
+    "CANCEL": "ダウンロードをキャンセル",
+    "NEEDS_FOLDER": "ダウンロードを始めるには、ダウンロードフォルダを選択してください。",
+    "CHOOSE_FOLDER": "フォルダを選択"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "ダウンロードはまだありません。",
+    "EMPTY_HINT": "作品のダウンロードボタンをタップすると、オフラインで読めます。",
+    "ERROR": "ダウンロードを読み込めませんでした。",
+    "RETRY": "再試行",
+    "IN_PROGRESS": "ダウンロード中（{{count}}）"
+  },
+  "WELCOME": {
+    "STEP": "ステップ {{step}} / {{total}}",
+    "BACK": "戻る",
+    "NEXT": "次へ",
+    "FINISH": "アプリを使い始める",
+    "PREFERENCES_TITLE": "nMangaloide へようこそ",
+    "PREFERENCES_TEXT": "始める前にいくつか設定します。あとで設定からすべて変更できます。",
+    "LANGUAGE": "言語",
+    "READER": "どのように読みますか？",
+    "FOLDER_TITLE": "ダウンロードフォルダ",
+    "FOLDER_TEXT": "ダウンロードした作品の保存先フォルダを選んでください。各作品は番号をファイル名にした1つの CBZ ファイルとして保存されるので、別のスマートフォンにコピーしたり、他の漫画リーダーで開いたりできます。",
+    "FOLDER_CHOOSE": "フォルダを選択",
+    "FOLDER_CHANGE": "フォルダを変更",
+    "FOLDER_CHOSEN": "保存先：{{name}}",
+    "FOLDER_LATER": "このステップはスキップして、あとで設定から選ぶこともできます。",
+    "FOLDER_ERROR": "このフォルダは使用できません。",
+    "IMPORT_TITLE": "データを引き継ぐ",
+    "IMPORT_TEXT": "別のスマートフォンから移行しますか？設定の「エクスポート」で作成したバックアップをインポートすると、お気に入り・タグ・設定を復元できます。このステップは任意です。",
+    "IMPORT_BUTTON": "バックアップをインポート",
+    "IMPORT_DONE": "バックアップをインポートしました。",
+    "IMPORT_DOWNLOADS": "ダウンロードはバックアップに含まれません。ダウンロードフォルダにあるので、そのフォルダもコピーしてください。"
+  }
+}

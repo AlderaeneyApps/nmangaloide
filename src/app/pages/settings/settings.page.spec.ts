@@ -8,6 +8,8 @@ import { BackupService } from '../../services/backup.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { DOWNLOAD_STORAGE } from '../../native/download-folder';
+import { FakeDownloadStorage, provideFakeDownloads } from '../../testing/fake-download-storage';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { SettingsPage } from './settings.page';
@@ -21,8 +23,11 @@ describe('SettingsPage', () => {
   let sheetChoice: { role?: string; data?: string };
   let actionSheetCreate: ReturnType<typeof vi.fn>;
 
+  let storage: FakeDownloadStorage;
+
   beforeEach(async () => {
     db = new FakeDatabase();
+    storage = new FakeDownloadStorage();
     sheetChoice = { data: 'device' };
     actionSheetCreate = vi.fn().mockImplementation(async () => ({
       present: vi.fn().mockResolvedValue(undefined),
@@ -47,6 +52,7 @@ describe('SettingsPage', () => {
         { provide: AlertController, useValue: { create: alertCreate } },
         { provide: ActionSheetController, useValue: { create: actionSheetCreate } },
         provideFakeDatabase(db),
+        provideFakeDownloads(storage),
       ],
     }).compileComponents();
   });
@@ -60,7 +66,7 @@ describe('SettingsPage', () => {
     expect(el.querySelector('ion-title')?.textContent).toContain('Settings');
     expect((el.querySelector('[data-setting="language"] ion-select') as HTMLIonSelectElement).label).toBe('Language');
     const options = [...el.querySelectorAll('[data-setting="language"] ion-select-option')].map((o) => o.textContent?.trim());
-    expect(options).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch']);
+    expect(options).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', '日本語', '简体中文', '繁體中文']);
   });
 
   it('should switch and save the language when a new one is picked', async () => {
@@ -73,6 +79,44 @@ describe('SettingsPage', () => {
     await vi.waitFor(() => expect(localStorage.getItem('CapacitorStorage.lang')).toBe('fr'));
     expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('fr');
     expect(TestBed.inject(LanguageService).current()).toBe('fr');
+  });
+
+  describe('download folder', () => {
+    async function render() {
+      const fixture = TestBed.createComponent(SettingsPage);
+      fixture.detectChanges();
+      await new Promise((resolve) => setTimeout(resolve));
+      fixture.detectChanges();
+      return fixture.nativeElement as HTMLElement;
+    }
+
+    it('shows the chosen folder on Android, and picks another one', async () => {
+      const el = await render();
+      const item = el.querySelector('[data-section="downloads"] [data-action="download-folder"]') as HTMLElement;
+      expect(item.querySelector('.folder-name')?.textContent).toBe('Comics');
+
+      storage.pickResult = { uri: 'content://other', name: 'Other folder' };
+      item.click();
+      await vi.waitFor(() =>
+        expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'Download folder changed.', color: 'success' })),
+      );
+      expect(el.querySelector('.folder-name')?.textContent).toBe('Other folder');
+    });
+
+    it('stays quiet when the picker is closed', async () => {
+      const el = await render();
+      storage.pickResult = Object.assign(new Error('cancelled'), { code: 'CANCELLED' });
+      (el.querySelector('[data-action="download-folder"]') as HTMLElement).click();
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(toastCreate).not.toHaveBeenCalled();
+    });
+
+    it("says where downloads go on iOS, with nothing to choose", async () => {
+      TestBed.overrideProvider(DOWNLOAD_STORAGE, { useValue: new FakeDownloadStorage('files-app') });
+      const el = await render();
+      expect(el.querySelector('[data-action="download-folder"]')).toBeNull();
+      expect(el.querySelector('[data-state="app-folder"]')?.textContent).toContain("app's folder in the Files app");
+    });
   });
 
   describe('backups', () => {
@@ -158,7 +202,7 @@ describe('SettingsPage', () => {
       chooseFile(el, new File(['x'], 'x.json'));
       await settle();
       expect(toastMessages()).toEqual([
-        'That file is not a valid nmangaloide backup.',
+        'That file is not a valid nMangaloide backup.',
         'This backup comes from a newer version of the app. Update the app to import it.',
       ]);
     });
@@ -180,7 +224,7 @@ describe('SettingsPage', () => {
     it('sits above the backup buttons and defaults to infinite scroll', async () => {
       const el: HTMLElement = (await render()).nativeElement;
       const sections = [...el.querySelectorAll('ion-list-header')].map((h) => h.textContent?.trim());
-      expect(sections).toEqual(['Reader', 'Data']);
+      expect(sections).toEqual(['Reader', 'Downloads', 'Data']);
       const options = [...el.querySelectorAll('[data-section="reader"] ion-radio')].map((r) => r.textContent);
       expect(options[0]).toContain('Infinite scroll');
       expect(options[1]).toContain('One page at a time');

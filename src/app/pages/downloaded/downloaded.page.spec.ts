@@ -7,11 +7,15 @@ import { provideRouter } from '@angular/router';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { DOWNLOAD_SLEEP } from '../../services/download.service';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { FakeDownloadStorage, TEST_FOLDER, provideFakeDownloads } from '../../testing/fake-download-storage';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { DownloadedPage } from './downloaded.page';
 
 describe('DownloadedPage', () => {
   let db: FakeDatabase;
+  let storage: FakeDownloadStorage;
+  /** The gallery's CBZ is in the download folder. */
+  const onDisk = (id: number) => storage.seed(TEST_FOLDER.uri, `${id}.cbz`);
   let fixture: ComponentFixture<DownloadedPage>;
 
   async function render() {
@@ -22,6 +26,7 @@ describe('DownloadedPage', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideFakeDatabase(db),
+        provideFakeDownloads(storage),
         { provide: DOWNLOAD_SLEEP, useValue: () => new Promise(() => undefined) },
       ],
     }).compileComponents();
@@ -34,6 +39,7 @@ describe('DownloadedPage', () => {
 
   beforeEach(() => {
     db = new FakeDatabase();
+    storage = new FakeDownloadStorage();
   });
 
   it('should show the translated title and go back home', async () => {
@@ -46,6 +52,8 @@ describe('DownloadedPage', () => {
   it('shows finished downloads as gallery cards with their saved covers, newest first', async () => {
     db.seedSaved({ id: 1, title_english: 'Older', is_favorite: 0, is_downloaded: 1, downloaded_at: 10, cover_base64: 'data:a' });
     db.seedSaved({ id: 2, title_english: 'Newer', is_favorite: 0, is_downloaded: 1, downloaded_at: 20, cover_base64: 'data:b' });
+    onDisk(1);
+    onDisk(2);
     const el = await render();
 
     const cards = [...el.querySelectorAll('app-gallery-card')];
@@ -57,10 +65,18 @@ describe('DownloadedPage', () => {
   it('lists downloads independently from favorites', async () => {
     db.seedSaved({ id: 1, is_favorite: 1 }); // favorite, not downloaded
     db.seedSaved({ id: 2, is_favorite: 0, is_downloaded: 1, downloaded_at: 1 }); // downloaded, not favorite
+    onDisk(2);
     const el = await render();
     expect([...el.querySelectorAll('app-gallery-card')].map((c) => c.querySelector('.title')?.textContent?.trim())).toEqual([
       'Gallery 2',
     ]);
+  });
+
+  it('no longer lists a download whose CBZ was deleted', async () => {
+    db.seedSaved({ id: 5, is_favorite: 0, is_downloaded: 1, downloaded_at: 1 });
+    const el = await render();
+    expect(el.querySelectorAll('app-gallery-card')).toHaveLength(0);
+    expect(db.saved.has(5)).toBe(false);
   });
 
   it('links to the downloads in progress', async () => {

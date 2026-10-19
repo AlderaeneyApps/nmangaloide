@@ -31,7 +31,7 @@
     "EXPORT_DONE": "Datenbank exportiert.",
     "EXPORT_ERROR": "Die Datenbank konnte nicht exportiert werden.",
     "IMPORT_DONE": "Datenbank importiert.",
-    "IMPORT_ERROR": "Diese Datei ist keine gültige nmangaloide-Sicherung.",
+    "IMPORT_ERROR": "Diese Datei ist keine gültige nMangaloide-Sicherung.",
     "IMPORT_NEWER": "Diese Sicherung stammt aus einer neueren App-Version. Aktualisiere die App, um sie zu importieren.",
     "READER": "Reader",
     "READER_MODE": {
@@ -53,7 +53,15 @@
     },
     "EXPORT_TO_DEVICE": "Auf dem Gerät speichern…",
     "EXPORT_SHARE": "Teilen…",
-    "EXPORT_SAVED": "Sicherung gespeichert."
+    "EXPORT_SAVED": "Sicherung gespeichert.",
+    "DOWNLOADS": "Downloads",
+    "DOWNLOAD_FOLDER": "Download-Ordner",
+    "DOWNLOAD_FOLDER_NONE": "Noch nicht gewählt",
+    "DOWNLOAD_FOLDER_HINT": "Jeder Comic wird als eine CBZ-Datei mit seiner Nummer als Namen gespeichert, die auch andere Comic-Reader öffnen können. Kopiere den Ordner auf ein anderes Handy, um deine Downloads mitzunehmen.",
+    "DOWNLOAD_FOLDER_CHANGED": "Download-Ordner geändert.",
+    "DOWNLOAD_FOLDER_ERROR": "Dieser Ordner kann nicht verwendet werden.",
+    "DOWNLOADS_FILES_APP": "Downloads werden im Ordner der App in der Dateien-App gespeichert (Auf meinem iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Downloads werden in diesem Browser gespeichert."
   },
   "COMMON": {
     "BACK": "Zurück"
@@ -114,7 +122,10 @@
     "DELETE_DOWNLOAD_TITLE": "Download löschen?",
     "DELETE_DOWNLOAD_MESSAGE": "Die heruntergeladenen Seiten werden von diesem Gerät entfernt.",
     "DELETE": "Löschen",
-    "CANCEL": "Abbrechen"
+    "CANCEL": "Abbrechen",
+    "CHOOSE_FOLDER_TITLE": "Wohin sollen Downloads?",
+    "CHOOSE_FOLDER_MESSAGE": "Wähle einen Ordner auf deinem Handy für heruntergeladene Comics. Du kannst ihn später in den Einstellungen ändern.",
+    "CHOOSE_FOLDER": "Ordner wählen"
   },
   "READER": {
     "TITLE": "Reader",
@@ -141,7 +152,9 @@
       "failed": "Fehlgeschlagen"
     },
     "RETRY": "Download erneut versuchen",
-    "CANCEL": "Download abbrechen"
+    "CANCEL": "Download abbrechen",
+    "NEEDS_FOLDER": "Wähle einen Download-Ordner, um mit dem Herunterladen zu beginnen.",
+    "CHOOSE_FOLDER": "Ordner wählen"
   },
   "DOWNLOADED": {
     "EMPTY": "Noch keine Downloads.",
@@ -149,5 +162,27 @@
     "ERROR": "Deine Downloads konnten nicht geladen werden.",
     "RETRY": "Erneut versuchen",
     "IN_PROGRESS": "Lädt ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Schritt {{step}} von {{total}}",
+    "BACK": "Zurück",
+    "NEXT": "Weiter",
+    "FINISH": "App verwenden",
+    "PREFERENCES_TITLE": "Willkommen bei nMangaloide",
+    "PREFERENCES_TEXT": "Ein paar Einstellungen, bevor es losgeht. Du kannst alles später in den Einstellungen ändern.",
+    "LANGUAGE": "Sprache",
+    "READER": "Wie möchtest du lesen?",
+    "FOLDER_TITLE": "Download-Ordner",
+    "FOLDER_TEXT": "Wähle einen Ordner für heruntergeladene Comics. Jeder Comic wird als eine CBZ-Datei mit seiner Nummer als Namen gespeichert, so kannst du sie auf ein anderes Handy kopieren oder in anderen Comic-Readern öffnen.",
+    "FOLDER_CHOOSE": "Ordner wählen",
+    "FOLDER_CHANGE": "Ordner ändern",
+    "FOLDER_CHOSEN": "Speichern in: {{name}}",
+    "FOLDER_LATER": "Du kannst diesen Schritt überspringen und den Ordner später in den Einstellungen wählen.",
+    "FOLDER_ERROR": "Dieser Ordner kann nicht verwendet werden.",
+    "IMPORT_TITLE": "Deine Daten mitnehmen",
+    "IMPORT_TEXT": "Kommst du von einem anderen Handy? Importiere eine mit „Exportieren“ in den Einstellungen erstellte Sicherung, um Favoriten, Tags und Einstellungen wiederherzustellen. Dieser Schritt ist optional.",
+    "IMPORT_BUTTON": "Sicherung importieren",
+    "IMPORT_DONE": "Sicherung importiert.",
+    "IMPORT_DOWNLOADS": "Downloads sind nicht in Sicherungen enthalten: Sie liegen im Download-Ordner, kopiere also auch diesen Ordner."
   }
 }

@@ -31,7 +31,7 @@
     "EXPORT_DONE": "S'ha exportat la base de dades.",
     "EXPORT_ERROR": "No s'ha pogut exportar la base de dades.",
     "IMPORT_DONE": "S'ha importat la base de dades.",
-    "IMPORT_ERROR": "Aquest fitxer no és una còpia vàlida de nmangaloide.",
+    "IMPORT_ERROR": "Aquest fitxer no és una còpia vàlida de nMangaloide.",
     "IMPORT_NEWER": "Aquesta còpia és d'una versió més nova de l'app. Actualitza l'app per importar-la.",
     "READER": "Lector",
     "READER_MODE": {
@@ -53,7 +53,15 @@
     },
     "EXPORT_TO_DEVICE": "Desa al dispositiu…",
     "EXPORT_SHARE": "Comparteix…",
-    "EXPORT_SAVED": "Còpia desada."
+    "EXPORT_SAVED": "Còpia desada.",
+    "DOWNLOADS": "Baixades",
+    "DOWNLOAD_FOLDER": "Carpeta de baixades",
+    "DOWNLOAD_FOLDER_NONE": "Sense triar",
+    "DOWNLOAD_FOLDER_HINT": "Cada còmic es desa com un fitxer CBZ amb el seu número com a nom, que també poden obrir altres apps de còmics. Copia la carpeta a un altre telèfon per endur-te les baixades.",
+    "DOWNLOAD_FOLDER_CHANGED": "S'ha canviat la carpeta de baixades.",
+    "DOWNLOAD_FOLDER_ERROR": "No s'ha pogut fer servir aquesta carpeta.",
+    "DOWNLOADS_FILES_APP": "Les baixades es desen a la carpeta de l'app a Fitxers (Al meu iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Les baixades es desen en aquest navegador."
   },
   "COMMON": {
     "BACK": "Enrere"
@@ -114,7 +122,10 @@
     "DELETE_DOWNLOAD_TITLE": "Vols eliminar la descàrrega?",
     "DELETE_DOWNLOAD_MESSAGE": "Les pàgines descarregades s'eliminaran d'aquest dispositiu.",
     "DELETE": "Elimina",
-    "CANCEL": "Cancel·la"
+    "CANCEL": "Cancel·la",
+    "CHOOSE_FOLDER_TITLE": "On vols desar les baixades?",
+    "CHOOSE_FOLDER_MESSAGE": "Tria una carpeta del telèfon per als còmics baixats. La pots canviar després a Configuració.",
+    "CHOOSE_FOLDER": "Tria la carpeta"
   },
   "READER": {
     "TITLE": "Lector",
@@ -141,7 +152,9 @@
       "failed": "Fallida"
     },
     "RETRY": "Torna a provar la descàrrega",
-    "CANCEL": "Cancel·la la descàrrega"
+    "CANCEL": "Cancel·la la descàrrega",
+    "NEEDS_FOLDER": "Tria una carpeta de baixades per començar a baixar.",
+    "CHOOSE_FOLDER": "Tria la carpeta"
   },
   "DOWNLOADED": {
     "EMPTY": "Encara no hi ha descàrregues.",
@@ -149,5 +162,27 @@
     "ERROR": "No s'han pogut carregar les teves descàrregues.",
     "RETRY": "Torna-ho a provar",
     "IN_PROGRESS": "Descarregant ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Pas {{step}} de {{total}}",
+    "BACK": "Enrere",
+    "NEXT": "Següent",
+    "FINISH": "Comença a fer servir l'app",
+    "PREFERENCES_TITLE": "Et donem la benvinguda a nMangaloide",
+    "PREFERENCES_TEXT": "Unes poques coses abans de començar. Les pots canviar totes després a Configuració.",
+    "LANGUAGE": "Idioma",
+    "READER": "Com vols llegir?",
+    "FOLDER_TITLE": "Carpeta de baixades",
+    "FOLDER_TEXT": "Tria una carpeta per als còmics baixats. Cada còmic es desa com un fitxer CBZ amb el seu número com a nom, així els pots copiar a un altre telèfon o obrir-los en altres lectors de còmics.",
+    "FOLDER_CHOOSE": "Tria la carpeta",
+    "FOLDER_CHANGE": "Canvia la carpeta",
+    "FOLDER_CHOSEN": "Es desarà a: {{name}}",
+    "FOLDER_LATER": "Pots saltar aquest pas i triar-la després a Configuració.",
+    "FOLDER_ERROR": "No s'ha pogut fer servir aquesta carpeta.",
+    "IMPORT_TITLE": "Porta les teves dades",
+    "IMPORT_TEXT": "Vens d'un altre telèfon? Importa una còpia feta amb Exporta a Configuració per recuperar els preferits, les etiquetes i la configuració. Aquest pas és opcional.",
+    "IMPORT_BUTTON": "Importa una còpia",
+    "IMPORT_DONE": "S'ha importat la còpia.",
+    "IMPORT_DOWNLOADS": "Les baixades no són a les còpies: són a la carpeta de baixades, així que copia també aquesta carpeta."
   }
 }

@@ -1,0 +1,188 @@
+{
+  "MENU": {
+    "TAGS": "標籤",
+    "FAVORITES": "收藏",
+    "DOWNLOADED": "已下載",
+    "SETTINGS": "設定",
+    "DOWNLOADING": "下載中"
+  },
+  "HOME": {
+    "TITLE": "首頁",
+    "ERROR": "無法載入作品。",
+    "RETRY": "重試",
+    "EMPTY": "找不到作品。",
+    "CLEAR_SEARCH": "清除搜尋並顯示最新作品",
+    "NO_RESULTS": "沒有符合此搜尋的作品。",
+    "SAVED_TAGS": "你的標籤（{{count}}）",
+    "SAVED_TAGS_HINT": "正在依你儲存的標籤篩選作品。前往標籤頁面可以修改。"
+  },
+  "SETTINGS": {
+    "TITLE": "設定",
+    "LANGUAGE": "語言",
+    "DATA": "資料",
+    "EXPORT": "匯出資料庫",
+    "EXPORT_HINT": "將備份儲存為裝置上的 JSON 檔案，或分享出去。",
+    "IMPORT": "匯入資料庫",
+    "IMPORT_HINT": "還原以「匯出」製作的備份。",
+    "IMPORT_CONFIRM_TITLE": "取代你的資料？",
+    "IMPORT_CONFIRM_MESSAGE": "匯入備份會取代 App 中目前儲存的所有內容。",
+    "IMPORT_CONFIRM": "匯入",
+    "CANCEL": "取消",
+    "EXPORT_DONE": "資料庫已匯出。",
+    "EXPORT_ERROR": "無法匯出資料庫。",
+    "IMPORT_DONE": "資料庫已匯入。",
+    "IMPORT_ERROR": "此檔案不是有效的 nMangaloide 備份。",
+    "IMPORT_NEWER": "此備份來自較新版本的 App。請更新 App 後再匯入。",
+    "READER": "閱讀器",
+    "READER_MODE": {
+      "scroll": "無限捲動",
+      "paged": "逐頁閱讀"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "所有頁面在一個連續的直向捲動中顯示。",
+      "paged": "點一下切換頁面。"
+    },
+    "SETTINGS_LOAD_ERROR": "無法載入你的設定。",
+    "SETTINGS_SAVE_ERROR": "無法儲存此設定。",
+    "THEME": "主題",
+    "THEMES": {
+      "system": "跟隨系統",
+      "light": "淺色",
+      "dark": "深色",
+      "oled": "OLED 純黑"
+    },
+    "EXPORT_TO_DEVICE": "儲存到裝置…",
+    "EXPORT_SHARE": "分享…",
+    "EXPORT_SAVED": "備份已儲存。",
+    "DOWNLOADS": "下載",
+    "DOWNLOAD_FOLDER": "下載資料夾",
+    "DOWNLOAD_FOLDER_NONE": "尚未選擇",
+    "DOWNLOAD_FOLDER_HINT": "每部漫畫儲存為一個以其編號命名的 CBZ 檔案，其他漫畫閱讀 App 也能開啟。把資料夾複製到另一支手機即可帶走你的下載。",
+    "DOWNLOAD_FOLDER_CHANGED": "下載資料夾已變更。",
+    "DOWNLOAD_FOLDER_ERROR": "無法使用此資料夾。",
+    "DOWNLOADS_FILES_APP": "下載內容儲存在「檔案」App 中本 App 的資料夾裡（我的 iPhone › nMangaloide）。",
+    "DOWNLOADS_BROWSER": "下載內容儲存在此瀏覽器中。"
+  },
+  "COMMON": {
+    "BACK": "返回"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "已選",
+    "HINT": "點一下標籤啟用，再點一下停用，再點一下清除。",
+    "STATE_ENABLED": "已啟用",
+    "STATE_DISABLED": "已停用",
+    "STATE_NONE": "未選擇",
+    "SELECTED_EMPTY": "尚未選擇標籤。",
+    "BROWSE_ALL": "瀏覽標籤",
+    "SELECTED_ERROR": "無法載入你儲存的標籤。",
+    "ALL_ERROR": "無法載入標籤。",
+    "RETRY": "重試",
+    "SAVE_ERROR": "無法儲存此標籤。",
+    "SEARCH_PLACEHOLDER": "搜尋標籤",
+    "NO_MATCHES": "沒有符合搜尋的標籤。",
+    "TYPE_EMPTY": "沒有此類型的標籤。",
+    "TYPES": {
+      "tag": "標籤",
+      "artist": "作者",
+      "character": "角色",
+      "parody": "原作",
+      "group": "社團",
+      "language": "語言",
+      "category": "分類"
+    },
+    "KIND": {
+      "tag": "標籤",
+      "artist": "作者",
+      "character": "角色",
+      "parody": "原作",
+      "group": "社團",
+      "language": "語言",
+      "category": "分類"
+    }
+  },
+  "GALLERY": {
+    "TITLE": "作品",
+    "PAGES": "{{count}} 頁",
+    "FAVORITES": "{{count}} 人收藏",
+    "UPLOADED": "上傳於 {{date}}",
+    "READ": "閱讀",
+    "ERROR": "無法載入此作品。",
+    "RETRY": "重試",
+    "SCANLATOR": "漢化：{{name}}",
+    "SEARCH_TAG": "顯示含有 {{tag}} 的作品",
+    "FAVORITE_ADD": "加入收藏",
+    "FAVORITE_REMOVE": "取消收藏",
+    "FAVORITE_ERROR": "無法更新你的收藏。",
+    "DOWNLOAD": "下載",
+    "DOWNLOAD_STARTED": "已開始下載。可在「下載中」查看進度。",
+    "DOWNLOAD_ERROR": "無法開始下載。",
+    "DOWNLOADING": "下載中：查看進度",
+    "DOWNLOAD_FAILED": "下載失敗：重試",
+    "DOWNLOADED": "已下載：刪除下載",
+    "DELETE_DOWNLOAD_TITLE": "刪除下載？",
+    "DELETE_DOWNLOAD_MESSAGE": "已下載的頁面將從此裝置中移除。",
+    "DELETE": "刪除",
+    "CANCEL": "取消",
+    "CHOOSE_FOLDER_TITLE": "下載內容要存到哪裡？",
+    "CHOOSE_FOLDER_MESSAGE": "請為下載的漫畫選擇手機上的一個資料夾。之後可以在設定中變更。",
+    "CHOOSE_FOLDER": "選擇資料夾"
+  },
+  "READER": {
+    "TITLE": "閱讀器",
+    "ERROR": "無法載入頁面。",
+    "NO_PAGES": "此作品沒有頁面。",
+    "PAGE_ALT": "第 {{page}} 頁",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "上一頁",
+    "NEXT": "下一頁"
+  },
+  "FAVORITES": {
+    "EMPTY": "尚無收藏。",
+    "EMPTY_HINT": "點一下作品上的愛心即可儲存到這裡。",
+    "ERROR": "無法載入你的收藏。",
+    "RETRY": "重試"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "沒有正在下載的內容。",
+    "HINT": "App 開啟時會繼續下載，每 2 秒下載一頁。",
+    "PROGRESS": "{{done}} / {{total}} 頁",
+    "STATUS": {
+      "queued": "等待中",
+      "downloading": "下載中",
+      "failed": "失敗"
+    },
+    "RETRY": "重新下載",
+    "CANCEL": "取消下載",
+    "NEEDS_FOLDER": "請選擇下載資料夾以開始下載。",
+    "CHOOSE_FOLDER": "選擇資料夾"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "尚無下載。",
+    "EMPTY_HINT": "點一下作品上的下載按鈕即可離線閱讀。",
+    "ERROR": "無法載入你的下載。",
+    "RETRY": "重試",
+    "IN_PROGRESS": "下載中（{{count}}）"
+  },
+  "WELCOME": {
+    "STEP": "第 {{step}} 步，共 {{total}} 步",
+    "BACK": "返回",
+    "NEXT": "下一步",
+    "FINISH": "開始使用",
+    "PREFERENCES_TITLE": "歡迎使用 nMangaloide",
+    "PREFERENCES_TEXT": "開始之前先做幾項設定。之後都可以在設定中變更。",
+    "LANGUAGE": "語言",
+    "READER": "你想怎麼閱讀？",
+    "FOLDER_TITLE": "下載資料夾",
+    "FOLDER_TEXT": "為下載的漫畫選擇一個資料夾。每部漫畫儲存為一個以其編號命名的 CBZ 檔案，方便複製到另一支手機或用其他漫畫閱讀器開啟。",
+    "FOLDER_CHOOSE": "選擇資料夾",
+    "FOLDER_CHANGE": "變更資料夾",
+    "FOLDER_CHOSEN": "儲存到：{{name}}",
+    "FOLDER_LATER": "可以略過此步，之後在設定中選擇。",
+    "FOLDER_ERROR": "無法使用此資料夾。",
+    "IMPORT_TITLE": "帶上你的資料",
+    "IMPORT_TEXT": "從另一支手機換過來？匯入在設定中以「匯出」製作的備份，即可還原你的收藏、標籤和設定。此步驟可略過。",
+    "IMPORT_BUTTON": "匯入備份",
+    "IMPORT_DONE": "備份已匯入。",
+    "IMPORT_DOWNLOADS": "備份中不包含下載內容：它們在下載資料夾裡，請一併複製該資料夾。"
+  }
+}

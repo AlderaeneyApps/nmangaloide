@@ -59,6 +59,32 @@
     </ion-radio-group>
   </ion-list>
 
+  <ion-list [inset]="true" data-section="downloads">
+    <ion-list-header>
+      <ion-label>{{ 'SETTINGS.DOWNLOADS' | transloco }}</ion-label>
+    </ion-list-header>
+    @if (folders.needsPicking) {
+      <ion-item button [detail]="false" [disabled]="!!busy()" (click)="chooseDownloadFolder()" data-action="download-folder">
+        <ion-icon slot="start" name="folder-open-outline" aria-hidden="true"></ion-icon>
+        <ion-label>
+          {{ 'SETTINGS.DOWNLOAD_FOLDER' | transloco }}
+          <p class="folder-name">{{ folders.folder()?.name ?? ('SETTINGS.DOWNLOAD_FOLDER_NONE' | transloco) }}</p>
+          <p>{{ 'SETTINGS.DOWNLOAD_FOLDER_HINT' | transloco }}</p>
+        </ion-label>
+        @if (busy() === 'folder') {
+          <ion-spinner slot="end" name="crescent"></ion-spinner>
+        }
+      </ion-item>
+    } @else {
+      <ion-item data-state="app-folder">
+        <ion-icon slot="start" name="folder-outline" aria-hidden="true"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          {{ (folders.kind === 'files-app' ? 'SETTINGS.DOWNLOADS_FILES_APP' : 'SETTINGS.DOWNLOADS_BROWSER') | transloco }}
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+
   <ion-list [inset]="true">
     <ion-list-header>
       <ion-label>{{ 'SETTINGS.DATA' | transloco }}</ion-label>

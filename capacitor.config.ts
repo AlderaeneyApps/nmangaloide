@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.alderaeney',
-  appName: 'nmangaloide',
+  appName: 'nMangaloide',
   webDir: 'www',
   plugins: {
     // Send the app's fetch/XHR requests (the nhentai.net API calls) through the native
@@ -18,6 +18,9 @@ const config: CapacitorConfig = {
       // app on first launch and stored by the plugin in the iOS Keychain / Android
       // encrypted storage (see SQLiteService.encryptionOptions). Not available on the web.
       iosIsEncryption: true,
+      // Keep the database out of the app's Documents folder, which is shown in the
+      // Files app (it holds the downloads). The plugin moves existing databases there.
+      iosDatabaseLocation: 'Library/CapacitorDatabase',
       iosKeychainPrefix: 'nmangaloide',
       iosBiometric: {
         biometricAuth: false,

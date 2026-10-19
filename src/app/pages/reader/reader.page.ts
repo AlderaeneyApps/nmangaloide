@@ -1,4 +1,4 @@
-import { Component, HostListener, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -58,7 +58,7 @@ const SCROLL_THRESHOLD = 8;
     BackButtonComponent,
   ],
 })
-export class ReaderPage {
+export class ReaderPage implements OnDestroy {
   private readonly details = inject(GalleryDetailsService);
   private readonly cdn = inject(CdnService);
   private readonly settings = inject(AppSettingsService);
@@ -124,7 +124,7 @@ export class ReaderPage {
     try {
       const [gallery, offline] = await Promise.all([
         this.details.get(id),
-        // Downloaded pages work offline; missing ones come from the CDN.
+        // A download's pages are unpacked from its CBZ to work offline; missing ones come from the CDN.
         this.downloads.getPages(id).catch(() => new Map<number, string>()),
         this.cdn.load().catch(() => undefined),
         // Fall back to the default mode if the setting can't be read.
@@ -139,6 +139,20 @@ export class ReaderPage {
       this.error.set(true);
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  /** The pages unpacked from a downloaded gallery's CBZ are temporary: removed on leaving. */
+  ngOnDestroy(): void {
+    void this.downloads.releasePages(Number(this.id()));
+  }
+
+  /** A downloaded page that can't be shown (e.g. its file was deleted) falls back to the CDN. */
+  protected onImageError(number: number): void {
+    if (this.offlinePages().has(number)) {
+      const pages = new Map(this.offlinePages());
+      pages.delete(number);
+      this.offlinePages.set(pages);
     }
   }
 

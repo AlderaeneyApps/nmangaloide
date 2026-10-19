@@ -31,7 +31,7 @@
     "EXPORT_DONE": "Base de datos exportada.",
     "EXPORT_ERROR": "No se pudo exportar la base de datos.",
     "IMPORT_DONE": "Base de datos importada.",
-    "IMPORT_ERROR": "Ese archivo no es una copia válida de nmangaloide.",
+    "IMPORT_ERROR": "Ese archivo no es una copia válida de nMangaloide.",
     "IMPORT_NEWER": "Esta copia es de una versión más reciente de la app. Actualiza la app para importarla.",
     "READER": "Lector",
     "READER_MODE": {
@@ -53,7 +53,15 @@
     },
     "EXPORT_TO_DEVICE": "Guardar en el dispositivo…",
     "EXPORT_SHARE": "Compartir…",
-    "EXPORT_SAVED": "Copia guardada."
+    "EXPORT_SAVED": "Copia guardada.",
+    "DOWNLOADS": "Descargas",
+    "DOWNLOAD_FOLDER": "Carpeta de descargas",
+    "DOWNLOAD_FOLDER_NONE": "Sin elegir",
+    "DOWNLOAD_FOLDER_HINT": "Cada cómic se guarda como un archivo CBZ con su número como nombre, que también pueden abrir otras apps de cómics. Copia la carpeta a otro teléfono para llevarte tus descargas.",
+    "DOWNLOAD_FOLDER_CHANGED": "Carpeta de descargas cambiada.",
+    "DOWNLOAD_FOLDER_ERROR": "No se ha podido usar esa carpeta.",
+    "DOWNLOADS_FILES_APP": "Las descargas se guardan en la carpeta de la app en Archivos (En mi iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Las descargas se guardan en este navegador."
   },
   "COMMON": {
     "BACK": "Atrás"
@@ -114,7 +122,10 @@
     "DELETE_DOWNLOAD_TITLE": "¿Eliminar la descarga?",
     "DELETE_DOWNLOAD_MESSAGE": "Las páginas descargadas se eliminarán de este dispositivo.",
     "DELETE": "Eliminar",
-    "CANCEL": "Cancelar"
+    "CANCEL": "Cancelar",
+    "CHOOSE_FOLDER_TITLE": "¿Dónde guardar las descargas?",
+    "CHOOSE_FOLDER_MESSAGE": "Elige una carpeta del teléfono para los cómics descargados. Puedes cambiarla luego en Ajustes.",
+    "CHOOSE_FOLDER": "Elegir carpeta"
   },
   "READER": {
     "TITLE": "Lector",
@@ -141,7 +152,9 @@
       "failed": "Fallida"
     },
     "RETRY": "Reintentar descarga",
-    "CANCEL": "Cancelar descarga"
+    "CANCEL": "Cancelar descarga",
+    "NEEDS_FOLDER": "Elige una carpeta de descargas para empezar a descargar.",
+    "CHOOSE_FOLDER": "Elegir carpeta"
   },
   "DOWNLOADED": {
     "EMPTY": "Aún no hay descargas.",
@@ -149,5 +162,27 @@
     "ERROR": "No se pudieron cargar tus descargas.",
     "RETRY": "Reintentar",
     "IN_PROGRESS": "Descargando ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Paso {{step}} de {{total}}",
+    "BACK": "Atrás",
+    "NEXT": "Siguiente",
+    "FINISH": "Empezar a usar la app",
+    "PREFERENCES_TITLE": "Te damos la bienvenida a nMangaloide",
+    "PREFERENCES_TEXT": "Unas pocas cosas antes de empezar. Puedes cambiarlas todas luego en Ajustes.",
+    "LANGUAGE": "Idioma",
+    "READER": "¿Cómo quieres leer?",
+    "FOLDER_TITLE": "Carpeta de descargas",
+    "FOLDER_TEXT": "Elige una carpeta para los cómics descargados. Cada cómic se guarda como un archivo CBZ con su número como nombre, así puedes copiarlos a otro teléfono o abrirlos en otros lectores de cómics.",
+    "FOLDER_CHOOSE": "Elegir carpeta",
+    "FOLDER_CHANGE": "Cambiar carpeta",
+    "FOLDER_CHOSEN": "Se guardará en: {{name}}",
+    "FOLDER_LATER": "Puedes saltarte este paso y elegirla luego en Ajustes.",
+    "FOLDER_ERROR": "No se ha podido usar esa carpeta.",
+    "IMPORT_TITLE": "Trae tus datos",
+    "IMPORT_TEXT": "¿Vienes de otro teléfono? Importa una copia hecha con Exportar en Ajustes para recuperar tus favoritos, etiquetas y ajustes. Este paso es opcional.",
+    "IMPORT_BUTTON": "Importar una copia",
+    "IMPORT_DONE": "Copia importada.",
+    "IMPORT_DOWNLOADS": "Las descargas no están en las copias: están en la carpeta de descargas, así que copia también esa carpeta."
   }
 }

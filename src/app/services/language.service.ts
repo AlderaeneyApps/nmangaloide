@@ -17,7 +17,37 @@ export const LANGUAGE_NAMES: Record<string, string> = {
   ca: 'Català',
   fr: 'Français',
   de: 'Deutsch',
+  ja: '日本語',
+  'zh-Hans': '简体中文',
+  'zh-Hant': '繁體中文',
 };
+
+/** Regions whose Chinese is written in traditional characters (when the tag names no script). */
+const TRADITIONAL_CHINESE_REGIONS = ['tw', 'hk', 'mo'];
+
+/**
+ * The supported language for a language tag such as `de-AT`, `pt_BR` or `zh-Hant-HK`,
+ * or null. Chinese picks the script: `zh-Hant`, or a Taiwan / Hong Kong / Macau region,
+ * means Traditional; anything else (`zh`, `zh-CN`, `zh-SG`, `zh-Hans-HK`) Simplified.
+ */
+export function matchLanguage(tag: string | null | undefined, available: readonly string[]): string | null {
+  if (!tag) {
+    return null;
+  }
+  const normalized = tag.trim().replace(/_/g, '-');
+  const exact = available.find((code) => code.toLowerCase() === normalized.toLowerCase());
+  if (exact) {
+    return exact;
+  }
+  const [primary, ...rest] = normalized.toLowerCase().split('-');
+  if (primary === 'zh') {
+    const traditional =
+      rest.includes('hant') || (!rest.includes('hans') && rest.some((part) => TRADITIONAL_CHINESE_REGIONS.includes(part)));
+    const code = traditional ? 'zh-Hant' : 'zh-Hans';
+    return available.includes(code) ? code : null;
+  }
+  return available.find((code) => code.toLowerCase() === primary) ?? null;
+}
 
 const LANG_SETTING_KEY = 'lang';
 
@@ -38,25 +68,22 @@ export class LanguageService {
     return this.availableLangs().map((code) => ({ code, name: LANGUAGE_NAMES[code] ?? code }));
   }
 
-  /** Applies the saved language, or detects one from the device and saves it. */
+  /**
+   * Applies the saved language, or detects one from the device and saves it: the
+   * device's languages are tried in order of preference (so Chinese gets the right
+   * script, and a second language is used if the first isn't translated), then English.
+   */
   async init(): Promise<void> {
-    let userLang = navigator.language;
-    const settingLang = await this.getLangSetting();
-    if (settingLang.value) {
-      userLang = settingLang.value;
-    }
-    let primaryLang: string;
-    if (userLang.includes('_')) {
-      primaryLang = userLang.split('_')[0];
-    } else if (userLang.includes('-')) {
-      primaryLang = userLang.split('-')[0];
-    } else {
-      primaryLang = userLang;
-    }
-    const languageToSet = this.isAvailable(primaryLang) ? primaryLang : DEFAULT_LANG;
+    const available = this.availableLangs();
+    const saved = (await this.getLangSetting()).value;
+    const fromSetting = matchLanguage(saved, available);
+    const fromDevice = [navigator.language, ...(navigator.languages ?? [])]
+      .map((tag) => matchLanguage(tag, available))
+      .find((lang): lang is string => lang !== null);
+    const languageToSet = fromSetting ?? fromDevice ?? DEFAULT_LANG;
     this.activate(languageToSet);
 
-    if (!settingLang.value) {
+    if (!saved) {
       await this.setLangSetting(languageToSet);
     }
   }
@@ -73,6 +100,8 @@ export class LanguageService {
   private activate(lang: string): void {
     this.transloco.setActiveLang(lang);
     this._current.set(lang);
+    // Lets the web view pick Japanese, Simplified or Traditional Chinese glyphs for shared characters.
+    document.documentElement.lang = lang;
   }
 
   private availableLangs(): string[] {

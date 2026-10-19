@@ -24,12 +24,14 @@ import {
 import { Capacitor } from '@capacitor/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { cloudDownloadOutline, cloudUploadOutline, folderOpenOutline, shareOutline } from 'ionicons/icons';
+import { cloudDownloadOutline, cloudUploadOutline, folderOpenOutline, folderOutline, shareOutline } from 'ionicons/icons';
 
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { APP_THEMES, AppSettingsService, AppTheme, READER_MODES, ReaderMode } from '../../services/app-settings.service';
 import { isCancelled } from '../../native/file-saver';
 import { BackupService, ExportDestination } from '../../services/backup.service';
+import { DownloadFolderService } from '../../services/download-folder.service';
+import { DownloadService } from '../../services/download.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
 
@@ -63,6 +65,8 @@ export class SettingsPage implements OnInit {
   protected readonly settings = inject(AppSettingsService);
   protected readonly readerModes = READER_MODES;
   protected readonly themes = APP_THEMES;
+  protected readonly folders = inject(DownloadFolderService);
+  private readonly downloads = inject(DownloadService);
   private readonly backup = inject(BackupService);
   private readonly alerts = inject(AlertController);
   private readonly actionSheets = inject(ActionSheetController);
@@ -72,14 +76,33 @@ export class SettingsPage implements OnInit {
   private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('importFile');
 
   /** The backup action in progress, if any. */
-  protected readonly busy = signal<'export' | 'import' | null>(null);
+  protected readonly busy = signal<'export' | 'import' | 'folder' | null>(null);
 
   constructor() {
-    addIcons({ cloudUploadOutline, cloudDownloadOutline, folderOpenOutline, shareOutline });
+    addIcons({ cloudUploadOutline, cloudDownloadOutline, folderOpenOutline, folderOutline, shareOutline });
   }
 
   ngOnInit(): void {
     this.settings.load().catch(() => this.toast('SETTINGS.SETTINGS_LOAD_ERROR', 'danger'));
+    this.folders.load().catch(() => undefined);
+  }
+
+  /** Android: picks another folder for downloads; it's scanned for galleries already there. */
+  protected async chooseDownloadFolder(): Promise<void> {
+    if (this.busy()) {
+      return;
+    }
+    this.busy.set('folder');
+    try {
+      await this.downloads.chooseFolder();
+      await this.toast('SETTINGS.DOWNLOAD_FOLDER_CHANGED', 'success');
+    } catch (error) {
+      if (!isCancelled(error)) {
+        await this.toast('SETTINGS.DOWNLOAD_FOLDER_ERROR', 'danger');
+      }
+    } finally {
+      this.busy.set(null);
+    }
   }
 
   protected async onThemeChange(event: Event): Promise<void> {

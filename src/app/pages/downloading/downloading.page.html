@@ -20,7 +20,17 @@
       <ion-text color="medium"><p>{{ 'DOWNLOADING.EMPTY' | transloco }}</p></ion-text>
     </div>
   } @else {
-    <ion-text color="medium"><p class="hint">{{ 'DOWNLOADING.HINT' | transloco }}</p></ion-text>
+    @if (!downloads.folderReady()) {
+      <div class="needs-folder" data-state="needs-folder">
+        <ion-text color="warning"><p>{{ 'DOWNLOADING.NEEDS_FOLDER' | transloco }}</p></ion-text>
+        <ion-button fill="outline" size="small" data-action="choose-folder" (click)="chooseFolder()">
+          <ion-icon slot="start" name="folder-open-outline" aria-hidden="true"></ion-icon>
+          {{ 'DOWNLOADING.CHOOSE_FOLDER' | transloco }}
+        </ion-button>
+      </div>
+    } @else {
+      <ion-text color="medium"><p class="hint">{{ 'DOWNLOADING.HINT' | transloco }}</p></ion-text>
+    }
     <ion-list [inset]="true">
       @for (job of downloads.jobs(); track job.id) {
         <ion-item [attr.data-id]="job.id" [attr.data-status]="job.status">

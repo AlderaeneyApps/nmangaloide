@@ -49,12 +49,7 @@ export class DatabaseService {
     if (!data) {
       throw new Error('The database could not be exported.');
     }
-    // Downloaded page images can add up to hundreds of megabytes, too much for a
-    // backup file: the table is kept (so the schema stays complete) without its rows.
-    const tables = data.tables.map((table) =>
-      BACKUP_EXCLUDED_ROWS.includes(table.name) ? { ...table, values: [] } : table,
-    );
-    return JSON.stringify({ ...data, tables }, null, 2);
+    return JSON.stringify(data, null, 2);
   }
 
   /**
@@ -124,12 +119,9 @@ export class DatabaseService {
   }
 }
 
-/** Tables exported without their rows (see exportJson). */
-export const BACKUP_EXCLUDED_ROWS: readonly string[] = ['downloaded_pages'];
-
 /** The file isn't a backup this app can read. */
 export class InvalidBackupError extends Error {
-  constructor(message = 'Not a valid nmangaloide backup.') {
+  constructor(message = 'Not a valid nMangaloide backup.') {
     super(message);
     this.name = 'InvalidBackupError';
   }

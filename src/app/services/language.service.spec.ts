@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
 
 import { getTranslocoTestingModule } from '../testing/transloco-testing';
-import { LanguageService } from './language.service';
+import { LanguageService, matchLanguage } from './language.service';
 
 // Capacitor Preferences uses localStorage on the web, under the "CapacitorStorage." prefix.
 const SAVED = 'CapacitorStorage.lang';
@@ -29,6 +29,9 @@ describe('LanguageService', () => {
       { code: 'ca', name: 'Català' },
       { code: 'fr', name: 'Français' },
       { code: 'de', name: 'Deutsch' },
+      { code: 'ja', name: '日本語' },
+      { code: 'zh-Hans', name: '简体中文' },
+      { code: 'zh-Hant', name: '繁體中文' },
     ]);
   });
 
@@ -47,7 +50,8 @@ describe('LanguageService', () => {
   });
 
   it('should fall back to English for an unsupported device language', async () => {
-    vi.spyOn(navigator, 'language', 'get').mockReturnValue('ja_JP');
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('ko_KR');
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['ko-KR']);
     await service.init();
     expect(service.current()).toBe('en');
     expect(localStorage.getItem(SAVED)).toBe('en');
@@ -64,5 +68,66 @@ describe('LanguageService', () => {
     await expect(service.setLanguage('xx')).rejects.toThrow('Unsupported language: xx');
     expect(service.current()).toBe('en');
     expect(localStorage.getItem(SAVED)).toBeNull();
+  });
+
+  it('detects Japanese and the right Chinese script on first run', async () => {
+    const cases: [string, string][] = [
+      ['ja-JP', 'ja'],
+      ['zh-CN', 'zh-Hans'],
+      ['zh-TW', 'zh-Hant'],
+      ['zh_HK', 'zh-Hant'],
+      ['zh-Hant-TW', 'zh-Hant'],
+      ['zh', 'zh-Hans'],
+    ];
+    for (const [device, expected] of cases) {
+      localStorage.clear();
+      vi.spyOn(navigator, 'language', 'get').mockReturnValue(device);
+      await service.init();
+      expect(service.current()).toBe(expected);
+      expect(localStorage.getItem(SAVED)).toBe(expected);
+      expect(document.documentElement.lang).toBe(expected);
+    }
+  });
+
+  it("tries the device's other languages before falling back to English", async () => {
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('ko-KR');
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['ko-KR', 'zh-Hant-HK', 'en-US']);
+    await service.init();
+    expect(service.current()).toBe('zh-Hant');
+  });
+
+  it('keeps a saved Chinese variant', async () => {
+    localStorage.setItem(SAVED, 'zh-Hant');
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('zh-CN');
+    await service.init();
+    expect(service.current()).toBe('zh-Hant');
+  });
+
+  it('can switch to the new languages', async () => {
+    await service.setLanguage('ja');
+    expect(transloco.getActiveLang()).toBe('ja');
+    await service.setLanguage('zh-Hans');
+    expect(localStorage.getItem(SAVED)).toBe('zh-Hans');
+  });
+});
+
+describe('matchLanguage', () => {
+  const available = ['en', 'es', 'ja', 'zh-Hans', 'zh-Hant'];
+
+  it('maps Chinese tags to the script their region uses', () => {
+    expect(matchLanguage('zh-CN', available)).toBe('zh-Hans');
+    expect(matchLanguage('zh-SG', available)).toBe('zh-Hans');
+    expect(matchLanguage('zh-Hans-HK', available)).toBe('zh-Hans');
+    expect(matchLanguage('zh-MO', available)).toBe('zh-Hant');
+    expect(matchLanguage('ZH-hant', available)).toBe('zh-Hant');
+    expect(matchLanguage('zh-CN', ['en'])).toBeNull();
+  });
+
+  it('matches other languages by their primary tag', () => {
+    expect(matchLanguage('es-MX', available)).toBe('es');
+    expect(matchLanguage('ja_JP', available)).toBe('ja');
+    expect(matchLanguage('ko', available)).toBeNull();
+    expect(matchLanguage('', available)).toBeNull();
+    expect(matchLanguage(null, available)).toBeNull();
   });
 });

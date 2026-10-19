@@ -37,6 +37,7 @@ export const TOP_LEVEL_PAGES: readonly string[] = ['tags', 'favorites', 'downloa
  * - Settings, Tags, Downloaded, Downloading, Favorites: the home page
  * - gallery page: the `from` page (e.g. home with its search), else the home page
  * - reader: the `from` page (its gallery page), else that gallery's page
+ * - welcome (first-start setup): null, so Android's back button closes the app
  * - anything else: the home page
  */
 export function backUrlFor(url: string): string | null {
@@ -44,7 +45,7 @@ export function backUrlFor(url: string): string | null {
   const segments = parsed.pathname.split('/').filter(Boolean);
   const from = safeBackUrl(parsed.searchParams.get(BACK_PARAM));
 
-  if (segments.length === 0) {
+  if (segments.length === 0 || segments[0] === 'welcome') {
     return null;
   }
   if (segments[0] === 'gallery' && segments.length === 2) {

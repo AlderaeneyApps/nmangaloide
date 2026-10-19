@@ -17,7 +17,7 @@ import {
 } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { closeCircleOutline, refreshOutline } from 'ionicons/icons';
+import { closeCircleOutline, folderOpenOutline, refreshOutline } from 'ionicons/icons';
 
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { BACK_PARAM } from '../../navigation';
@@ -52,7 +52,7 @@ export class DownloadingPage implements OnInit {
   protected readonly backParams = { [BACK_PARAM]: '/downloading' };
 
   constructor() {
-    addIcons({ refreshOutline, closeCircleOutline });
+    addIcons({ refreshOutline, closeCircleOutline, folderOpenOutline });
   }
 
   ngOnInit(): void {
@@ -69,5 +69,10 @@ export class DownloadingPage implements OnInit {
 
   protected cancel(job: DownloadJob): void {
     void this.downloads.remove(job.id);
+  }
+
+  /** Downloads wait until there's a folder to save them to (Android). */
+  protected chooseFolder(): void {
+    this.downloads.chooseFolder().catch(() => undefined);
   }
 }

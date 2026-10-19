@@ -6,6 +6,15 @@ import { provideRouter } from '@angular/router';
 
 import { GalleryDetailResponse, PageInfo, TagResponse } from '../../api';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
+import { ZipWriter, bytesToBase64, concat } from '../../native/cbz';
+import { FakeAppFiles, FakeDownloadStorage, TEST_FOLDER, provideFakeDownloads } from '../../testing/fake-download-storage';
+
+/** A downloaded gallery's CBZ with the given pages. */
+function cbz(pages: number[]): string {
+  const zip = new ZipWriter();
+  const parts = pages.map((page) => zip.add(`00${page}.webp`, new TextEncoder().encode(`page ${page}`)));
+  return bytesToBase64(concat([...parts, zip.finish()]));
+}
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { ReaderPage } from './reader.page';
@@ -54,6 +63,8 @@ describe('ReaderPage', () => {
   let fixture: ComponentFixture<ReaderPage>;
   let http: HttpTestingController;
   let db: FakeDatabase;
+  let storage: FakeDownloadStorage;
+  let appFiles: FakeAppFiles;
 
   async function settle() {
     await new Promise((resolve) => setTimeout(resolve));
@@ -61,13 +72,21 @@ describe('ReaderPage', () => {
     fixture.detectChanges();
   }
 
-  async function open(mode: 'scroll' | 'paged', startPage?: string, seed?: (db: FakeDatabase) => void) {
+  async function open(mode: 'scroll' | 'paged', startPage?: string, seed?: (storage: FakeDownloadStorage) => void) {
     db = new FakeDatabase();
-    seed?.(db);
+    storage = new FakeDownloadStorage();
+    appFiles = new FakeAppFiles();
+    seed?.(storage);
     db.settings.set('reader_mode', mode);
     await TestBed.configureTestingModule({
       imports: [ReaderPage, getTranslocoTestingModule()],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), provideFakeDatabase(db)],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideFakeDatabase(db),
+        provideFakeDownloads(storage, undefined, true, appFiles),
+      ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(ReaderPage);
@@ -122,16 +141,26 @@ describe('ReaderPage', () => {
     expect(counter()).toBe('2 / 3');
   });
 
-  it('uses the pages saved on the device for a downloaded gallery', async () => {
-    await open('scroll', undefined, (fake) => {
-      fake.seedPage(42, 1, 'data:image/webp;base64,ONE');
-      fake.seedPage(42, 2, 'data:image/webp;base64,TWO');
-    });
+  it('reads a downloaded gallery from its CBZ, unpacked to temporary files removed on leaving', async () => {
+    await open('scroll', undefined, (fake) => fake.seed(TEST_FOLDER.uri, '42.cbz', cbz([1, 2])));
+    await settle();
     expect(images()).toEqual([
-      'data:image/webp;base64,ONE',
-      'data:image/webp;base64,TWO',
+      'app-src:reader/42/001.webp',
+      'app-src:reader/42/002.webp',
       'https://i.example/galleries/100/3.webp',
     ]);
+    expect(appFiles.keys('reader')).toEqual(['42/001.webp', '42/002.webp']);
+
+    fixture.destroy();
+    await vi.waitFor(() => expect(appFiles.keys('reader')).toEqual([]));
+  });
+
+  it('falls back to the CDN for a downloaded page that fails to load', async () => {
+    await open('scroll', undefined, (fake) => fake.seed(TEST_FOLDER.uri, '42.cbz', cbz([1])));
+    await settle();
+    el().querySelector('img')!.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(images()[0]).toBe('https://i.example/galleries/100/1.webp');
   });
 
   it('turns the page when tapping the image: left third back, the rest forward', async () => {

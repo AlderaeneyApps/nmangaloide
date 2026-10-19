@@ -11,6 +11,7 @@ import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { GalleryPage } from './gallery.page';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 import { DOWNLOAD_SLEEP } from '../../services/download.service';
+import { FakeDownloadStorage, FakePreferences, TEST_FOLDER, provideFakeDownloads } from '../../testing/fake-download-storage';
 
 const API = 'https://nhentai.net/api/v2';
 
@@ -52,8 +53,13 @@ const GALLERY: GalleryDetailResponse = {
   pages: [page(2), page(1), page(3)],
 };
 
+/** Whether the next page starts with a download folder (set before beforeEach runs). */
+let folderChosen = true;
+
 describe('GalleryPage', () => {
   let db: FakeDatabase;
+  let storage: FakeDownloadStorage;
+  let preferences: FakePreferences;
   let fixture: ComponentFixture<GalleryPage>;
   let http: HttpTestingController;
   let navigateRoot: ReturnType<typeof vi.fn>;
@@ -70,6 +76,8 @@ describe('GalleryPage', () => {
 
   beforeEach(async () => {
     db = new FakeDatabase();
+    storage = new FakeDownloadStorage();
+    preferences = new FakePreferences();
     navigateRoot = vi.fn().mockResolvedValue(true);
     navigateForward = vi.fn().mockResolvedValue(true);
     toastCreate = vi.fn().mockResolvedValue({ present: vi.fn().mockResolvedValue(undefined) });
@@ -83,6 +91,7 @@ describe('GalleryPage', () => {
       providers: [
         provideRouter([{ path: '**', children: [] }]),
         provideFakeDatabase(db),
+        provideFakeDownloads(storage, preferences, folderChosen),
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: NavController, useValue: { navigateRoot, navigateForward } },
@@ -299,6 +308,7 @@ describe('GalleryPage', () => {
       await settle();
       expect(button().dataset['state']).toBe('downloaded');
       expect(icon()).toBe('checkmark-circle');
+      expect([...storage.files.keys()]).toEqual([`${TEST_FOLDER.uri}/42.cbz`]);
     });
 
     it('asks before deleting a download', async () => {
@@ -315,9 +325,40 @@ describe('GalleryPage', () => {
       alertRole = 'destructive';
       button().click();
       await vi.waitFor(() => expect(db.saved.has(42)).toBe(false));
-      expect(db.pages.size).toBe(0);
+      expect(storage.files.size).toBe(0);
       await settle();
       expect(button().dataset['state']).toBe('none');
+    });
+      describe('on Android without a download folder', () => {
+      beforeAll(() => (folderChosen = false));
+      afterAll(() => (folderChosen = true));
+
+      it('asks for a folder before the first download, then starts it', async () => {
+        flush();
+        await settle();
+        alertRole = 'confirm';
+        button().click();
+        await settle();
+        expect(alertCreate).toHaveBeenCalledWith(expect.objectContaining({ header: 'Where should downloads go?' }));
+        await vi.waitFor(() => expect(storage.picks).toHaveLength(1));
+        await settle();
+        http.expectOne('https://t.example/galleries/100/cover.webp').flush(image());
+        await vi.waitFor(() => expect(db.saved.get(42)?.['download_status']).toBe('queued'));
+        expect(JSON.parse(preferences.values.get('download_folder')!)).toEqual(TEST_FOLDER);
+        for (const n of [1, 2, 3]) await answerPage(n);
+        await vi.waitFor(() => expect(db.saved.get(42)?.['is_downloaded']).toBe(1));
+      });
+
+      it('does nothing when the user cancels', async () => {
+        flush();
+        await settle();
+        alertRole = 'cancel';
+        button().click();
+        await settle();
+        expect(storage.picks).toHaveLength(0);
+        expect(db.saved.has(42)).toBe(false);
+        expect(toastCreate).not.toHaveBeenCalled();
+      });
     });
   });
 });

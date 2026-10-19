@@ -31,7 +31,7 @@
     "EXPORT_DONE": "Base de données exportée.",
     "EXPORT_ERROR": "Impossible d’exporter la base de données.",
     "IMPORT_DONE": "Base de données importée.",
-    "IMPORT_ERROR": "Ce fichier n’est pas une sauvegarde nmangaloide valide.",
+    "IMPORT_ERROR": "Ce fichier n’est pas une sauvegarde nMangaloide valide.",
     "IMPORT_NEWER": "Cette sauvegarde provient d’une version plus récente de l’app. Mettez l’app à jour pour l’importer.",
     "READER": "Lecteur",
     "READER_MODE": {
@@ -53,7 +53,15 @@
     },
     "EXPORT_TO_DEVICE": "Enregistrer sur l’appareil…",
     "EXPORT_SHARE": "Partager…",
-    "EXPORT_SAVED": "Sauvegarde enregistrée."
+    "EXPORT_SAVED": "Sauvegarde enregistrée.",
+    "DOWNLOADS": "Téléchargements",
+    "DOWNLOAD_FOLDER": "Dossier de téléchargement",
+    "DOWNLOAD_FOLDER_NONE": "Pas encore choisi",
+    "DOWNLOAD_FOLDER_HINT": "Chaque bande dessinée est enregistrée dans un fichier CBZ nommé d’après son numéro, que d’autres lecteurs de BD peuvent aussi ouvrir. Copiez le dossier sur un autre téléphone pour emporter vos téléchargements.",
+    "DOWNLOAD_FOLDER_CHANGED": "Dossier de téléchargement modifié.",
+    "DOWNLOAD_FOLDER_ERROR": "Impossible d’utiliser ce dossier.",
+    "DOWNLOADS_FILES_APP": "Les téléchargements sont enregistrés dans le dossier de l’app dans Fichiers (Sur mon iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Les téléchargements sont enregistrés dans ce navigateur."
   },
   "COMMON": {
     "BACK": "Retour"
@@ -114,7 +122,10 @@
     "DELETE_DOWNLOAD_TITLE": "Supprimer le téléchargement ?",
     "DELETE_DOWNLOAD_MESSAGE": "Les pages téléchargées seront supprimées de cet appareil.",
     "DELETE": "Supprimer",
-    "CANCEL": "Annuler"
+    "CANCEL": "Annuler",
+    "CHOOSE_FOLDER_TITLE": "Où enregistrer les téléchargements ?",
+    "CHOOSE_FOLDER_MESSAGE": "Choisissez un dossier du téléphone pour les bandes dessinées téléchargées. Vous pourrez le changer dans Réglages.",
+    "CHOOSE_FOLDER": "Choisir un dossier"
   },
   "READER": {
     "TITLE": "Lecteur",
@@ -141,7 +152,9 @@
       "failed": "Échec"
     },
     "RETRY": "Réessayer le téléchargement",
-    "CANCEL": "Annuler le téléchargement"
+    "CANCEL": "Annuler le téléchargement",
+    "NEEDS_FOLDER": "Choisissez un dossier de téléchargement pour commencer.",
+    "CHOOSE_FOLDER": "Choisir un dossier"
   },
   "DOWNLOADED": {
     "EMPTY": "Aucun téléchargement pour l’instant.",
@@ -149,5 +162,27 @@
     "ERROR": "Impossible de charger vos téléchargements.",
     "RETRY": "Réessayer",
     "IN_PROGRESS": "En cours ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Étape {{step}} sur {{total}}",
+    "BACK": "Retour",
+    "NEXT": "Suivant",
+    "FINISH": "Commencer à utiliser l’app",
+    "PREFERENCES_TITLE": "Bienvenue dans nMangaloide",
+    "PREFERENCES_TEXT": "Quelques réglages avant de commencer. Vous pourrez tous les modifier plus tard dans Réglages.",
+    "LANGUAGE": "Langue",
+    "READER": "Comment voulez-vous lire ?",
+    "FOLDER_TITLE": "Dossier de téléchargement",
+    "FOLDER_TEXT": "Choisissez un dossier pour les bandes dessinées téléchargées. Chacune est enregistrée dans un fichier CBZ nommé d’après son numéro, pour pouvoir les copier sur un autre téléphone ou les ouvrir dans d’autres lecteurs de BD.",
+    "FOLDER_CHOOSE": "Choisir un dossier",
+    "FOLDER_CHANGE": "Changer de dossier",
+    "FOLDER_CHOSEN": "Enregistrement dans : {{name}}",
+    "FOLDER_LATER": "Vous pouvez passer cette étape et le choisir plus tard dans Réglages.",
+    "FOLDER_ERROR": "Impossible d’utiliser ce dossier.",
+    "IMPORT_TITLE": "Récupérez vos données",
+    "IMPORT_TEXT": "Vous venez d’un autre téléphone ? Importez une sauvegarde faite avec Exporter dans Réglages pour retrouver vos favoris, tags et réglages. Cette étape est facultative.",
+    "IMPORT_BUTTON": "Importer une sauvegarde",
+    "IMPORT_DONE": "Sauvegarde importée.",
+    "IMPORT_DOWNLOADS": "Les téléchargements ne sont pas dans les sauvegardes : ils sont dans le dossier de téléchargement, copiez-le aussi."
   }
 }
