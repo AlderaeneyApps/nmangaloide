@@ -184,5 +184,11 @@
     "IMPORT_BUTTON": "Importar una copia",
     "IMPORT_DONE": "Copia importada.",
     "IMPORT_DOWNLOADS": "Las descargas no están en las copias: están en la carpeta de descargas, así que copia también esa carpeta."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Descargas",
+    "TITLE_ONE": "Descargando 1 cómic",
+    "TITLE_OTHER": "Descargando {{count}} cómics",
+    "BODY": "{{done}} / {{total}} páginas · {{title}}"
   }
 }

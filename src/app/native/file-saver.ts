@@ -26,10 +26,10 @@ export interface FileSaverPlugin {
 
 export const FileSaver = registerPlugin<FileSaverPlugin>('FileSaver');
 
-/** The FileSaver plugin; a token so tests can replace it. */
+/** The FileSaver plugin; a token so tests can replace it. A plain object (see DOWNLOAD_KEEP_ALIVE). */
 export const FILE_SAVER = new InjectionToken<FileSaverPlugin>('FILE_SAVER', {
   providedIn: 'root',
-  factory: () => FileSaver,
+  factory: () => ({ saveAs: (options) => FileSaver.saveAs(options) }),
 });
 
 /** Whether `error` means the user closed a picker or share sheet without choosing. */

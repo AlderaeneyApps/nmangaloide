@@ -79,10 +79,11 @@ describe('AppComponent', () => {
     expect(links).toEqual(['/tags', '/favorites', '/downloaded', '/downloading', '/settings']);
   });
 
-  it('should link the subtitle to the GitHub repository', () => {
+  it('should link the menu title to the GitHub repository', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('ion-note a');
+    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('ion-list-header a');
+    expect(link.textContent).toBe('nMangaloide');
     expect(link.href).toEqual('https://github.com/AlderaeneyApps/nmangaloide');
   });
 

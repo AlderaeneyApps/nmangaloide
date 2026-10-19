@@ -184,5 +184,11 @@
     "IMPORT_BUTTON": "バックアップをインポート",
     "IMPORT_DONE": "バックアップをインポートしました。",
     "IMPORT_DOWNLOADS": "ダウンロードはバックアップに含まれません。ダウンロードフォルダにあるので、そのフォルダもコピーしてください。"
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "ダウンロード",
+    "TITLE_ONE": "1 作品をダウンロード中",
+    "TITLE_OTHER": "{{count}} 作品をダウンロード中",
+    "BODY": "{{done}} / {{total}} ページ · {{title}}"
   }
 }

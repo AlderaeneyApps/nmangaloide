@@ -184,5 +184,11 @@
     "IMPORT_BUTTON": "Sicherung importieren",
     "IMPORT_DONE": "Sicherung importiert.",
     "IMPORT_DOWNLOADS": "Downloads sind nicht in Sicherungen enthalten: Sie liegen im Download-Ordner, kopiere also auch diesen Ordner."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Downloads",
+    "TITLE_ONE": "1 Comic wird heruntergeladen",
+    "TITLE_OTHER": "{{count}} Comics werden heruntergeladen",
+    "BODY": "{{done}} / {{total}} Seiten · {{title}}"
   }
 }

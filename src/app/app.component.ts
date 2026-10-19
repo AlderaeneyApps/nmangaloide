@@ -29,6 +29,7 @@ import {
   settingsSharp,
 } from 'ionicons/icons';
 
+import { DownloadNotificationService } from './services/download-notification.service';
 import { DownloadService } from './services/download.service';
 import { HardwareBackService } from './services/hardware-back.service';
 import { LanguageService } from './services/language.service';
@@ -99,6 +100,8 @@ export class AppComponent {
     inject(HardwareBackService).init();
     // Resume unfinished downloads in the background.
     inject(DownloadService).init().catch(() => undefined);
+    // Download progress notification, and downloads kept going in the background.
+    inject(DownloadNotificationService).init();
   }
 
 }

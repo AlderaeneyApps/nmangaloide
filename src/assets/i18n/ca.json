@@ -184,5 +184,11 @@
     "IMPORT_BUTTON": "Importa una còpia",
     "IMPORT_DONE": "S'ha importat la còpia.",
     "IMPORT_DOWNLOADS": "Les baixades no són a les còpies: són a la carpeta de baixades, així que copia també aquesta carpeta."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Baixades",
+    "TITLE_ONE": "Baixant 1 còmic",
+    "TITLE_OTHER": "Baixant {{count}} còmics",
+    "BODY": "{{done}} / {{total}} pàgines · {{title}}"
   }
 }

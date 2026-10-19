@@ -184,5 +184,11 @@
     "IMPORT_BUTTON": "Import a backup",
     "IMPORT_DONE": "Backup imported.",
     "IMPORT_DOWNLOADS": "Downloads aren't in backups: they live in the download folder, so copy that folder too."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Downloads",
+    "TITLE_ONE": "Downloading 1 comic",
+    "TITLE_OTHER": "Downloading {{count}} comics",
+    "BODY": "{{done}} / {{total}} pages · {{title}}"
   }
 }

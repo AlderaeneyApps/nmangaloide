@@ -184,5 +184,11 @@
     "IMPORT_BUTTON": "匯入備份",
     "IMPORT_DONE": "備份已匯入。",
     "IMPORT_DOWNLOADS": "備份中不包含下載內容：它們在下載資料夾裡，請一併複製該資料夾。"
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "下載",
+    "TITLE_ONE": "正在下載 1 部漫畫",
+    "TITLE_OTHER": "正在下載 {{count}} 部漫畫",
+    "BODY": "{{done}} / {{total}} 頁 · {{title}}"
   }
 }
