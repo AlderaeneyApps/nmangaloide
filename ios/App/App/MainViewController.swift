@@ -7,5 +7,6 @@ class MainViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(FileSaverPlugin())
         bridge?.registerPluginInstance(DownloadKeepAlivePlugin())
+        bridge?.registerPluginInstance(BackgroundDownloadsPlugin())
     }
 }

@@ -45,7 +45,7 @@ describe('DownloadNotificationService', () => {
       providers: [
         { provide: DownloadService, useValue: { jobs, folderReady } },
         { provide: DOWNLOAD_KEEP_ALIVE, useValue: keepAlive },
-        { provide: NATIVE_DOWNLOADER, useValue: platform === 'android' ? native : null },
+        { provide: NATIVE_DOWNLOADER, useValue: platform === 'web' ? null : native },
         { provide: PROGRESS_NOTIFICATIONS, useValue: notifications },
         { provide: APP_PLATFORM, useValue: platform },
         { provide: APP_ACTIVE_LISTENER, useValue: (listener: (active: boolean) => void) => (setActive = listener) },
@@ -126,6 +126,8 @@ describe('DownloadNotificationService', () => {
       setActive(false);
       await settle();
       expect(notifications.show).toHaveBeenCalledWith(DOWNLOAD_NOTIFICATION_ID, 'Downloading 2 comics', '3 / 40 pages · Comic 1');
+      // The native downloader gets the texts, to update the notification once the app is frozen.
+      expect(native.setLabels).toHaveBeenCalledWith(expect.objectContaining({ titleOther: 'Downloading {count} comics' }));
 
       // Pages alone don't re-alert…
       jobs.set([job(1, 'downloading', 4), job(2, 'queued')]);

@@ -28,10 +28,11 @@ export interface DownloadProgress {
  *   and keeps its own notification ("Downloading 2 comics", "12 / 40 pages · title", with a
  *   progress bar), updated for every page even while the app is closed. Here it's only given
  *   the texts in the app's language, and notification permission is asked.
- * - iOS: there are no foreground services, so downloads continue only while the app is
- *   open, plus the short extra time iOS gives on leaving it. The notification is shown
- *   while the app is in the background, updated when the comic or the count changes
- *   (iOS shows every update as a new alert, so not for every page), and removed on return.
+ * - iOS: the native downloader's background URLSession goes on with the app in the
+ *   background, but there are no ongoing notifications. The notification is shown while the
+ *   app is in the background, updated when the comic or the count changes (iOS shows every
+ *   update as a new alert, so not for every page), and removed on return. Once the app's web
+ *   view is frozen, the native downloader updates it instead, with the texts given here.
  * - Web: nothing.
  */
 @Injectable({ providedIn: 'root' })
@@ -64,7 +65,7 @@ export class DownloadNotificationService {
   private keepAliveRunning = false;
   /** What the iOS notification currently shows (null when there's none). */
   private shownKey: string | null = null;
-  /** The texts last given to the native downloader (Android). */
+  /** The texts last given to the native downloader. */
   private labelsKey: string | null = null;
   private dirty = false;
   private applying = false;
@@ -149,6 +150,7 @@ export class DownloadNotificationService {
       this.keepAliveRunning = false;
     }
     if (this.platform === 'ios') {
+      await this.sendLabels();
       if (this.appActive) {
         await this.hideNotification();
       } else {
@@ -169,6 +171,14 @@ export class DownloadNotificationService {
     if (!this.askedPermission) {
       this.askedPermission = true;
       await this.notifications.requestPermission().catch(() => false);
+    }
+    await this.sendLabels();
+  }
+
+  /** Gives the native downloader the notification's texts in the app's language (when they changed). */
+  private async sendLabels(): Promise<void> {
+    if (!this.native) {
+      return;
     }
     const labels: NativeDownloadLabels = {
       titleOne: this.transloco.translate('NOTIFICATION.TITLE_ONE', { count: '{count}' }),

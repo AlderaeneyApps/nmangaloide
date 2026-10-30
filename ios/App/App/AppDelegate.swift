@@ -7,8 +7,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Reconnects to the background download session, so its events (pages downloaded while
+        // the app was away) are delivered.
+        BackgroundDownloader.shared.start()
         return true
+    }
+
+    /// iOS woke the app because the background downloads' tasks are done: the downloader handles
+    /// their events and calls `completionHandler` once it has.
+    func application(_ application: UIApplication,
+                     handleEventsForBackgroundURLSession identifier: String,
+                     completionHandler: @escaping () -> Void) {
+        guard identifier == BackgroundDownloader.sessionIdentifier else {
+            completionHandler()
+            return
+        }
+        BackgroundDownloader.shared.backgroundCompletionHandler = completionHandler
+        BackgroundDownloader.shared.start()
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

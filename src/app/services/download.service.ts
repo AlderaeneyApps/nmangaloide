@@ -88,10 +88,11 @@ interface QueueRow {
  * Downloads galleries in the background: one gallery at a time, one page at a time,
  * waiting DOWNLOAD_PAGE_DELAY between pages.
  *
- * On Android the downloading itself is handed over to a native foreground service
- * (NATIVE_DOWNLOADER), which goes on with the app in the background, the screen off or
- * the app closed; this service hands it the queue and follows its progress. Elsewhere
- * (iOS, the browser) the pages are downloaded here, while the app is open.
+ * On Android and iOS the downloading itself is handed over to the native downloader
+ * (NATIVE_DOWNLOADER: a foreground service on Android, a background URLSession on iOS),
+ * which goes on with the app in the background, the screen off or the app closed; this
+ * service hands it the queue and follows its progress. In the browser the pages are
+ * downloaded here, while the app is open.
  *
  * Pages are first saved in the app's private storage (APP_FILES `staging`, never seen
  * by the gallery or Files apps), so an interrupted download resumes where it stopped.
@@ -128,7 +129,7 @@ export class DownloadService {
   private worker: Promise<void> | null = null;
   private initializing: Promise<void> | null = null;
   private loadingDownloaded: Promise<void> | null = null;
-  /** Android: the queue being handed over to the native downloader, and whether to do it again. */
+  /** Android, iOS: the queue being handed over to the native downloader, and whether to do it again. */
   private handingOver: Promise<void> | null = null;
   private handOverAgain = false;
   private followingNative = false;
@@ -497,7 +498,7 @@ export class DownloadService {
     this.updateJob(id, { status: 'failed' });
   }
 
-  // --- Native downloader (Android) ---
+  // --- Native downloader (Android, iOS) ---
 
   /** Follows the native downloader's progress, and hands the queue over again whenever the app is opened. */
   private followNative(): void {
@@ -552,7 +553,8 @@ export class DownloadService {
       const state = await this.native!.enqueue({
         id,
         title: titleOf(gallery),
-        folderUri: this.folders.root()!,
+        // iOS has no folder to pick (always Documents).
+        folderUri: this.folders.root() ?? '',
         detailsJson: JSON.stringify(gallery, null, 2),
         comicInfoXml: comicInfoXml(gallery),
         delayMs: this.pageDelay,

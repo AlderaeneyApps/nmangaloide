@@ -5,7 +5,7 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 export interface NativeDownloadJob {
   id: number;
   title: string;
-  /** The download folder (Android tree URI) the CBZ is written to. */
+  /** The download folder (Android tree URI) the CBZ is written to; unused on iOS (always Documents). */
   folderUri: string;
   /** Contents of gallery.json and ComicInfo.xml in the CBZ. */
   detailsJson: string;
@@ -35,13 +35,16 @@ export interface NativeDownloadLabels {
 }
 
 /**
- * The app's own Android plugin (BackgroundDownloadsPlugin.java): downloads run in a
- * foreground service, natively, so they keep going with the app in the background,
- * the screen off or the app closed (the web view is paused or destroyed then). Pages go
- * to the same staging folder the app uses, and the CBZ to the download folder.
+ * The app's own native downloader, so downloads keep going with the app in the background,
+ * the screen off or the app closed (the web view is paused, frozen or destroyed then). Pages
+ * go to the same staging folder the app uses, and the CBZ to the download folder.
  *
- * `enqueue()` rejects with code `NOT_ALLOWED` when Android doesn't allow starting the
- * service (the app is in the background); the job then waits for the next `enqueue()`.
+ * - Android (BackgroundDownloadsPlugin.java): downloads run in a foreground service.
+ *   `enqueue()` rejects with code `NOT_ALLOWED` when Android doesn't allow starting the
+ *   service (the app is in the background); the job then waits for the next `enqueue()`.
+ * - iOS (BackgroundDownloadsPlugin.swift): downloads run in a background URLSession, done by
+ *   iOS itself; the CBZ goes to the app's Documents folder. A comic whose CBZ is already
+ *   there (finished while the app was away) is reported `finished` by `enqueue()`.
  */
 export interface BackgroundDownloadsPlugin {
   enqueue(job: NativeDownloadJob): Promise<NativeDownloadState>;
@@ -62,13 +65,13 @@ export interface NativeDownloader {
 }
 
 /**
- * The native downloader on Android; null elsewhere (iOS and the browser download in
- * the app itself). A plain object: see DOWNLOAD_KEEP_ALIVE.
+ * The native downloader on Android and iOS; null in the browser (which downloads in the
+ * app itself). A plain object: see DOWNLOAD_KEEP_ALIVE.
  */
 export const NATIVE_DOWNLOADER = new InjectionToken<NativeDownloader | null>('NATIVE_DOWNLOADER', {
   providedIn: 'root',
   factory: () =>
-    Capacitor.getPlatform() === 'android'
+    Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios'
       ? {
           enqueue: (job) => BackgroundDownloads.enqueue(job),
           cancel: (id) => BackgroundDownloads.cancel({ id }),
