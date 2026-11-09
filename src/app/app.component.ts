@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { IsActiveMatchOptions, NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   IonApp,
   IonSplitPane,
@@ -23,12 +24,16 @@ import {
   cloudDownloadSharp,
   heartOutline,
   heartSharp,
+  homeOutline,
+  homeSharp,
   pricetagOutline,
   pricetagSharp,
   settingsOutline,
   settingsSharp,
 } from 'ionicons/icons';
+import { filter, map } from 'rxjs';
 
+import { isTopLevelPage } from './navigation';
 import { DownloadNotificationService } from './services/download-notification.service';
 import { DownloadService } from './services/download.service';
 import { HardwareBackService } from './services/hardware-back.service';
@@ -65,6 +70,19 @@ export interface AppPage {
 })
 export class AppComponent {
   private readonly language = inject(LanguageService);
+  private readonly router = inject(Router);
+
+  /**
+   * Sidebar pages open on top of the home page so iOS's swipe back has somewhere
+   * to go. Moving between them replaces the current one, so it's always home.
+   */
+  protected readonly onTopLevelPage = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => isTopLevelPage(this.router.url)),
+    ),
+    { initialValue: false },
+  );
 
   /** A link stays highlighted whatever its query params are. */
   protected readonly activeOptions: IsActiveMatchOptions = {
@@ -75,6 +93,7 @@ export class AppComponent {
   };
 
   readonly appPages: AppPage[] = [
+    { title: 'MENU.HOME', url: '/', icon: 'home' },
     { title: 'MENU.TAGS', url: '/tags', icon: 'pricetag' },
     { title: 'MENU.FAVORITES', url: '/favorites', icon: 'heart' },
     { title: 'MENU.DOWNLOADED', url: '/downloaded', icon: 'download' },
@@ -84,6 +103,8 @@ export class AppComponent {
 
   constructor() {
     addIcons({
+      homeOutline,
+      homeSharp,
       pricetagOutline,
       pricetagSharp,
       heartOutline,

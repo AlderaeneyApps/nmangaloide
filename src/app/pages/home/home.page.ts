@@ -11,7 +11,10 @@ import {
   IonHeader,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonItem,
+  IonList,
   IonMenuButton,
+  IonPopover,
   IonRefresher,
   IonRefresherContent,
   IonSearchbar,
@@ -25,16 +28,26 @@ import {
 } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { closeCircle, pricetagsOutline, search } from 'ionicons/icons';
+import { checkmark, closeCircle, pricetagsOutline, search, swapVertical } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 
-import { CdnService, GalleriesService, GalleryListItem, PaginatedGalleryListItemResponse, SearchService } from '../../api';
+import {
+  CdnService,
+  GalleriesService,
+  GalleryListItem,
+  GallerySort,
+  PaginatedGalleryListItemResponse,
+  SearchService,
+} from '../../api';
 import { GalleryCardComponent } from '../../components/gallery-card/gallery-card.component';
 import { BACK_PARAM, SEARCH_PARAM, parseSingleFilter } from '../../navigation';
+import { GallerySortService } from '../../services/gallery-sort.service';
 import { HARDWARE_BACK_PRIORITY } from '../../services/hardware-back.service';
 import { TagPreferencesService } from '../../services/tag-preferences.service';
 
 const PER_PAGE = 25;
+/** The plain gallery list can't be sorted, so a sorted list with no search uses a search matching everything. */
+const MATCH_ALL_QUERY = 'pages:>0';
 
 @Component({
   selector: 'app-home',
@@ -59,6 +72,9 @@ const PER_PAGE = 25;
     IonChip,
     IonIcon,
     IonLabel,
+    IonList,
+    IonItem,
+    IonPopover,
     TranslocoPipe,
     GalleryCardComponent,
   ],
@@ -70,6 +86,17 @@ export class HomePage {
   private readonly router = inject(Router);
   private readonly navController = inject(NavController);
   private readonly tagPreferences = inject(TagPreferencesService);
+  private readonly gallerySort = inject(GallerySortService);
+
+  protected readonly sortOptions: readonly GallerySort[] = [
+    'date',
+    'popular-today',
+    'popular-week',
+    'popular-month',
+    'popular',
+  ];
+  /** The order of the results, whatever is being searched. */
+  protected readonly sort = this.gallerySort.sort;
 
   /** Optional gallery search from the `q` query parameter, e.g. `artist:"someone"`. */
   readonly q = input<string | undefined>(undefined);
@@ -118,9 +145,10 @@ export class HomePage {
   private generation = 0;
 
   constructor() {
-    addIcons({ closeCircle, pricetagsOutline, search });
+    addIcons({ checkmark, closeCircle, pricetagsOutline, search, swapVertical });
     effect(() => {
       this.query();
+      this.sort();
       untracked(() => void this.loadFirstPage());
     });
     // A new `q` search (a tag tapped in a gallery) replaces a typed one.
@@ -141,6 +169,10 @@ export class HomePage {
       }
     });
     inject(DestroyRef).onDestroy(() => subscription.unsubscribe());
+  }
+
+  protected setSort(sort: GallerySort): void {
+    this.sort.set(sort);
   }
 
   /** The loupe: shows the search field (focused), or hides and clears it, going back to the previous search. */
@@ -271,8 +303,11 @@ export class HomePage {
   }
 
   private fetchPage(query: string, page: number): Promise<PaginatedGalleryListItemResponse> {
+    const sort = this.sort();
     return firstValueFrom(
-      query ? this.searchService.search(query, 'date', page) : this.galleriesService.list(page, PER_PAGE),
+      query || sort !== 'date'
+        ? this.searchService.search(query || MATCH_ALL_QUERY, sort, page)
+        : this.galleriesService.list(page, PER_PAGE),
     );
   }
 

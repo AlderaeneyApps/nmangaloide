@@ -1,5 +1,6 @@
 {
   "MENU": {
+    "HOME": "Inici",
     "TAGS": "Etiquetes",
     "FAVORITES": "Preferits",
     "DOWNLOADED": "Descarregats",
@@ -17,7 +18,15 @@
     "SAVED_TAGS_HINT": "Es mostren galeries filtrades per les teves etiquetes desades. Obre la pàgina d'etiquetes per canviar-les.",
     "SEARCH_OPEN": "Cerca",
     "SEARCH_CLOSE": "Tanca la cerca",
-    "SEARCH_PLACEHOLDER": "Cerca galeries"
+    "SEARCH_PLACEHOLDER": "Cerca galeries",
+    "SORT": "Ordena",
+    "SORT_BY": {
+      "date": "Recents",
+      "popular": "Populars: sempre",
+      "popular-today": "Populars: avui",
+      "popular-week": "Populars: aquesta setmana",
+      "popular-month": "Populars: aquest mes"
+    }
   },
   "SETTINGS": {
     "TITLE": "Configuració",

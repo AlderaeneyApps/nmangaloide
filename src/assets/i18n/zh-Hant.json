@@ -1,5 +1,6 @@
 {
   "MENU": {
+    "HOME": "首頁",
     "TAGS": "標籤",
     "FAVORITES": "收藏",
     "DOWNLOADED": "已下載",
@@ -17,7 +18,15 @@
     "SAVED_TAGS_HINT": "正在依你儲存的標籤篩選作品。前往標籤頁面可以修改。",
     "SEARCH_OPEN": "搜尋",
     "SEARCH_CLOSE": "關閉搜尋",
-    "SEARCH_PLACEHOLDER": "搜尋作品"
+    "SEARCH_PLACEHOLDER": "搜尋作品",
+    "SORT": "排序",
+    "SORT_BY": {
+      "date": "最新",
+      "popular": "熱門:全部",
+      "popular-today": "熱門:今日",
+      "popular-week": "熱門:本週",
+      "popular-month": "熱門:本月"
+    }
   },
   "SETTINGS": {
     "TITLE": "設定",

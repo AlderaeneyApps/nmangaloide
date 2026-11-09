@@ -1,5 +1,6 @@
 {
   "MENU": {
+    "HOME": "首页",
     "TAGS": "标签",
     "FAVORITES": "收藏",
     "DOWNLOADED": "已下载",
@@ -17,7 +18,15 @@
     "SAVED_TAGS_HINT": "正在按你保存的标签筛选作品。前往标签页面可以修改。",
     "SEARCH_OPEN": "搜索",
     "SEARCH_CLOSE": "关闭搜索",
-    "SEARCH_PLACEHOLDER": "搜索作品"
+    "SEARCH_PLACEHOLDER": "搜索作品",
+    "SORT": "排序",
+    "SORT_BY": {
+      "date": "最新",
+      "popular": "热门:全部",
+      "popular-today": "热门:今日",
+      "popular-week": "热门:本周",
+      "popular-month": "热门:本月"
+    }
   },
   "SETTINGS": {
     "TITLE": "设置",

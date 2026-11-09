@@ -1,5 +1,6 @@
 {
   "MENU": {
+    "HOME": "Inicio",
     "TAGS": "Etiquetas",
     "FAVORITES": "Favoritos",
     "DOWNLOADED": "Descargados",
@@ -17,7 +18,15 @@
     "SAVED_TAGS_HINT": "Mostrando galerías filtradas por tus etiquetas guardadas. Abre la página de etiquetas para cambiarlas.",
     "SEARCH_OPEN": "Buscar",
     "SEARCH_CLOSE": "Cerrar búsqueda",
-    "SEARCH_PLACEHOLDER": "Buscar galerías"
+    "SEARCH_PLACEHOLDER": "Buscar galerías",
+    "SORT": "Ordenar",
+    "SORT_BY": {
+      "date": "Recientes",
+      "popular": "Populares: siempre",
+      "popular-today": "Populares: hoy",
+      "popular-week": "Populares: esta semana",
+      "popular-month": "Populares: este mes"
+    }
   },
   "SETTINGS": {
     "TITLE": "Ajustes",

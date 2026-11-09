@@ -19,6 +19,9 @@
       <ion-title>{{ 'HOME.TITLE' | transloco }}</ion-title>
     }
     <ion-buttons slot="end">
+      <ion-button id="home-sort-button" data-action="sort" [attr.aria-label]="'HOME.SORT' | transloco">
+        <ion-icon slot="icon-only" name="swap-vertical" [color]="sort() === 'date' ? undefined : 'primary'" aria-hidden="true"></ion-icon>
+      </ion-button>
       @if (searchOpen()) {
         <ion-button data-action="search" data-state="open" [attr.aria-label]="'HOME.SEARCH_CLOSE' | transloco" (click)="toggleSearch()">
           <ion-icon slot="icon-only" name="search" color="primary" aria-hidden="true"></ion-icon>
@@ -31,6 +34,21 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-popover trigger="home-sort-button" [dismissOnSelect]="true">
+  <ng-template>
+    <ion-list lines="none">
+      @for (option of sortOptions; track option) {
+        <ion-item button detail="false" [attr.data-sort]="option" (click)="setSort(option)">
+          <ion-label>{{ 'HOME.SORT_BY.' + option | transloco }}</ion-label>
+          @if (sort() === option) {
+            <ion-icon slot="end" name="checkmark" color="primary" aria-hidden="true"></ion-icon>
+          }
+        </ion-item>
+      }
+    </ion-list>
+  </ng-template>
+</ion-popover>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">

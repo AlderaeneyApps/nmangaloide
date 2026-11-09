@@ -3,12 +3,14 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import { NavController, Platform } from '@ionic/angular';
 
-import { GalleryListItem } from '../../api';
+import { GalleryListItem, GallerySort } from '../../api';
+import { GallerySortService } from '../../services/gallery-sort.service';
 import { TagPreferencesService } from '../../services/tag-preferences.service';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
@@ -158,6 +160,85 @@ describe('HomePage', () => {
     await settle();
 
     expect(el.querySelectorAll('app-gallery-card').length).toBe(1);
+  });
+
+  describe('sorting', () => {
+    const EMPTY = { result: [], num_pages: 2, per_page: 25, total: 0 };
+    const sorted = (query: string, sort: string, page = 1) => (req: HttpRequest<unknown>) =>
+      req.url === `${BASE}/search` &&
+      req.params.get('query') === query &&
+      req.params.get('sort') === sort &&
+      req.params.get('page') === String(page);
+    const setSort = async (sort: GallerySort) => {
+      TestBed.inject(GallerySortService).sort.set(sort);
+      await settle();
+    };
+
+    beforeEach(async () => {
+      http.expectOne(`${BASE}/galleries?page=1&per_page=25`).flush({ ...EMPTY, num_pages: 0 });
+      flushCdn();
+      await settle();
+    });
+
+    it('puts the sort button just before the search button', () => {
+      const buttons = fixture.nativeElement.querySelectorAll('ion-buttons[slot="end"] ion-button');
+      expect([...buttons].map((button) => (button as HTMLElement).dataset['action'])).toEqual(['sort', 'search']);
+    });
+
+    it('sorts the galleries when nothing is searched, and goes back to the plain list', async () => {
+      await setSort('popular');
+      http.expectOne(sorted('pages:>0', 'popular')).flush(EMPTY);
+      await settle();
+
+      await setSort('date');
+      http.expectOne(`${BASE}/galleries?page=1&per_page=25`).flush(EMPTY);
+    });
+
+    it('keeps the sort when a gallery tag is searched and when it changes', async () => {
+      await setSort('popular-week');
+      http.expectOne(sorted('pages:>0', 'popular-week')).flush(EMPTY);
+
+      fixture.componentRef.setInput('q', 'artist:"someone"');
+      await settle();
+      http.expectOne(sorted('artist:"someone"', 'popular-week')).flush(EMPTY);
+
+      fixture.componentRef.setInput('q', 'tag:"other"');
+      await settle();
+      http.expectOne(sorted('tag:"other"', 'popular-week')).flush(EMPTY);
+    });
+
+    it('keeps the sort for a search typed in the header', async () => {
+      await setSort('popular-month');
+      http.expectOne(sorted('pages:>0', 'popular-month')).flush(EMPTY);
+
+      const page = fixture.componentInstance as unknown as {
+        searchText: WritableSignal<string>;
+        submitSearch(): void;
+      };
+      page.searchText.set('some words');
+      page.submitSearch();
+      await settle();
+      http.expectOne(sorted('some words', 'popular-month')).flush(EMPTY);
+    });
+
+    it('applies the sort to the saved tags', async () => {
+      vi.spyOn(TestBed.inject(TagPreferencesService), 'searchQuery').mockReturnValue('tag:"saved"');
+      await setSort('popular-today');
+      http.expectOne(sorted('tag:"saved"', 'popular-today')).flush(EMPTY);
+    });
+
+    it('keeps the sort when loading more results', async () => {
+      await setSort('popular');
+      http.expectOne(sorted('pages:>0', 'popular')).flush(EMPTY);
+      await settle();
+
+      const complete = vi.fn().mockResolvedValue(undefined);
+      const more = (fixture.componentInstance as unknown as { loadMore(e: unknown): Promise<void> }).loadMore({
+        target: { complete },
+      });
+      http.expectOne(sorted('pages:>0', 'popular', 2)).flush(EMPTY);
+      await more;
+    });
   });
 
   describe('searching', () => {

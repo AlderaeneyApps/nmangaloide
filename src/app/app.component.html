@@ -8,8 +8,9 @@
           @for (p of appPages; track p.url) {
             <ion-menu-toggle auto-hide="false">
               <ion-item
-                routerDirection="root"
+                [routerDirection]="p.url === '/' ? 'root' : 'forward'"
                 [routerLink]="[p.url]"
+                [replaceUrl]="p.url !== '/' && onTopLevelPage()"
                 lines="none"
                 detail="false"
                 routerLinkActive="selected"

@@ -31,6 +31,12 @@ export function parseSingleFilter(query: string): SearchFilter | null {
 /** Top-level pages, reached from the side menu: back always goes to the home page. */
 export const TOP_LEVEL_PAGES: readonly string[] = ['tags', 'favorites', 'downloaded', 'downloading', 'settings'];
 
+/** Whether `url` is one of the TOP_LEVEL_PAGES, whatever its query params are. */
+export function isTopLevelPage(url: string): boolean {
+  const segments = new URL(url, 'https://app.invalid').pathname.split('/').filter(Boolean);
+  return segments.length === 1 && TOP_LEVEL_PAGES.includes(segments[0]);
+}
+
 /**
  * Where "back" goes from `url`, the same rules as the header back button:
  * - home page: null (nothing to go back to, so Android's back button closes the app)

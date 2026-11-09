@@ -1,5 +1,6 @@
 {
   "MENU": {
+    "HOME": "ホーム",
     "TAGS": "タグ",
     "FAVORITES": "お気に入り",
     "DOWNLOADED": "ダウンロード済み",
@@ -17,7 +18,15 @@
     "SAVED_TAGS_HINT": "保存したタグで作品を絞り込んでいます。変更するにはタグページを開いてください。",
     "SEARCH_OPEN": "検索",
     "SEARCH_CLOSE": "検索を閉じる",
-    "SEARCH_PLACEHOLDER": "作品を検索"
+    "SEARCH_PLACEHOLDER": "作品を検索",
+    "SORT": "並べ替え",
+    "SORT_BY": {
+      "date": "新着",
+      "popular": "人気:全期間",
+      "popular-today": "人気:今日",
+      "popular-week": "人気:今週",
+      "popular-month": "人気:今月"
+    }
   },
   "SETTINGS": {
     "TITLE": "設定",

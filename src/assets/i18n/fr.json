@@ -1,5 +1,6 @@
 {
   "MENU": {
+    "HOME": "Accueil",
     "TAGS": "Tags",
     "FAVORITES": "Favoris",
     "DOWNLOADED": "Téléchargés",
@@ -17,7 +18,15 @@
     "SAVED_TAGS_HINT": "Galeries filtrées selon vos tags enregistrés. Ouvrez la page Tags pour les modifier.",
     "SEARCH_OPEN": "Rechercher",
     "SEARCH_CLOSE": "Fermer la recherche",
-    "SEARCH_PLACEHOLDER": "Rechercher des galeries"
+    "SEARCH_PLACEHOLDER": "Rechercher des galeries",
+    "SORT": "Trier",
+    "SORT_BY": {
+      "date": "Récents",
+      "popular": "Populaires : depuis toujours",
+      "popular-today": "Populaires : aujourd'hui",
+      "popular-week": "Populaires : cette semaine",
+      "popular-month": "Populaires : ce mois-ci"
+    }
   },
   "SETTINGS": {
     "TITLE": "Paramètres",

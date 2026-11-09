@@ -1,6 +1,7 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, Router, RouterLink } from '@angular/router';
+import { IonRouterLink } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 
 import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest';
@@ -37,19 +38,20 @@ describe('AppComponent', () => {
     await fixture.whenStable();
     const app = fixture.nativeElement;
     const menuItems = app.querySelectorAll('ion-label');
-    expect(menuItems.length).toEqual(5);
-    expect(menuItems[0].innerHTML).toContain('Tags');
-    expect(menuItems[1].innerHTML).toContain('Favorites');
-    expect(menuItems[2].innerHTML).toContain('Downloaded');
-    expect(menuItems[3].innerHTML).toContain('Downloading');
-    expect(menuItems[4].innerHTML).toContain('Settings');
+    expect(menuItems.length).toEqual(6);
+    expect(menuItems[0].innerHTML).toContain('Home');
+    expect(menuItems[1].innerHTML).toContain('Tags');
+    expect(menuItems[2].innerHTML).toContain('Favorites');
+    expect(menuItems[3].innerHTML).toContain('Downloaded');
+    expect(menuItems[4].innerHTML).toContain('Downloading');
+    expect(menuItems[5].innerHTML).toContain('Settings');
   });
 
   it('should have urls', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const app = fixture.nativeElement;
-    expect(app.querySelectorAll('ion-item').length).toEqual(5);
+    expect(app.querySelectorAll('ion-item').length).toEqual(6);
     // Ionic applies the rendered href through its own async write queue, so
     // reading the DOM attribute is flaky (FW-6264). Assert the routerLink
     // binding directly, which resolves synchronously.
@@ -57,12 +59,13 @@ describe('AppComponent', () => {
     const links = fixture.debugElement
       .queryAll(By.directive(RouterLink))
       .map((el) => el.injector.get(RouterLink));
-    expect(links.length).toEqual(5);
-    expect(router.serializeUrl(links[0].urlTree!)).toEqual('/tags');
-    expect(router.serializeUrl(links[1].urlTree!)).toEqual('/favorites');
-    expect(router.serializeUrl(links[2].urlTree!)).toEqual('/downloaded');
-    expect(router.serializeUrl(links[3].urlTree!)).toEqual('/downloading');
-    expect(router.serializeUrl(links[4].urlTree!)).toEqual('/settings');
+    expect(links.length).toEqual(6);
+    expect(router.serializeUrl(links[0].urlTree!)).toEqual('/');
+    expect(router.serializeUrl(links[1].urlTree!)).toEqual('/tags');
+    expect(router.serializeUrl(links[2].urlTree!)).toEqual('/favorites');
+    expect(router.serializeUrl(links[3].urlTree!)).toEqual('/downloaded');
+    expect(router.serializeUrl(links[4].urlTree!)).toEqual('/downloading');
+    expect(router.serializeUrl(links[5].urlTree!)).toEqual('/settings');
   });
 
   it('should link the sidebar straight to each page, without a back parameter', async () => {
@@ -76,7 +79,48 @@ describe('AppComponent', () => {
       .queryAll(By.directive(RouterLink))
       .map((el) => router.serializeUrl(el.injector.get(RouterLink).urlTree!));
     // Those pages' back buttons always go to the home page.
-    expect(links).toEqual(['/tags', '/favorites', '/downloaded', '/downloading', '/settings']);
+    expect(links).toEqual(['/', '/tags', '/favorites', '/downloaded', '/downloading', '/settings']);
+  });
+
+  describe('sidebar navigation stack (iOS swipe back)', () => {
+    const sidebarLink = (fixture: ComponentFixture<AppComponent>, url: string) => {
+      const router = TestBed.inject(Router);
+      const item = fixture.debugElement
+        .queryAll(By.directive(RouterLink))
+        .find((el) => router.serializeUrl(el.injector.get(RouterLink).urlTree!) === url)!;
+      return { link: item.injector.get(RouterLink), direction: item.injector.get(IonRouterLink).routerDirection };
+    };
+
+    const openAt = async (url: string) => {
+      const router = TestBed.inject(Router);
+      router.resetConfig([{ path: '**', children: [] }]);
+      const fixture = TestBed.createComponent(AppComponent);
+      await router.navigateByUrl(url);
+      fixture.detectChanges();
+      return fixture;
+    };
+
+    it('should open a page on top of the home page', async () => {
+      const { link, direction } = sidebarLink(await openAt('/'), '/tags');
+      expect(direction).toBe('forward');
+      expect(link.replaceUrl).toBe(false);
+    });
+
+    it('should replace the current sidebar page, so back is still the home page', async () => {
+      const { link, direction } = sidebarLink(await openAt('/tags?from=%2F'), '/favorites');
+      expect(direction).toBe('forward');
+      expect(link.replaceUrl).toBe(true);
+    });
+
+    it('should not replace a gallery page', async () => {
+      expect(sidebarLink(await openAt('/gallery/1'), '/tags').link.replaceUrl).toBe(false);
+    });
+
+    it('should reset the stack when going home', async () => {
+      const { link, direction } = sidebarLink(await openAt('/tags'), '/');
+      expect(direction).toBe('root');
+      expect(link.replaceUrl).toBe(false);
+    });
   });
 
   it('should link the menu title to the GitHub repository', () => {
@@ -96,7 +140,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(fixture.nativeElement.querySelector('ion-label').innerHTML).toContain('Etiquetas');
+    expect(fixture.nativeElement.querySelector('ion-label').innerHTML).toContain('Inicio');
   });
 
   it('should fall back to English for an unsupported device language and save it', async () => {
