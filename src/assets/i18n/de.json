@@ -121,6 +121,7 @@
     "ERROR": "Diese Galerie konnte nicht geladen werden.",
     "RETRY": "Erneut versuchen",
     "SCANLATOR": "Übersetzt von {{name}}",
+    "PAGE": "Seite {{number}}",
     "SEARCH_TAG": "Galerien mit {{tag}} anzeigen",
     "FAVORITE_ADD": "Zu Favoriten hinzufügen",
     "FAVORITE_REMOVE": "Aus Favoriten entfernen",

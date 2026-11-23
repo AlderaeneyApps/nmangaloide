@@ -48,6 +48,8 @@ import { TagPreferencesService } from '../../services/tag-preferences.service';
 const PER_PAGE = 25;
 /** The plain gallery list can't be sorted, so a sorted list with no search uses a search matching everything. */
 const MATCH_ALL_QUERY = 'pages:>0';
+/** How many pages one scroll to the bottom may fetch while they only repeat galleries already shown. */
+const MAX_PAGES_PER_LOAD = 3;
 
 @Component({
   selector: 'app-home',
@@ -139,6 +141,8 @@ export class HomePage {
   });
 
   private page = 0;
+  /** A next page is being loaded (see loadMore). */
+  private loadingMore = false;
   /** The search the list was last loaded for ('' = newest galleries); null before the first load. */
   private loadedQuery: string | null = null;
   /** Increases with every new load, so a late response for an older search is dropped. */
@@ -236,6 +240,8 @@ export class HomePage {
   async loadFirstPage(): Promise<void> {
     const generation = ++this.generation;
     this.page = 0;
+    this.loadingMore = false;
+    this.hasMore.set(false);
     this.error.set(false);
     this.loading.set(true);
     this.galleries.set([]);
@@ -278,17 +284,41 @@ export class HomePage {
   }
 
   protected async loadMore(event: InfiniteScrollCustomEvent): Promise<void> {
+    // The first page is still loading (the list was just emptied, which can
+    // scroll to the bottom), or another page is already on its way.
+    if (this.loading() || this.loadingMore) {
+      await event.target.complete();
+      return;
+    }
     const generation = this.generation;
+    this.loadingMore = true;
     try {
-      const page = this.page + 1;
-      const response = await this.fetchPage(this.loadedQuery ?? '', page);
-      if (generation === this.generation) {
+      // Galleries uploaded since the last page push the results down, so the
+      // next page can repeat ones already shown (all of them, after a while
+      // away reading). Those are skipped, moving on to further pages if needed.
+      for (let attempt = 0; attempt < MAX_PAGES_PER_LOAD; attempt++) {
+        const page = this.page + 1;
+        const response = await this.fetchPage(this.loadedQuery ?? '', page);
+        if (generation !== this.generation) {
+          return;
+        }
         this.apply(response, page);
-        this.galleries.update((current) => [...current, ...response.result]);
+        const shown = new Set(this.galleries().map((gallery) => gallery.id));
+        const fresh = response.result.filter((gallery) => !shown.has(gallery.id));
+        if (fresh.length > 0) {
+          this.galleries.update((current) => [...current, ...fresh]);
+          return;
+        }
+        if (!this.hasMore()) {
+          return;
+        }
       }
     } catch {
       // Keep what's already shown; scrolling again retries the same page.
     } finally {
+      if (generation === this.generation) {
+        this.loadingMore = false;
+      }
       await event.target.complete();
     }
   }

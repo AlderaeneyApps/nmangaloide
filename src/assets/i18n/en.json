@@ -121,6 +121,7 @@
     "ERROR": "Could not load this gallery.",
     "RETRY": "Retry",
     "SCANLATOR": "Scanlated by {{name}}",
+    "PAGE": "Page {{number}}",
     "SEARCH_TAG": "Show galleries with {{tag}}",
     "FAVORITE_ADD": "Add to favorites",
     "FAVORITE_REMOVE": "Remove from favorites",

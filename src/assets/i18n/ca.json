@@ -121,6 +121,7 @@
     "ERROR": "No s'ha pogut carregar aquesta galeria.",
     "RETRY": "Torna-ho a provar",
     "SCANLATOR": "Traduïda per {{name}}",
+    "PAGE": "Pàgina {{number}}",
     "SEARCH_TAG": "Mostra les galeries amb {{tag}}",
     "FAVORITE_ADD": "Afegeix als preferits",
     "FAVORITE_REMOVE": "Treu dels preferits",

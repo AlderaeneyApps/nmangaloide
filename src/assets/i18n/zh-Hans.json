@@ -121,6 +121,7 @@
     "ERROR": "无法加载此作品。",
     "RETRY": "重试",
     "SCANLATOR": "汉化：{{name}}",
+    "PAGE": "第 {{number}} 页",
     "SEARCH_TAG": "显示含有 {{tag}} 的作品",
     "FAVORITE_ADD": "加入收藏",
     "FAVORITE_REMOVE": "取消收藏",

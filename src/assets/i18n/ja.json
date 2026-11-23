@@ -121,6 +121,7 @@
     "ERROR": "この作品を読み込めませんでした。",
     "RETRY": "再試行",
     "SCANLATOR": "翻訳：{{name}}",
+    "PAGE": "{{number}}ページ",
     "SEARCH_TAG": "{{tag}} の作品を表示",
     "FAVORITE_ADD": "お気に入りに追加",
     "FAVORITE_REMOVE": "お気に入りから削除",

@@ -120,6 +120,25 @@
       <p class="scanlator">{{ 'GALLERY.SCANLATOR' | transloco: { name: g.scanlator } }}</p>
     }
 
+    @if (pageThumbnails().length > 0) {
+      <div class="page-grid">
+        @for (thumb of pageThumbnails(); track thumb.number) {
+          <a
+            class="page-thumb"
+            [routerLink]="['/gallery', g.id, 'read']"
+            [queryParams]="thumb.params"
+            [style.aspect-ratio]="thumb.ratio"
+            [attr.aria-label]="'GALLERY.PAGE' | transloco: { number: thumb.number }"
+          >
+            @if (thumb.url) {
+              <img [src]="thumb.url" alt="" loading="lazy" decoding="async" />
+            }
+            <span class="page-number" aria-hidden="true">{{ thumb.number }}</span>
+          </a>
+        }
+      </div>
+    }
+
     <div class="fab-spacer"></div>
 
     <!-- Always visible while scrolling the details. -->

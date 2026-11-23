@@ -136,6 +136,20 @@ export class GalleryPage {
     );
   });
 
+  /** Every page as a small thumbnail (from the CDN's thumbnail servers, not the full-size images). */
+  protected readonly pageThumbnails = computed(() =>
+    [...(this.gallery()?.pages ?? [])].sort((a, b) => a.number - b.number).map((page) => ({
+      number: page.number,
+      url: this.cdn.thumbnailUrl(page.thumbnail),
+      /** Tapping a thumbnail opens the reader on that page. */
+      params: { ...this.readerParams(), page: page.number },
+      ratio:
+        page.thumbnail_width > 0 && page.thumbnail_height > 0
+          ? `${page.thumbnail_width} / ${page.thumbnail_height}`
+          : '2 / 3',
+    })),
+  );
+
   /** The reader link comes back here. */
   protected readonly readerParams = computed(() => ({ [BACK_PARAM]: this.router.url }));
 

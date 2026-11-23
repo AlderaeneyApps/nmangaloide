@@ -340,6 +340,53 @@ describe('HomePage', () => {
       ).toBe(2);
     });
 
+    it('skips galleries already shown when new uploads shift the next page', async () => {
+      http
+        .expectOne(SEARCH(1))
+        .flush({ result: [gallery(1), gallery(2)], num_pages: 3, per_page: 25, total: 6 });
+      flushCdn();
+      await settle();
+
+      const complete = vi.fn().mockResolvedValue(undefined);
+      const page = fixture.componentInstance as unknown as {
+        loadMore(e: unknown): Promise<void>;
+      };
+      const more = page.loadMore({ target: { complete } });
+      // Page 2 only repeats what's shown (uploads pushed it down), so page 3 is fetched too.
+      http
+        .expectOne(SEARCH(2))
+        .flush({ result: [gallery(1), gallery(2)], num_pages: 3, per_page: 25, total: 6 });
+      await settle();
+      http
+        .expectOne(SEARCH(3))
+        .flush({ result: [gallery(2), gallery(3)], num_pages: 3, per_page: 25, total: 6 });
+      await more;
+      await settle();
+      const ids = [...fixture.nativeElement.querySelectorAll('a.card-link')].map((a: Element) =>
+        a.getAttribute('href')!.split('?')[0],
+      );
+      expect(ids).toEqual(['/gallery/1', '/gallery/2', '/gallery/3']);
+      expect(complete).toHaveBeenCalled();
+    });
+
+    it('does not load a next page while the first one is loading', async () => {
+      const complete = vi.fn().mockResolvedValue(undefined);
+      const page = fixture.componentInstance as unknown as {
+        loadMore(e: unknown): Promise<void>;
+      };
+      await page.loadMore({ target: { complete } });
+      expect(complete).toHaveBeenCalled();
+      http
+        .expectOne(SEARCH(1))
+        .flush({ result: [gallery(1)], num_pages: 2, per_page: 25, total: 2 });
+      flushCdn();
+      await settle();
+      http.verify();
+      expect(
+        fixture.nativeElement.querySelectorAll('app-gallery-card').length,
+      ).toBe(1);
+    });
+
     it('clears the search from the chip', async () => {
       http
         .expectOne(SEARCH(1))

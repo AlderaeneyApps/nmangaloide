@@ -168,6 +168,30 @@ describe('GalleryPage', () => {
     expect(TestBed.inject(Router).url).toBe('/gallery/42/read?from=%2Fgallery%2F42');
   });
 
+  it('shows every page as a CDN thumbnail after the details, opening the reader on that page', async () => {
+    flush();
+    await settle();
+
+    const thumbs = [...el().querySelectorAll<HTMLAnchorElement>('.page-grid a.page-thumb')];
+    // In page order, from the thumbnail servers (not the full-size images).
+    expect(thumbs.map((a) => a.querySelector('img')?.getAttribute('src'))).toEqual([
+      'https://t.example/galleries/100/1t.webp',
+      'https://t.example/galleries/100/2t.webp',
+      'https://t.example/galleries/100/3t.webp',
+    ]);
+    expect(thumbs[0].getAttribute('aria-label')).toBe('Page 1');
+    expect(thumbs[0].style.aspectRatio).toBe('200 / 280');
+    // After the tags, before the space kept free for the Read button.
+    const lastTags = el().querySelectorAll('.tag-group');
+    const grid = el().querySelector('.page-grid')!;
+    expect(lastTags[lastTags.length - 1].compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(grid.nextElementSibling?.classList.contains('fab-spacer')).toBe(true);
+
+    thumbs[1].click();
+    await settle();
+    expect(TestBed.inject(Router).url).toBe('/gallery/42/read?from=%2Fgallery%2F42&page=2');
+  });
+
   it('goes to the home page searching for a tapped artist, group or tag', async () => {
     flush();
     await settle();

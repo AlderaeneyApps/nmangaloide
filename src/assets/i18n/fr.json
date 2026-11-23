@@ -121,6 +121,7 @@
     "ERROR": "Impossible de charger cette galerie.",
     "RETRY": "Réessayer",
     "SCANLATOR": "Traduite par {{name}}",
+    "PAGE": "Page {{number}}",
     "SEARCH_TAG": "Afficher les galeries avec {{tag}}",
     "FAVORITE_ADD": "Ajouter aux favoris",
     "FAVORITE_REMOVE": "Retirer des favoris",
