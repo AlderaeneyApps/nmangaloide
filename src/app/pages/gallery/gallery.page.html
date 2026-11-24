@@ -131,7 +131,7 @@
             [attr.aria-label]="'GALLERY.PAGE' | transloco: { number: thumb.number }"
           >
             @if (thumb.url) {
-              <img [src]="thumb.url" alt="" loading="lazy" decoding="async" />
+              <img [src]="thumb.url" alt="" loading="lazy" decoding="async" (error)="onThumbnailError(thumb.number)" />
             }
             <span class="page-number" aria-hidden="true">{{ thumb.number }}</span>
           </a>

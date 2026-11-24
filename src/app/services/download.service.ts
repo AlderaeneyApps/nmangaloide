@@ -147,8 +147,10 @@ export class DownloadService {
   init(): Promise<void> {
     this.initializing ??= (async () => {
       this.followNative();
-      // Pages left unpacked if the app was closed while reading.
-      await this.files.remove('reader').catch(() => undefined);
+      // Pages left unpacked if the app was closed while reading (unless they're already in use again).
+      if (this.unpacked.size === 0) {
+        await this.files.remove('reader').catch(() => undefined);
+      }
       await this.folders.load();
       await this.restoreQueue();
       await this.sync().catch(() => undefined);
@@ -232,12 +234,52 @@ export class DownloadService {
     await this.forget(id);
   }
 
+  /** Galleries whose pages are unpacked for reading, with how many pages (detail, reader) use them. */
+  private readonly unpacked = new Map<number, { users: number; pages: Promise<Map<number, string>> }>();
+
   /**
-   * Unpacks a downloaded gallery's CBZ into a temporary folder for the reader and
-   * returns image URLs by page number (empty if it isn't downloaded). Pages unpacked
-   * for an earlier gallery are removed first. Call releasePages() when done reading.
+   * Unpacks a downloaded gallery's CBZ into a temporary folder and returns image URLs
+   * by page number (empty if it isn't downloaded). The pages are shared: while they're
+   * in use, asking again returns the same files at once. Each call must be matched by a
+   * releasePages() call; the files are deleted once nothing uses them.
    */
-  async getPages(id: number): Promise<Map<number, string>> {
+  getPages(id: number): Promise<Map<number, string>> {
+    const held = this.unpacked.get(id);
+    if (held) {
+      held.users++;
+      return held.pages;
+    }
+    const entry = { users: 1, pages: this.unpack(id) };
+    this.unpacked.set(id, entry);
+    entry.pages.catch(() => {
+      if (this.unpacked.get(id) === entry) {
+        this.unpacked.delete(id);
+      }
+    });
+    return entry.pages;
+  }
+
+  /** Stops using a gallery's unpacked pages; deletes them when nothing else uses them. */
+  async releasePages(id: number): Promise<void> {
+    const held = this.unpacked.get(id);
+    if (held) {
+      held.users--;
+      if (held.users > 0) {
+        return;
+      }
+      this.unpacked.delete(id);
+      await held.pages.catch(() => undefined);
+      if (this.unpacked.has(id)) {
+        // Asked for again while it was still unpacking.
+        return;
+      }
+    }
+    await this.files.remove('reader', String(id)).catch(() => undefined);
+  }
+
+  private async unpack(id: number): Promise<Map<number, string>> {
+    // Starting up clears the temporary folder; don't let it remove these pages.
+    await this.initializing?.catch(() => undefined);
     await this.folders.load();
     const pages = new Map<number, string>();
     if (!this.folders.ready()) {
@@ -248,8 +290,13 @@ export class DownloadService {
     if (!entry) {
       return pages;
     }
-    await this.files.remove('reader');
     const dir = String(id);
+    // Pages left over from earlier galleries go too, unless another page still uses them.
+    if ([...this.unpacked.keys()].every((other) => other === id)) {
+      await this.files.remove('reader');
+    } else {
+      await this.files.remove('reader', dir).catch(() => undefined);
+    }
     for (const file of readZip(await this.storage.readBytes(root, [], entry))) {
       const name = file.name.slice(file.name.lastIndexOf('/') + 1);
       const number = pageNumberOf(name);
@@ -258,11 +305,6 @@ export class DownloadService {
       }
     }
     return pages;
-  }
-
-  /** Deletes the pages unpacked for reading. */
-  releasePages(id: number): Promise<void> {
-    return this.files.remove('reader', String(id)).catch(() => undefined);
   }
 
   /**
@@ -727,6 +769,7 @@ export class DownloadService {
 
   private async deleteFiles(id: number): Promise<void> {
     await this.files.remove('staging', String(id)).catch(() => undefined);
+    this.unpacked.delete(id);
     await this.files.remove('reader', String(id)).catch(() => undefined);
     if (this.folders.ready()) {
       const root = this.folders.root();

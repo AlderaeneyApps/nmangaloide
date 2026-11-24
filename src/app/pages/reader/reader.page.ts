@@ -1,4 +1,17 @@
-import { Component, HostListener, OnDestroy, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Injector,
+  OnDestroy,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -34,6 +47,12 @@ const PRELOAD_AHEAD = 2;
 const SHOW_HEADER_NEAR_TOP = 56;
 /** Ignore scroll jitter smaller than this before hiding or showing the bar. */
 const SCROLL_THRESHOLD = 8;
+/** Two taps within this time (ms) are a double tap; a single tap in paged mode waits this long. */
+const DOUBLE_TAP_MS = 300;
+/** ...and within this distance (px) of each other. */
+const DOUBLE_TAP_DISTANCE = 40;
+/** How much a double tap zooms in. */
+const ZOOM_SCALE = 2.5;
 
 /**
  * Shows a gallery's pages in order, either as one infinite vertical scroll or
@@ -63,6 +82,8 @@ export class ReaderPage implements OnDestroy {
   private readonly cdn = inject(CdnService);
   private readonly settings = inject(AppSettingsService);
   private readonly downloads = inject(DownloadService);
+  private readonly injector = inject(Injector);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   /** Pages saved on the device (downloads), by number; shown instead of the CDN images. */
   private readonly offlinePages = signal<ReadonlyMap<number, string>>(new Map());
 
@@ -98,6 +119,12 @@ export class ReaderPage implements OnDestroy {
   protected readonly hasPrevious = computed(() => this.index() > 0);
   protected readonly hasNext = computed(() => this.index() < this.pages().length - 1);
 
+  /** Zoom level set by double tapping: 1 is the regular fit. */
+  protected readonly zoom = signal(1);
+  protected readonly zoomed = computed(() => this.zoom() > 1);
+  private lastTap: { time: number; x: number; y: number } | null = null;
+  private pendingTap: ReturnType<typeof setTimeout> | undefined;
+
   constructor() {
     addIcons({ chevronBackOutline, chevronForwardOutline });
     effect(() => {
@@ -121,6 +148,7 @@ export class ReaderPage implements OnDestroy {
   async load(id: number = Number(this.id())): Promise<void> {
     this.loading.set(true);
     this.error.set(false);
+    this.zoom.set(1);
     try {
       const [gallery, offline] = await Promise.all([
         this.details.get(id),
@@ -140,10 +168,26 @@ export class ReaderPage implements OnDestroy {
     } finally {
       this.loading.set(false);
     }
+    if (this.mode() === 'scroll' && this.index() > 0) {
+      afterNextRender({ read: () => void this.scrollToPage(this.index()) }, { injector: this.injector });
+    }
+  }
+
+  /** In infinite scroll mode, starts at the given page (its space is reserved before images load). */
+  private async scrollToPage(index: number): Promise<void> {
+    const content = this.content();
+    const page = this.host.nativeElement.querySelector<HTMLElement>(`.scroll .page[data-page="${this.pages()[index]?.number}"]`);
+    if (!content || !page) {
+      return;
+    }
+    const scroller = await content.getScrollElement();
+    const top = page.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+    await content.scrollToPoint(0, Math.max(top, 0));
   }
 
   /** The pages unpacked from a downloaded gallery's CBZ are temporary: removed on leaving. */
   ngOnDestroy(): void {
+    clearTimeout(this.pendingTap);
     void this.downloads.releasePages(Number(this.id()));
   }
 
@@ -179,15 +223,66 @@ export class ReaderPage implements OnDestroy {
     this.goTo(this.index() - 1);
   }
 
-  /** Tapping the left third goes back, anywhere else goes forward. */
+  /**
+   * Double tapping zooms in on that spot, or back out. Otherwise, while not zoomed,
+   * tapping the left third goes back and anywhere else goes forward.
+   */
   protected onPageTap(event: MouseEvent): void {
+    if (this.isDoubleTap(event)) {
+      clearTimeout(this.pendingTap);
+      void this.toggleZoom(event);
+      return;
+    }
+    if (this.zoomed()) {
+      return;
+    }
     const target = event.currentTarget as HTMLElement;
     const { left, width } = target.getBoundingClientRect();
-    if (width > 0 && event.clientX - left < width / 3) {
-      this.previous();
-    } else {
-      this.next();
+    const back = width > 0 && event.clientX - left < width / 3;
+    // Wait to see whether a second tap makes this a double tap.
+    clearTimeout(this.pendingTap);
+    this.pendingTap = setTimeout(() => (back ? this.previous() : this.next()), DOUBLE_TAP_MS);
+  }
+
+  /** In infinite scroll mode a single tap does nothing, so only double taps (zoom) matter. */
+  protected onScrollTap(event: MouseEvent): void {
+    if (this.isDoubleTap(event)) {
+      void this.toggleZoom(event);
     }
+  }
+
+  private isDoubleTap(event: MouseEvent): boolean {
+    const now = Date.now();
+    const last = this.lastTap;
+    if (
+      last &&
+      now - last.time < DOUBLE_TAP_MS &&
+      Math.hypot(event.clientX - last.x, event.clientY - last.y) < DOUBLE_TAP_DISTANCE
+    ) {
+      this.lastTap = null;
+      return true;
+    }
+    this.lastTap = { time: now, x: event.clientX, y: event.clientY };
+    return false;
+  }
+
+  /** Zooms in or out, keeping the tapped spot under the finger. */
+  private async toggleZoom(event: MouseEvent): Promise<void> {
+    const content = this.content();
+    if (!content) {
+      return;
+    }
+    const scroller = await content.getScrollElement();
+    const rect = scroller.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const from = this.zoom();
+    const to = from > 1 ? 1 : ZOOM_SCALE;
+    const ratio = to / from;
+    const left = (scroller.scrollLeft + x) * ratio - x;
+    const top = (scroller.scrollTop + y) * ratio - y;
+    this.zoom.set(to);
+    afterNextRender({ read: () => scroller.scrollTo({ left: Math.max(left, 0), top: Math.max(top, 0) }) }, { injector: this.injector });
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -210,6 +305,7 @@ export class ReaderPage implements OnDestroy {
       return;
     }
     this.index.set(clamped);
+    this.zoom.set(1);
     void this.content()?.scrollToTop();
   }
 }

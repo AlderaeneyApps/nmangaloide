@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, OnDestroy, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -75,7 +75,7 @@ const GROUP_ORDER: readonly TagType[] = ['artist', 'group', 'parody', 'character
     BackButtonComponent,
   ],
 })
-export class GalleryPage {
+export class GalleryPage implements OnDestroy {
   private readonly details = inject(GalleryDetailsService);
   private readonly cdn = inject(CdnService);
   private readonly router = inject(Router);
@@ -90,6 +90,13 @@ export class GalleryPage {
   readonly id = input.required<string>();
 
   protected readonly gallery = signal<GalleryDetailResponse | null>(null);
+  /**
+   * A downloaded gallery's pages, unpacked on the device by page number. Used for the
+   * thumbnails, and kept while this page is open so the reader opens them at once.
+   */
+  private readonly localPages = signal<ReadonlyMap<number, string>>(new Map());
+  /** The gallery whose unpacked pages this page is holding, if any. */
+  private heldPages: number | null = null;
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
 
@@ -140,7 +147,7 @@ export class GalleryPage {
   protected readonly pageThumbnails = computed(() =>
     [...(this.gallery()?.pages ?? [])].sort((a, b) => a.number - b.number).map((page) => ({
       number: page.number,
-      url: this.cdn.thumbnailUrl(page.thumbnail),
+      url: this.localPages().get(page.number) ?? this.cdn.thumbnailUrl(page.thumbnail),
       /** Tapping a thumbnail opens the reader on that page. */
       params: { ...this.readerParams(), page: page.number },
       ratio:
@@ -170,6 +177,47 @@ export class GalleryPage {
     effect(() => {
       void this.load(Number(this.id()));
     });
+    // Once downloaded (now, or when its download finishes), the pages come from the device.
+    effect(() => {
+      const id = Number(this.id());
+      const downloaded = this.downloadState() === 'downloaded';
+      untracked(() => this.holdPages(downloaded ? id : null));
+    });
+  }
+
+  /** The unpacked pages are temporary: deleted on leaving (unless the reader still uses them). */
+  ngOnDestroy(): void {
+    this.holdPages(null);
+  }
+
+  private holdPages(id: number | null): void {
+    if (this.heldPages === id) {
+      return;
+    }
+    if (this.heldPages !== null) {
+      void this.downloads.releasePages(this.heldPages);
+    }
+    this.heldPages = id;
+    this.localPages.set(new Map());
+    if (id !== null) {
+      this.downloads
+        .getPages(id)
+        .then((pages) => {
+          if (this.heldPages === id) {
+            this.localPages.set(pages);
+          }
+        })
+        .catch(() => undefined);
+    }
+  }
+
+  /** A page that can't be shown from the device (e.g. its file was deleted) falls back to the CDN. */
+  protected onThumbnailError(number: number): void {
+    if (this.localPages().has(number)) {
+      const pages = new Map(this.localPages());
+      pages.delete(number);
+      this.localPages.set(pages);
+    }
   }
 
   /** Queues the gallery's pages for download in the background. */

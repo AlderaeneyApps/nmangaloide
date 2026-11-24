@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="reader" [fullscreen]="true" [scrollEvents]="mode() === 'scroll'" (ionScroll)="onScroll($event)">
+<ion-content class="reader" [fullscreen]="true" [scrollX]="zoomed()" [scrollEvents]="mode() === 'scroll'" (ionScroll)="onScroll($event)">
   @if (loading()) {
     <div class="state"><ion-spinner></ion-spinner></div>
   } @else if (error()) {
@@ -20,9 +20,9 @@
       <ion-text color="medium"><p>{{ 'READER.NO_PAGES' | transloco }}</p></ion-text>
     </div>
   } @else if (mode() === 'scroll') {
-    <div class="scroll" data-mode="scroll">
+    <div class="scroll" data-mode="scroll" [class.zoomed]="zoomed()" [style.--zoom]="zoom()" (click)="onScrollTap($event)">
       @for (page of pages(); track page.number) {
-        <div class="page" [style.aspect-ratio]="page.ratio">
+        <div class="page" [attr.data-page]="page.number" [style.aspect-ratio]="page.ratio">
           @if (page.url) {
             <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" loading="lazy" decoding="async" (error)="onImageError(page.number)" />
           }
@@ -30,7 +30,7 @@
       }
     </div>
   } @else if (current(); as page) {
-    <div class="paged" data-mode="paged" (click)="onPageTap($event)">
+    <div class="paged" data-mode="paged" [class.zoomed]="zoomed()" [style.--zoom]="zoom()" (click)="onPageTap($event)">
       @if (page.url) {
         <img [src]="page.url" [alt]="'READER.PAGE_ALT' | transloco: { page: page.number }" (error)="onImageError(page.number)" />
       }

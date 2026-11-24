@@ -11,7 +11,13 @@ import { getTranslocoTestingModule } from '../../testing/transloco-testing';
 import { GalleryPage } from './gallery.page';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 import { DOWNLOAD_SLEEP } from '../../services/download.service';
-import { FakeDownloadStorage, FakePreferences, TEST_FOLDER, provideFakeDownloads } from '../../testing/fake-download-storage';
+import {
+  FakeAppFiles,
+  FakeDownloadStorage,
+  FakePreferences,
+  TEST_FOLDER,
+  provideFakeDownloads,
+} from '../../testing/fake-download-storage';
 
 import { describe, beforeEach, it, expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 
@@ -62,6 +68,7 @@ describe('GalleryPage', () => {
   let db: FakeDatabase;
   let storage: FakeDownloadStorage;
   let preferences: FakePreferences;
+  let appFiles: FakeAppFiles;
   let fixture: ComponentFixture<GalleryPage>;
   let http: HttpTestingController;
   let navigateRoot: ReturnType<typeof vi.fn>;
@@ -80,6 +87,7 @@ describe('GalleryPage', () => {
     db = new FakeDatabase();
     storage = new FakeDownloadStorage();
     preferences = new FakePreferences();
+    appFiles = new FakeAppFiles();
     navigateRoot = vi.fn().mockResolvedValue(true);
     navigateForward = vi.fn().mockResolvedValue(true);
     toastCreate = vi.fn().mockResolvedValue({ present: vi.fn().mockResolvedValue(undefined) });
@@ -93,7 +101,7 @@ describe('GalleryPage', () => {
       providers: [
         provideRouter([{ path: '**', children: [] }]),
         provideFakeDatabase(db),
-        provideFakeDownloads(storage, preferences, folderChosen),
+        provideFakeDownloads(storage, preferences, folderChosen, appFiles),
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: NavController, useValue: { navigateRoot, navigateForward } },
@@ -335,6 +343,26 @@ describe('GalleryPage', () => {
       expect(button().dataset['state']).toBe('downloaded');
       expect(icon()).toBe('checkmark-circle');
       expect([...storage.files.keys()]).toEqual([`${TEST_FOLDER.uri}/42.cbz`]);
+    });
+
+    it('shows a downloaded gallery\'s thumbnails from the device, keeping them until leaving', async () => {
+      await startDownload();
+      for (const n of [1, 2, 3]) await answerPage(n);
+      await vi.waitFor(() => expect(db.saved.get(42)?.['is_downloaded']).toBe(1));
+      const thumbs = () => [...el().querySelectorAll('.page-grid img')].map((img) => img.getAttribute('src'));
+      await vi.waitFor(async () => {
+        await settle();
+        expect(thumbs()).toEqual(['app-src:reader/42/001.webp', 'app-src:reader/42/002.webp', 'app-src:reader/42/003.webp']);
+      });
+      expect(appFiles.keys('reader')).toEqual(['42/001.webp', '42/002.webp', '42/003.webp']);
+
+      // A page that fails to load from the device falls back to the CDN.
+      el().querySelector('.page-grid img')!.dispatchEvent(new Event('error'));
+      fixture.detectChanges();
+      expect(thumbs()[0]).toBe('https://t.example/galleries/100/1t.webp');
+
+      fixture.destroy();
+      await vi.waitFor(() => expect(appFiles.keys('reader')).toEqual([]));
     });
 
     it('asks before deleting a download', async () => {

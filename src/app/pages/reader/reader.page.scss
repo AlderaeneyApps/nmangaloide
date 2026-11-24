@@ -15,15 +15,24 @@
   --background: #111;
 }
 
+.scroll,
+.paged {
+  --zoom: 1;
+  // Double taps are handled here, so the browser shouldn't wait for (or act on) them.
+  touch-action: manipulation;
+}
+
 .scroll {
   display: flex;
   flex-direction: column;
   align-items: center;
+  // Zoomed in, the whole strip grows and the content scrolls both ways.
+  width: calc(100% * var(--zoom));
 }
 
 .page {
   width: 100%;
-  max-width: 900px;
+  max-width: calc(900px * var(--zoom));
   background: #1c1c1c;
 
   img {
@@ -37,14 +46,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100%;
+  width: calc(100% * var(--zoom));
+  min-height: calc(100% * var(--zoom));
   cursor: pointer;
   user-select: none;
+
+  &.zoomed {
+    cursor: zoom-out;
+  }
 
   img {
     display: block;
     max-width: 100%;
-    max-height: calc(100vh - 112px);
+    max-height: calc((100vh - 112px) * var(--zoom));
     object-fit: contain;
   }
 }

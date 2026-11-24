@@ -334,13 +334,38 @@ describe('DownloadService', () => {
       expect(appFiles.keys('reader')).toEqual([]);
     });
 
-    it('removes pages unpacked for another comic first', async () => {
+    it('removes pages left unpacked for another comic first', async () => {
+      await appFiles.write('reader', '1', '001.webp', 'AAAA');
+      storage.seed(ROOT, '2.cbz', cbzOf(gallery(2, 1), [1]));
+      setUp();
+      await service.getPages(2);
+      expect(appFiles.keys('reader')).toEqual(['2/001.webp']);
+    });
+
+    it('keeps the pages of another comic that is still in use', async () => {
       storage.seed(ROOT, '1.cbz', cbzOf(gallery(1, 1), [1]));
       storage.seed(ROOT, '2.cbz', cbzOf(gallery(2, 1), [1]));
       setUp();
       await service.getPages(1);
       await service.getPages(2);
+      expect(appFiles.keys('reader')).toEqual(['1/001.webp', '2/001.webp']);
+      await service.releasePages(1);
       expect(appFiles.keys('reader')).toEqual(['2/001.webp']);
+    });
+
+    it('shares unpacked pages, deleting them only once nothing uses them', async () => {
+      storage.seed(ROOT, '1.cbz', cbzOf(gallery(1, 2), [1, 2]));
+      setUp();
+      const first = await service.getPages(1);
+      const readBytes = vi.spyOn(storage, 'readBytes');
+      // e.g. the reader opened from the gallery details: no unpacking again.
+      expect(await service.getPages(1)).toBe(first);
+      expect(readBytes).not.toHaveBeenCalled();
+
+      await service.releasePages(1);
+      expect(appFiles.keys('reader')).toEqual(['1/001.webp', '1/002.webp']);
+      await service.releasePages(1);
+      expect(appFiles.keys('reader')).toEqual([]);
     });
 
     it('has no pages for a gallery that is not downloaded', async () => {

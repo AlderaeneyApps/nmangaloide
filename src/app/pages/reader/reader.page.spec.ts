@@ -17,6 +17,8 @@ function cbz(pages: number[]): string {
 }
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { getTranslocoTestingModule } from '../../testing/transloco-testing';
+import { IonContent } from '@ionic/angular';
+
 import { ReaderPage } from './reader.page';
 
 import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
@@ -171,12 +173,58 @@ describe('ReaderPage', () => {
     area.getBoundingClientRect = () => ({ left: 0, width: 300 }) as DOMRect;
 
     area.dispatchEvent(new MouseEvent('click', { clientX: 250, bubbles: true }));
-    await settle();
-    expect(counter()).toBe('2 / 3');
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(counter()).toBe('2 / 3');
+    });
 
     area.dispatchEvent(new MouseEvent('click', { clientX: 50, bubbles: true }));
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(counter()).toBe('1 / 3');
+    });
+  });
+
+  it('zooms in on a double tap and back out on another, without turning the page', async () => {
+    await open('paged');
+    const area = () => el().querySelector('[data-mode="paged"]') as HTMLElement;
+    const doubleTap = () => {
+      area().dispatchEvent(new MouseEvent('click', { clientX: 250, clientY: 100, bubbles: true }));
+      area().dispatchEvent(new MouseEvent('click', { clientX: 252, clientY: 102, bubbles: true }));
+    };
+
+    doubleTap();
     await settle();
+    expect(area().classList).toContain('zoomed');
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    fixture.detectChanges();
     expect(counter()).toBe('1 / 3');
+
+    doubleTap();
+    await settle();
+    expect(area().classList).not.toContain('zoomed');
+  });
+
+  it('zooms the infinite scroll on a double tap', async () => {
+    await open('scroll');
+    const strip = () => el().querySelector('[data-mode="scroll"]') as HTMLElement;
+    strip().dispatchEvent(new MouseEvent('click', { clientX: 100, clientY: 100, bubbles: true }));
+    strip().dispatchEvent(new MouseEvent('click', { clientX: 100, clientY: 100, bubbles: true }));
+    await settle();
+    expect(strip().classList).toContain('zoomed');
+  });
+
+  it('resets the zoom when turning the page', async () => {
+    await open('paged');
+    const area = () => el().querySelector('[data-mode="paged"]') as HTMLElement;
+    area().dispatchEvent(new MouseEvent('click', { clientX: 250, bubbles: true }));
+    area().dispatchEvent(new MouseEvent('click', { clientX: 250, bubbles: true }));
+    await settle();
+    expect(area().classList).toContain('zoomed');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+    await settle();
+    expect(counter()).toBe('2 / 3');
+    expect(area().classList).not.toContain('zoomed');
   });
 
   it('turns the page with the arrow keys', async () => {
@@ -187,6 +235,22 @@ describe('ReaderPage', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
     await settle();
     expect(counter()).toBe('1 / 3');
+  });
+
+  it('starts the infinite scroll on a given page', async () => {
+    const scrollToPoint = vi.spyOn(IonContent.prototype, 'scrollToPoint').mockResolvedValue(undefined);
+    const scroller = document.createElement('div');
+    vi.spyOn(IonContent.prototype, 'getScrollElement').mockResolvedValue(scroller);
+    const tops = new Map([['1', 0], ['2', 700], ['3', 1400]]);
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      return { top: tops.get(this.dataset['page'] ?? '') ?? 0 } as DOMRect;
+    });
+    try {
+      await open('scroll', '3');
+      await vi.waitFor(() => expect(scrollToPoint).toHaveBeenCalledWith(0, 1400));
+    } finally {
+      vi.restoreAllMocks();
+    }
   });
 
   it('can start on a given page, clamped to the gallery', async () => {
