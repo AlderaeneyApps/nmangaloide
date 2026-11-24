@@ -8,7 +8,6 @@ import {
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   IonLabel,
-  IonMenuButton,
   IonSearchbar,
   IonSegment,
   IonSegmentButton,
@@ -25,6 +24,7 @@ import { TAG_TYPES, TagResponse, TagType, TagsService } from '../../api';
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { TagToggleComponent } from '../../components/tag-toggle/tag-toggle.component';
 import { TagInfo, TagPreferencesService } from '../../services/tag-preferences.service';
+import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 export type TagsTab = 'selected' | TagType;
 
@@ -57,7 +57,7 @@ class TagTypeList {
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonMenuButton,
+    MenuButtonComponent,
     IonTitle,
     IonContent,
     IonSearchbar,

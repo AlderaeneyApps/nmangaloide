@@ -10,7 +10,6 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonMenuButton,
   IonNote,
   IonRadio,
   IonRadioGroup,
@@ -34,6 +33,7 @@ import { DownloadFolderService } from '../../services/download-folder.service';
 import { DownloadService } from '../../services/download.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
+import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 @Component({
   selector: 'app-settings',
@@ -42,7 +42,7 @@ import { NewerBackupError } from '../../sql-services/database.service';
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonMenuButton,
+    MenuButtonComponent,
     IonTitle,
     IonContent,
     IonList,

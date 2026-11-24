@@ -5,7 +5,8 @@
     "FAVORITES": "收藏",
     "DOWNLOADED": "已下载",
     "SETTINGS": "设置",
-    "DOWNLOADING": "下载中"
+    "DOWNLOADING": "下载中",
+    "OPEN": "菜单"
   },
   "HOME": {
     "TITLE": "首页",

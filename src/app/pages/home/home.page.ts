@@ -13,7 +13,6 @@ import {
   IonInfiniteScrollContent,
   IonItem,
   IonList,
-  IonMenuButton,
   IonPopover,
   IonRefresher,
   IonRefresherContent,
@@ -44,6 +43,7 @@ import { BACK_PARAM, SEARCH_PARAM, parseSingleFilter } from '../../navigation';
 import { GallerySortService } from '../../services/gallery-sort.service';
 import { HARDWARE_BACK_PRIORITY } from '../../services/hardware-back.service';
 import { TagPreferencesService } from '../../services/tag-preferences.service';
+import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 const PER_PAGE = 25;
 /** The plain gallery list can't be sorted, so a sorted list with no search uses a search matching everything. */
@@ -60,7 +60,7 @@ const MAX_PAGES_PER_LOAD = 3;
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonMenuButton,
+    MenuButtonComponent,
     IonTitle,
     IonContent,
     IonRefresher,

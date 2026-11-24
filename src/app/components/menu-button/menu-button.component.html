@@ -1,0 +1,27 @@
+<ion-button data-action="menu" [attr.aria-label]="'MENU.OPEN' | transloco" (click)="show($event)">
+  <ion-icon slot="icon-only" ios="menu-outline" md="menu-sharp" aria-hidden="true"></ion-icon>
+</ion-button>
+
+<ion-popover [isOpen]="open()" [event]="openEvent()" [dismissOnSelect]="true" (didDismiss)="hide()">
+  <ng-template>
+    <ion-list lines="none" class="app-menu-list">
+      <ion-list-header>
+        <a href="https://github.com/AlderaeneyApps/nmangaloide" target="_blank" rel="noopener noreferrer">nMangaloide</a>
+      </ion-list-header>
+      @for (p of pages; track p.url) {
+        <ion-item
+          button
+          routerDirection="forward"
+          [routerLink]="[p.url]"
+          [replaceUrl]="onTopLevelPage()"
+          detail="false"
+          routerLinkActive="selected"
+          [routerLinkActiveOptions]="activeOptions"
+        >
+          <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+          <ion-label>{{ p.title | transloco }}</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  </ng-template>
+</ion-popover>

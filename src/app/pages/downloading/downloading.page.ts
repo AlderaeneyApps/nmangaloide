@@ -9,7 +9,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonMenuButton,
   IonProgressBar,
   IonText,
   IonTitle,
@@ -22,6 +21,7 @@ import { closeCircleOutline, folderOpenOutline, refreshOutline } from 'ionicons/
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { BACK_PARAM } from '../../navigation';
 import { DownloadJob, DownloadService } from '../../services/download.service';
+import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 /** Galleries downloading in the background, with live page counts. */
 @Component({
@@ -33,7 +33,7 @@ import { DownloadJob, DownloadService } from '../../services/download.service';
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonMenuButton,
+    MenuButtonComponent,
     IonTitle,
     IonContent,
     IonList,

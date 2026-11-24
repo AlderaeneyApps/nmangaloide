@@ -81,7 +81,7 @@ describe('HomePage', () => {
     await settle();
 
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelector('ion-menu-button')).toBeTruthy();
+    expect(el.querySelector('app-menu-button')).toBeTruthy();
     expect(el.querySelector('ion-title')?.textContent).toContain('Home');
     expect(el.textContent).toContain('No galleries found.');
   });

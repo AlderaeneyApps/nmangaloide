@@ -1,29 +1,18 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
-        <ion-list id="menu-list">
-          <ion-list-header><a href="https://github.com/AlderaeneyApps/nmangaloide" target="_blank" rel="noopener noreferrer">nMangaloide</a></ion-list-header>
-
-          @for (p of appPages; track p.url) {
-            <ion-menu-toggle auto-hide="false">
-              <ion-item
-                [routerDirection]="p.url === '/' ? 'root' : 'forward'"
-                [routerLink]="[p.url]"
-                [replaceUrl]="p.url !== '/' && onTopLevelPage()"
-                lines="none"
-                detail="false"
-                routerLinkActive="selected"
-                [routerLinkActiveOptions]="activeOptions"
-              >
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                <ion-label>{{ p.title | transloco }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-          }
-        </ion-list>
-      </ion-content>
-    </ion-menu>
-    <ion-router-outlet id="main-content"></ion-router-outlet>
-  </ion-split-pane>
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+  @if (showBottomBar()) {
+    <ion-tab-bar slot="bottom" [selectedTab]="selectedTab()">
+      @for (p of bottomPages; track p.url) {
+        <ion-tab-button
+          [tab]="p.url"
+          [routerDirection]="p.url === '/' ? 'root' : 'forward'"
+          [routerLink]="[p.url]"
+          [replaceUrl]="p.url !== '/' && onTopLevelPage()"
+        >
+          <ion-icon aria-hidden="true" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+          <ion-label>{{ p.title | transloco }}</ion-label>
+        </ion-tab-button>
+      }
+    </ion-tab-bar>
+  }
 </ion-app>

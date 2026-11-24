@@ -5,7 +5,8 @@
     "FAVORITES": "お気に入り",
     "DOWNLOADED": "ダウンロード済み",
     "SETTINGS": "設定",
-    "DOWNLOADING": "ダウンロード中"
+    "DOWNLOADING": "ダウンロード中",
+    "OPEN": "メニュー"
   },
   "HOME": {
     "TITLE": "ホーム",

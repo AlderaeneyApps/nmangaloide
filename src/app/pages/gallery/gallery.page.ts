@@ -10,7 +10,6 @@ import {
   IonHeader,
   IonIcon,
   IonLabel,
-  IonMenuButton,
   IonSpinner,
   IonText,
   IonTitle,
@@ -41,6 +40,7 @@ import { DownloadService } from '../../services/download.service';
 import { GalleryDetailsService } from '../../services/gallery-details.service';
 import { SavedGalleriesService } from '../../services/saved-galleries.service';
 import { buildGallerySearchQuery } from '../../services/tag-preferences.service';
+import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 export interface TagGroup {
   type: TagType;
@@ -60,7 +60,7 @@ const GROUP_ORDER: readonly TagType[] = ['artist', 'group', 'parody', 'character
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonMenuButton,
+    MenuButtonComponent,
     IonTitle,
     IonContent,
     IonButton,

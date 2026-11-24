@@ -6,7 +6,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonMenuButton,
   IonSpinner,
   IonText,
   IonTitle,
@@ -21,6 +20,7 @@ import { GalleryCardComponent } from '../../components/gallery-card/gallery-card
 import { BACK_PARAM } from '../../navigation';
 import { DownloadService } from '../../services/download.service';
 import { flagLanguageOf, toGalleryListItem } from '../../services/saved-galleries.service';
+import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 /** Galleries downloaded to the device, readable offline. Independent from favorites. */
 @Component({
@@ -32,7 +32,7 @@ import { flagLanguageOf, toGalleryListItem } from '../../services/saved-gallerie
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonMenuButton,
+    MenuButtonComponent,
     IonTitle,
     IonContent,
     IonButton,

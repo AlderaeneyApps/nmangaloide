@@ -1,49 +1,33 @@
-import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { IsActiveMatchOptions, NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  IonApp,
-  IonSplitPane,
-  IonMenu,
-  IonContent,
-  IonList,
-  IonListHeader,
-  IonMenuToggle,
-  IonItem,
-  IonIcon,
-  IonLabel,
-  IonRouterOutlet,
-  IonRouterLink,
-} from '@ionic/angular';
+import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { IonApp, IonIcon, IonLabel, IonRouterLink, IonRouterOutlet, IonTabBar, IonTabButton } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
   downloadOutline,
   downloadSharp,
-  cloudDownloadOutline,
-  cloudDownloadSharp,
   heartOutline,
   heartSharp,
   homeOutline,
   homeSharp,
   pricetagOutline,
   pricetagSharp,
-  settingsOutline,
-  settingsSharp,
 } from 'ionicons/icons';
-import { filter, map } from 'rxjs';
 
-import { isTopLevelPage } from './navigation';
+import { BOTTOM_BAR_PAGES, injectCurrentUrl, injectOnTopLevelPage } from './app-pages';
 import { DownloadNotificationService } from './services/download-notification.service';
 import { DownloadService } from './services/download.service';
 import { HardwareBackService } from './services/hardware-back.service';
 import { LanguageService } from './services/language.service';
 import { ThemeService } from './services/theme.service';
 
-export interface AppPage {
-  title: string;
-  url: string;
-  icon: string;
+/** Whether `url` shows the bottom bar: every page but the reader and the first-start setup. */
+export function showsBottomBar(url: string): boolean {
+  const segments = new URL(url, 'https://app.invalid').pathname.split('/').filter(Boolean);
+  if (segments[0] === 'welcome') {
+    return false;
+  }
+  return !(segments[0] === 'gallery' && segments[2] === 'read');
 }
 
 @Component({
@@ -52,15 +36,9 @@ export interface AppPage {
   styleUrls: ['app.component.scss'],
   imports: [
     RouterLink,
-    RouterLinkActive,
     IonApp,
-    IonSplitPane,
-    IonMenu,
-    IonContent,
-    IonList,
-    IonListHeader,
-    IonMenuToggle,
-    IonItem,
+    IonTabBar,
+    IonTabButton,
     IonIcon,
     IonLabel,
     IonRouterLink,
@@ -70,36 +48,23 @@ export interface AppPage {
 })
 export class AppComponent {
   private readonly language = inject(LanguageService);
-  private readonly router = inject(Router);
+  private readonly url = injectCurrentUrl();
 
   /**
-   * Sidebar pages open on top of the home page so iOS's swipe back has somewhere
-   * to go. Moving between them replaces the current one, so it's always home.
+   * Bottom bar pages open on top of the home page so iOS's swipe back has somewhere
+   * to go. Moving between top-level pages replaces the current one, so it's always home.
    */
-  protected readonly onTopLevelPage = toSignal(
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => isTopLevelPage(this.router.url)),
-    ),
-    { initialValue: false },
-  );
+  protected readonly onTopLevelPage = injectOnTopLevelPage();
 
-  /** A link stays highlighted whatever its query params are. */
-  protected readonly activeOptions: IsActiveMatchOptions = {
-    paths: 'exact',
-    queryParams: 'ignored',
-    fragment: 'ignored',
-    matrixParams: 'ignored',
-  };
+  protected readonly showBottomBar = computed(() => showsBottomBar(this.url()));
 
-  readonly appPages: AppPage[] = [
-    { title: 'MENU.HOME', url: '/', icon: 'home' },
-    { title: 'MENU.TAGS', url: '/tags', icon: 'pricetag' },
-    { title: 'MENU.FAVORITES', url: '/favorites', icon: 'heart' },
-    { title: 'MENU.DOWNLOADED', url: '/downloaded', icon: 'download' },
-    { title: 'MENU.DOWNLOADING', url: '/downloading', icon: 'cloud-download' },
-    { title: 'MENU.SETTINGS', url: '/settings', icon: 'settings' },
-  ];
+  /** The bottom bar tab of the current page, if it is one of them. */
+  protected readonly selectedTab = computed(() => {
+    const path = new URL(this.url(), 'https://app.invalid').pathname;
+    return this.bottomPages.find((p) => p.url === path)?.url;
+  });
+
+  readonly bottomPages = BOTTOM_BAR_PAGES;
 
   constructor() {
     addIcons({
@@ -111,10 +76,6 @@ export class AppComponent {
       heartSharp,
       downloadOutline,
       downloadSharp,
-      cloudDownloadOutline,
-      cloudDownloadSharp,
-      settingsOutline,
-      settingsSharp,
     });
     void this.language.init();
     void inject(ThemeService).init();

@@ -6,7 +6,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonMenuButton,
   IonSpinner,
   IonText,
   IonTitle,
@@ -20,6 +19,7 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
 import { GalleryCardComponent } from '../../components/gallery-card/gallery-card.component';
 import { BACK_PARAM } from '../../navigation';
 import { SavedGalleriesService, flagLanguageOf, toGalleryListItem } from '../../services/saved-galleries.service';
+import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 /** The galleries saved as favorites, read from the device (no API calls). */
 @Component({
@@ -31,7 +31,7 @@ import { SavedGalleriesService, flagLanguageOf, toGalleryListItem } from '../../
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonMenuButton,
+    MenuButtonComponent,
     IonTitle,
     IonContent,
     IonButton,

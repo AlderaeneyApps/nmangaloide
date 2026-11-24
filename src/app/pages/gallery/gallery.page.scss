@@ -104,8 +104,9 @@
 }
 
 // The floating Read button: further from the bottom and side edges, and 10px bigger than the default 56px.
+// The bottom bar below the page already keeps clear of the home indicator.
 ion-fab.fab-vertical-bottom {
-  bottom: calc(24px + var(--ion-safe-area-bottom, 0px));
+  bottom: 24px;
 }
 
 ion-fab.fab-horizontal-end {
