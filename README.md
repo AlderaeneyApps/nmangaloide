@@ -39,7 +39,7 @@
 - **Backups**: export and import favorites, tags and settings as a JSON file, saved to the device or shared.
 - **Privacy**: an encrypted local database, and the app's content is hidden in the app switcher.
 - **Themes**: system, light, dark and OLED black.
-- **16 languages**: English, Spanish, Catalan, French, German, Portuguese, Russian, Ukrainian, Bulgarian, Finnish, Danish, Norwegian Bokmål, Swedish, Japanese, Simplified and Traditional Chinese. The app picks your device's language on first launch, and you can change it in Settings.
+- **17 languages**: English, Spanish, Catalan, French, German, Portuguese, Russian, Ukrainian, Bulgarian, Finnish, Danish, Norwegian Bokmål, Swedish, Polish, Japanese, Simplified and Traditional Chinese. The app picks your device's language on first launch, and you can change it in Settings.
 
 ## Building
 

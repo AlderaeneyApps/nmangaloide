@@ -55,6 +55,15 @@
       "scroll": "Todas as páginas em uma rolagem vertical contínua.",
       "paged": "Toque para passar de uma página para outra."
     },
+    "PAGE_DIRECTION": "Mudança de página",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Da direita para a esquerda",
+      "ltr": "Da esquerda para a direita"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Toque no lado direito para avançar e no esquerdo para voltar.",
+      "ltr": "Toque no lado esquerdo para avançar e no direito para voltar."
+    },
     "SETTINGS_LOAD_ERROR": "Não foi possível carregar suas configurações.",
     "SETTINGS_SAVE_ERROR": "Não foi possível salvar a configuração.",
     "THEME": "Tema",

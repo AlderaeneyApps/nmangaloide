@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Translation, TranslocoLoader } from '@jsverse/transloco';
 
 /** Languages with a translation file in `src/assets/i18n/`. */
-export const AVAILABLE_LANGS = ['en', 'es', 'ca', 'fr', 'de', 'pt', 'ru', 'uk', 'bg', 'fi', 'da', 'nb', 'sv', 'ja', 'zh-Hans', 'zh-Hant'];
+export const AVAILABLE_LANGS = ['en', 'es', 'ca', 'fr', 'de', 'pt', 'ru', 'uk', 'bg', 'fi', 'da', 'nb', 'sv', 'pl', 'ja', 'zh-Hans', 'zh-Hant'];
 export const DEFAULT_LANG = 'en';
 
 @Injectable({ providedIn: 'root' })

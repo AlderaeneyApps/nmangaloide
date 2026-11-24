@@ -55,6 +55,15 @@
       "scroll": "Todas las páginas en un único desplazamiento vertical.",
       "paged": "Toca para pasar de una página a otra."
     },
+    "PAGE_DIRECTION": "Paso de página",
+    "PAGE_DIRECTIONS": {
+      "rtl": "De derecha a izquierda",
+      "ltr": "De izquierda a derecha"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Toca el lado derecho para avanzar y el izquierdo para retroceder.",
+      "ltr": "Toca el lado izquierdo para avanzar y el derecho para retroceder."
+    },
     "SETTINGS_LOAD_ERROR": "No se pudieron cargar tus ajustes.",
     "SETTINGS_SAVE_ERROR": "No se pudo guardar el ajuste.",
     "THEME": "Tema",

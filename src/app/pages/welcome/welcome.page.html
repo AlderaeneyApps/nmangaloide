@@ -49,6 +49,22 @@
                 </ion-item>
               }
             </ion-radio-group>
+            @if (settings.readerMode() === 'paged') {
+              <ion-radio-group data-setting="page-direction" [value]="settings.pageDirection()" (ionChange)="onPageDirectionChange($event)">
+                <ion-list-header>
+                  <ion-label>{{ 'SETTINGS.PAGE_DIRECTION' | transloco }}</ion-label>
+                </ion-list-header>
+                @for (direction of pageDirections; track direction) {
+                  <ion-item>
+                    <ion-radio [value]="direction" justify="space-between">
+                      {{ 'SETTINGS.PAGE_DIRECTIONS.' + direction | transloco }}
+                      <br />
+                      <ion-note>{{ 'SETTINGS.PAGE_DIRECTION_HINT.' + direction | transloco }}</ion-note>
+                    </ion-radio>
+                  </ion-item>
+                }
+              </ion-radio-group>
+            }
           </ion-list>
         </section>
       }

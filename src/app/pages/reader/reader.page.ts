@@ -98,6 +98,7 @@ export class ReaderPage implements OnDestroy {
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
   protected readonly mode = this.settings.readerMode;
+  protected readonly direction = this.settings.pageDirection;
 
   protected readonly pages = computed<ReaderPageImage[]>(() =>
     [...(this.gallery()?.pages ?? [])]
@@ -270,7 +271,8 @@ export class ReaderPage implements OnDestroy {
 
   /**
    * Double tapping zooms in on that spot, or back out. Otherwise, while not zoomed,
-   * tapping the left third goes back and anywhere else goes forward.
+   * tapping the back third goes back and anywhere else goes forward. The back third is
+   * the left one by default ('rtl'), or the right one when the direction is 'ltr'.
    */
   protected onPageTap(event: MouseEvent): void {
     if (this.isDoubleTap(event)) {
@@ -283,7 +285,8 @@ export class ReaderPage implements OnDestroy {
     }
     const target = event.currentTarget as HTMLElement;
     const { left, width } = target.getBoundingClientRect();
-    const back = width > 0 && event.clientX - left < width / 3;
+    const offset = event.clientX - left;
+    const back = width > 0 && (this.direction() === 'ltr' ? offset > (width * 2) / 3 : offset < width / 3);
     // Wait to see whether a second tap makes this a double tap.
     clearTimeout(this.pendingTap);
     this.pendingTap = setTimeout(() => (back ? this.previous() : this.next()), DOUBLE_TAP_MS);
@@ -335,10 +338,11 @@ export class ReaderPage implements OnDestroy {
     if (this.mode() !== 'paged' || !this.gallery()) {
       return;
     }
-    if (['ArrowRight', 'PageDown', ' '].includes(event.key)) {
+    const [forwardArrow, backArrow] = this.direction() === 'ltr' ? ['ArrowLeft', 'ArrowRight'] : ['ArrowRight', 'ArrowLeft'];
+    if ([forwardArrow, 'PageDown', ' '].includes(event.key)) {
       event.preventDefault();
       this.next();
-    } else if (['ArrowLeft', 'PageUp'].includes(event.key)) {
+    } else if ([backArrow, 'PageUp'].includes(event.key)) {
       event.preventDefault();
       this.previous();
     }

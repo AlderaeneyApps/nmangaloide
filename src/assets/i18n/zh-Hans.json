@@ -55,6 +55,15 @@
       "scroll": "所有页面在一个连续的竖向滚动中显示。",
       "paged": "点按切换页面。"
     },
+    "PAGE_DIRECTION": "翻页方向",
+    "PAGE_DIRECTIONS": {
+      "rtl": "从右到左",
+      "ltr": "从左到右"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "点击右侧前进，点击左侧后退。",
+      "ltr": "点击左侧前进，点击右侧后退。"
+    },
     "SETTINGS_LOAD_ERROR": "无法加载你的设置。",
     "SETTINGS_SAVE_ERROR": "无法保存该设置。",
     "THEME": "主题",

@@ -77,12 +77,20 @@ describe('ReaderPage', () => {
     fixture.detectChanges();
   }
 
-  async function open(mode: 'scroll' | 'paged', startPage?: string, seed?: (storage: FakeDownloadStorage) => void) {
+  async function open(
+    mode: 'scroll' | 'paged',
+    startPage?: string,
+    seed?: (storage: FakeDownloadStorage) => void,
+    direction?: 'rtl' | 'ltr',
+  ) {
     db = new FakeDatabase();
     storage = new FakeDownloadStorage();
     appFiles = new FakeAppFiles();
     seed?.(storage);
     db.settings.set('reader_mode', mode);
+    if (direction) {
+      db.settings.set('page_direction', direction);
+    }
     await TestBed.configureTestingModule({
       imports: [ReaderPage, getTranslocoTestingModule()],
       providers: [
@@ -208,6 +216,53 @@ describe('ReaderPage', () => {
       fixture.detectChanges();
       expect(counter()).toBe('1 / 3');
     });
+  });
+
+  it('mirrors the tap zones left to right: right third back, the rest forward', async () => {
+    await open('paged', undefined, undefined, 'ltr');
+    const area = el().querySelector('[data-mode="paged"]') as HTMLElement;
+    area.getBoundingClientRect = () => ({ left: 0, width: 300 }) as DOMRect;
+
+    area.dispatchEvent(new MouseEvent('click', { clientX: 50, bubbles: true }));
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(counter()).toBe('2 / 3');
+    });
+
+    area.dispatchEvent(new MouseEvent('click', { clientX: 250, bubbles: true }));
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(counter()).toBe('1 / 3');
+    });
+  });
+
+  it('swaps the bottom bar buttons left to right, arrows still pointing outward', async () => {
+    const buttons = () =>
+      ['previous', 'next'].map((action) => {
+        const button = el().querySelector(`[data-action="${action}"]`)!;
+        return [button.closest('ion-buttons')!.getAttribute('slot'), button.querySelector('ion-icon')!.getAttribute('name')];
+      });
+    await open('paged');
+    expect(buttons()).toEqual([
+      ['start', 'chevron-back-outline'],
+      ['end', 'chevron-forward-outline'],
+    ]);
+    TestBed.resetTestingModule();
+    await open('paged', undefined, undefined, 'ltr');
+    expect(buttons()).toEqual([
+      ['end', 'chevron-forward-outline'],
+      ['start', 'chevron-back-outline'],
+    ]);
+  });
+
+  it('mirrors the arrow keys left to right', async () => {
+    await open('paged', undefined, undefined, 'ltr');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+    await settle();
+    expect(counter()).toBe('2 / 3');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+    await settle();
+    expect(counter()).toBe('1 / 3');
   });
 
   it('zooms in on a double tap and back out on another, without turning the page', async () => {

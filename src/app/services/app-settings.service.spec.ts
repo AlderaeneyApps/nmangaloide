@@ -46,6 +46,24 @@ describe('AppSettingsService', () => {
     expect(service.readerMode()).toBe('scroll');
   });
 
+  it('defaults the page direction to right to left and loads a saved one', async () => {
+    await service.load();
+    expect(service.pageDirection()).toBe('rtl');
+    db.settings.set('page_direction', 'ltr');
+    await service.reload();
+    expect(service.pageDirection()).toBe('ltr');
+    db.settings.set('page_direction', 'up');
+    await service.reload();
+    expect(service.pageDirection()).toBe('rtl');
+  });
+
+  it('saves the page direction', async () => {
+    await service.setPageDirection('ltr');
+    expect(db.settings.get('page_direction')).toBe('ltr');
+    expect(service.pageDirection()).toBe('ltr');
+    await expect(service.setPageDirection('up' as never)).rejects.toThrow('Unknown page direction');
+  });
+
   it('rejects unknown modes', async () => {
     await expect(service.setReaderMode('sideways' as never)).rejects.toThrow('Unknown reader mode');
     expect(db.runs).toEqual([]);

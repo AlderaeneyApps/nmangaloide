@@ -55,6 +55,15 @@
       "scroll": "Totes les pàgines en un sol desplaçament vertical.",
       "paged": "Toca per passar d'una pàgina a una altra."
     },
+    "PAGE_DIRECTION": "Pas de pàgina",
+    "PAGE_DIRECTIONS": {
+      "rtl": "De dreta a esquerra",
+      "ltr": "D'esquerra a dreta"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Toca el costat dret per avançar i l'esquerre per retrocedir.",
+      "ltr": "Toca el costat esquerre per avançar i el dret per retrocedir."
+    },
     "SETTINGS_LOAD_ERROR": "No s'ha pogut carregar la configuració.",
     "SETTINGS_SAVE_ERROR": "No s'ha pogut desar el canvi.",
     "THEME": "Tema",

@@ -8,12 +8,21 @@ export type ReaderMode = 'scroll' | 'paged';
 export const READER_MODES: readonly ReaderMode[] = ['scroll', 'paged'];
 export const DEFAULT_READER_MODE: ReaderMode = 'scroll';
 
+/**
+ * Which way taps turn pages in paged mode. 'rtl': the right side goes forward and the
+ * left side goes back. 'ltr': mirrored, the left side goes forward and the right side goes back.
+ */
+export type PageDirection = 'rtl' | 'ltr';
+export const PAGE_DIRECTIONS: readonly PageDirection[] = ['rtl', 'ltr'];
+export const DEFAULT_PAGE_DIRECTION: PageDirection = 'rtl';
+
 /** The app's colours: follow the phone, always light, always dark, or dark on pure black. */
 export type AppTheme = 'system' | 'light' | 'dark' | 'oled';
 export const APP_THEMES: readonly AppTheme[] = ['system', 'light', 'dark', 'oled'];
 export const DEFAULT_THEME: AppTheme = 'system';
 
 const READER_MODE_KEY = 'reader_mode';
+const PAGE_DIRECTION_KEY = 'page_direction';
 const THEME_KEY = 'theme';
 const API_KEY_KEY = 'api_key';
 
@@ -28,10 +37,12 @@ export class AppSettingsService {
   private readonly db = inject(DatabaseService);
   private readonly apiKeys = inject(ApiKeyService);
   private readonly _readerMode = signal<ReaderMode>(DEFAULT_READER_MODE);
+  private readonly _pageDirection = signal<PageDirection>(DEFAULT_PAGE_DIRECTION);
   private readonly _theme = signal<AppTheme>(DEFAULT_THEME);
   private loading: Promise<void> | null = null;
 
   readonly readerMode = this._readerMode.asReadonly();
+  readonly pageDirection = this._pageDirection.asReadonly();
   readonly theme = this._theme.asReadonly();
   /** The nhentai API key, sent by the API interceptor as the `Authorization` header. */
   readonly apiKey = this.apiKeys.key;
@@ -43,6 +54,8 @@ export class AppSettingsService {
         const settings = new Map(rows.map((row) => [row.key, row.value]));
         const mode = settings.get(READER_MODE_KEY);
         this._readerMode.set(isReaderMode(mode) ? mode : DEFAULT_READER_MODE);
+        const direction = settings.get(PAGE_DIRECTION_KEY);
+        this._pageDirection.set(isPageDirection(direction) ? direction : DEFAULT_PAGE_DIRECTION);
         const theme = settings.get(THEME_KEY);
         this._theme.set(isTheme(theme) ? theme : DEFAULT_THEME);
         this.apiKeys.set(settings.get(API_KEY_KEY) ?? null);
@@ -67,6 +80,14 @@ export class AppSettingsService {
     }
     await this.setValue(READER_MODE_KEY, mode);
     this._readerMode.set(mode);
+  }
+
+  async setPageDirection(direction: PageDirection): Promise<void> {
+    if (!isPageDirection(direction)) {
+      throw new Error(`Unknown page direction: ${direction}`);
+    }
+    await this.setValue(PAGE_DIRECTION_KEY, direction);
+    this._pageDirection.set(direction);
   }
 
   async setTheme(theme: AppTheme): Promise<void> {
@@ -105,6 +126,10 @@ export class AppSettingsService {
 
 function isReaderMode(value: unknown): value is ReaderMode {
   return READER_MODES.includes(value as ReaderMode);
+}
+
+function isPageDirection(value: unknown): value is PageDirection {
+  return PAGE_DIRECTIONS.includes(value as PageDirection);
 }
 
 function isTheme(value: unknown): value is AppTheme {

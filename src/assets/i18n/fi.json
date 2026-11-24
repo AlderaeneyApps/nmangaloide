@@ -55,6 +55,15 @@
       "scroll": "Kaikki sivut yhtenä jatkuvana pystysuuntaisena vierityksenä.",
       "paged": "Siirry sivulta toiselle napauttamalla."
     },
+    "PAGE_DIRECTION": "Sivun kääntäminen",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Oikealta vasemmalle",
+      "ltr": "Vasemmalta oikealle"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Napauta oikeaa reunaa siirtyäksesi eteenpäin ja vasenta palataksesi.",
+      "ltr": "Napauta vasenta reunaa siirtyäksesi eteenpäin ja oikeaa palataksesi."
+    },
     "SETTINGS_LOAD_ERROR": "Asetuksia ei voitu ladata.",
     "SETTINGS_SAVE_ERROR": "Asetusta ei voitu tallentaa.",
     "THEME": "Teema",

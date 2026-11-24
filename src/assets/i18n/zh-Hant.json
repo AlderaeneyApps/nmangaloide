@@ -55,6 +55,15 @@
       "scroll": "所有頁面在一個連續的直向捲動中顯示。",
       "paged": "點一下切換頁面。"
     },
+    "PAGE_DIRECTION": "翻頁方向",
+    "PAGE_DIRECTIONS": {
+      "rtl": "從右到左",
+      "ltr": "從左到右"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "點擊右側前進，點擊左側後退。",
+      "ltr": "點擊左側前進，點擊右側後退。"
+    },
     "SETTINGS_LOAD_ERROR": "無法載入你的設定。",
     "SETTINGS_SAVE_ERROR": "無法儲存此設定。",
     "THEME": "主題",

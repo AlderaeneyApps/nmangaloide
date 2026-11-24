@@ -86,7 +86,7 @@ describe('WelcomePage', () => {
     expect(el().querySelector('h1')?.textContent).toContain('Welcome to nMangaloide');
     expect(el().querySelector('.step-count')?.textContent).toContain('Step 1 of 3');
     const languages = [...el().querySelectorAll('[data-setting="language"] ion-radio')].map((r) => r.textContent?.trim());
-    expect(languages).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', 'Português', 'Русский', 'Українська', 'Български', 'Suomi', 'Dansk', 'Norsk bokmål', 'Svenska', '日本語', '简体中文', '繁體中文']);
+    expect(languages).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', 'Português', 'Русский', 'Українська', 'Български', 'Suomi', 'Dansk', 'Norsk bokmål', 'Svenska', 'Polski', '日本語', '简体中文', '繁體中文']);
     expect(el().querySelector('[data-setting="language"] ion-radio-group')?.classList).toContain('language-scroll');
     const modes = [...el().querySelectorAll('[data-setting="reader"] ion-radio')].map((r) => r.getAttribute('value'));
     expect(modes).toEqual(['scroll', 'paged']);

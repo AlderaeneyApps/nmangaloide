@@ -22,7 +22,7 @@ import { addIcons } from 'ionicons';
 import { arrowBack, arrowForward, checkmarkCircle, cloudDownloadOutline, folderOpenOutline, languageOutline } from 'ionicons/icons';
 
 import { isCancelled } from '../../native/file-saver';
-import { AppSettingsService, READER_MODES, ReaderMode } from '../../services/app-settings.service';
+import { AppSettingsService, PAGE_DIRECTIONS, PageDirection, READER_MODES, ReaderMode } from '../../services/app-settings.service';
 import { BackupService } from '../../services/backup.service';
 import { DownloadFolderService } from '../../services/download-folder.service';
 import { DownloadService } from '../../services/download.service';
@@ -76,6 +76,7 @@ export class WelcomePage {
   protected readonly languageListAtEnd = signal(false);
 
   protected readonly readerModes = READER_MODES;
+  protected readonly pageDirections = PAGE_DIRECTIONS;
   /** The folder step only where the user picks the folder (Android). */
   protected readonly steps: readonly WelcomeStep[] = this.folders.needsPicking
     ? ['preferences', 'folder', 'import']
@@ -159,6 +160,13 @@ export class WelcomePage {
     const mode = (event as CustomEvent<{ value: ReaderMode }>).detail.value;
     if (mode && mode !== this.settings.readerMode()) {
       await this.settings.setReaderMode(mode).catch(() => this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger'));
+    }
+  }
+
+  protected async onPageDirectionChange(event: Event): Promise<void> {
+    const direction = (event as CustomEvent<{ value: PageDirection }>).detail.value;
+    if (direction && direction !== this.settings.pageDirection()) {
+      await this.settings.setPageDirection(direction).catch(() => this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger'));
     }
   }
 

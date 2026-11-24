@@ -55,6 +55,15 @@
       "scroll": "Alle sidene i én sammenhengende loddrett rulling.",
       "paged": "Trykk for å bytte mellom sidene."
     },
+    "PAGE_DIRECTION": "Sidebytte",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Fra høyre til venstre",
+      "ltr": "Fra venstre til høyre"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Trykk på høyre side for å gå fram og venstre side for å gå tilbake.",
+      "ltr": "Trykk på venstre side for å gå fram og høyre side for å gå tilbake."
+    },
     "SETTINGS_LOAD_ERROR": "Kunne ikke laste inn innstillingene dine.",
     "SETTINGS_SAVE_ERROR": "Kunne ikke lagre innstillingen.",
     "THEME": "Tema",

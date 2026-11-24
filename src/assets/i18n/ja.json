@@ -55,6 +55,15 @@
       "scroll": "すべてのページを1つの縦スクロールで表示します。",
       "paged": "タップしてページを移動します。"
     },
+    "PAGE_DIRECTION": "ページ送り",
+    "PAGE_DIRECTIONS": {
+      "rtl": "右から左",
+      "ltr": "左から右"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "右側をタップで次へ、左側をタップで前へ。",
+      "ltr": "左側をタップで次へ、右側をタップで前へ。"
+    },
     "SETTINGS_LOAD_ERROR": "設定を読み込めませんでした。",
     "SETTINGS_SAVE_ERROR": "設定を保存できませんでした。",
     "THEME": "テーマ",

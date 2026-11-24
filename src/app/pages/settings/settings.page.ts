@@ -34,7 +34,7 @@ import {
 } from 'ionicons/icons';
 
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
-import { APP_THEMES, AppSettingsService, AppTheme, READER_MODES, ReaderMode } from '../../services/app-settings.service';
+import { APP_THEMES, AppSettingsService, AppTheme, PAGE_DIRECTIONS, PageDirection, READER_MODES, ReaderMode } from '../../services/app-settings.service';
 import { isCancelled } from '../../native/file-saver';
 import { BackupService, ExportDestination } from '../../services/backup.service';
 import { DownloadFolderService } from '../../services/download-folder.service';
@@ -74,6 +74,7 @@ export class SettingsPage implements OnInit {
   protected readonly language = inject(LanguageService);
   protected readonly settings = inject(AppSettingsService);
   protected readonly readerModes = READER_MODES;
+  protected readonly pageDirections = PAGE_DIRECTIONS;
   protected readonly themes = APP_THEMES;
   protected readonly folders = inject(DownloadFolderService);
   private readonly downloads = inject(DownloadService);
@@ -146,6 +147,18 @@ export class SettingsPage implements OnInit {
     }
     try {
       await this.settings.setReaderMode(mode);
+    } catch {
+      await this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger');
+    }
+  }
+
+  protected async onPageDirectionChange(event: Event): Promise<void> {
+    const direction = (event as CustomEvent<{ value: PageDirection }>).detail.value;
+    if (direction === this.settings.pageDirection()) {
+      return;
+    }
+    try {
+      await this.settings.setPageDirection(direction);
     } catch {
       await this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger');
     }

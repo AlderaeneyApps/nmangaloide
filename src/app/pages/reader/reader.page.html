@@ -41,17 +41,17 @@
 @if (mode() === 'paged' && !loading() && pages().length > 0) {
   <ion-footer>
     <ion-toolbar>
-      <ion-buttons slot="start">
+      <ion-buttons [slot]="direction() === 'ltr' ? 'end' : 'start'">
         <ion-button data-action="previous" [disabled]="!hasPrevious()" (click)="previous()" [attr.aria-label]="'READER.PREVIOUS' | transloco">
-          <ion-icon slot="icon-only" name="chevron-back-outline" aria-hidden="true"></ion-icon>
+          <ion-icon slot="icon-only" [name]="direction() === 'ltr' ? 'chevron-forward-outline' : 'chevron-back-outline'" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-buttons>
       <ion-title class="counter" size="small">
         {{ 'READER.PAGE_OF' | transloco: { page: index() + 1, total: pages().length } }}
       </ion-title>
-      <ion-buttons slot="end">
+      <ion-buttons [slot]="direction() === 'ltr' ? 'start' : 'end'">
         <ion-button data-action="next" [disabled]="!hasNext()" (click)="next()" [attr.aria-label]="'READER.NEXT' | transloco">
-          <ion-icon slot="icon-only" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+          <ion-icon slot="icon-only" [name]="direction() === 'ltr' ? 'chevron-back-outline' : 'chevron-forward-outline'" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>

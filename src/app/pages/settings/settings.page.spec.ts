@@ -74,7 +74,7 @@ describe('SettingsPage', () => {
     expect(el.querySelector('ion-title')?.textContent).toContain('Settings');
     expect((el.querySelector('[data-setting="language"] ion-select') as HTMLIonSelectElement).label).toBe('Language');
     const options = [...el.querySelectorAll('[data-setting="language"] ion-select-option')].map((o) => o.textContent?.trim());
-    expect(options).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', 'Português', 'Русский', 'Українська', 'Български', 'Suomi', 'Dansk', 'Norsk bokmål', 'Svenska', '日本語', '简体中文', '繁體中文']);
+    expect(options).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', 'Português', 'Русский', 'Українська', 'Български', 'Suomi', 'Dansk', 'Norsk bokmål', 'Svenska', 'Polski', '日本語', '简体中文', '繁體中文']);
   });
 
   it('should switch and save the language when a new one is picked', async () => {
@@ -263,6 +263,26 @@ describe('SettingsPage', () => {
       db.settings.set('reader_mode', 'paged');
       const el: HTMLElement = (await render()).nativeElement;
       expect(group(el).value).toBe('paged');
+    });
+
+    it('offers the page direction only in paged mode, and saves it', async () => {
+      const direction = (el: HTMLElement) => el.querySelector('[data-setting="page-direction"]') as HTMLIonRadioGroupElement | null;
+      const fixture = await render();
+      const el: HTMLElement = fixture.nativeElement;
+      expect(direction(el)).toBeNull();
+
+      group(el).dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'paged' } }));
+      await settle();
+      fixture.detectChanges();
+      const options = [...direction(el)!.querySelectorAll('ion-radio')].map((r) => r.getAttribute('value'));
+      expect(options).toEqual(['rtl', 'ltr']);
+      expect(direction(el)!.value).toBe('rtl');
+
+      direction(el)!.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'ltr' } }));
+      await settle();
+      fixture.detectChanges();
+      expect(db.settings.get('page_direction')).toBe('ltr');
+      expect(direction(el)!.value).toBe('ltr');
     });
 
     it('saves the chosen mode in the database', async () => {

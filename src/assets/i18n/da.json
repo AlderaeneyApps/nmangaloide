@@ -55,6 +55,15 @@
       "scroll": "Alle sider i én sammenhængende lodret rulning.",
       "paged": "Tryk for at skifte mellem siderne."
     },
+    "PAGE_DIRECTION": "Sideskift",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Fra højre mod venstre",
+      "ltr": "Fra venstre mod højre"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Tryk i højre side for at gå frem og i venstre side for at gå tilbage.",
+      "ltr": "Tryk i venstre side for at gå frem og i højre side for at gå tilbage."
+    },
     "SETTINGS_LOAD_ERROR": "Kunne ikke indlæse dine indstillinger.",
     "SETTINGS_SAVE_ERROR": "Kunne ikke gemme indstillingen.",
     "THEME": "Tema",

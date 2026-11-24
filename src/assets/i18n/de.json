@@ -55,6 +55,15 @@
       "scroll": "Alle Seiten in einem durchgehenden vertikalen Bildlauf.",
       "paged": "Tippe, um zwischen den Seiten zu wechseln."
     },
+    "PAGE_DIRECTION": "Umblättern",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Von rechts nach links",
+      "ltr": "Von links nach rechts"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Rechts tippen zum Vorblättern, links zum Zurückblättern.",
+      "ltr": "Links tippen zum Vorblättern, rechts zum Zurückblättern."
+    },
     "SETTINGS_LOAD_ERROR": "Deine Einstellungen konnten nicht geladen werden.",
     "SETTINGS_SAVE_ERROR": "Die Einstellung konnte nicht gespeichert werden.",
     "THEME": "Design",

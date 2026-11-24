@@ -25,6 +25,7 @@ export const LANGUAGE_NAMES: Record<string, string> = {
   da: 'Dansk',
   nb: 'Norsk bokmål',
   sv: 'Svenska',
+  pl: 'Polski',
   ja: '日本語',
   'zh-Hans': '简体中文',
   'zh-Hant': '繁體中文',

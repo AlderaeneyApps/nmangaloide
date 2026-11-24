@@ -1,0 +1,237 @@
+{
+  "MENU": {
+    "HOME": "Strona główna",
+    "TAGS": "Tagi",
+    "FAVORITES": "Ulubione",
+    "DOWNLOADED": "Pobrane",
+    "SETTINGS": "Ustawienia",
+    "DOWNLOADING": "Pobieranie",
+    "OPEN": "Menu"
+  },
+  "HOME": {
+    "TITLE": "Strona główna",
+    "ERROR": "Nie udało się wczytać galerii.",
+    "RETRY": "Spróbuj ponownie",
+    "EMPTY": "Nie znaleziono galerii.",
+    "CLEAR_SEARCH": "Wyczyść wyszukiwanie i pokaż najnowsze galerie",
+    "NO_RESULTS": "Żadna galeria nie pasuje do tego wyszukiwania.",
+    "SAVED_TAGS": "Twoje tagi ({{count}})",
+    "SAVED_TAGS_HINT": "Wyświetlane są galerie filtrowane według zapisanych tagów. Otwórz stronę Tagi, aby je zmienić.",
+    "SEARCH_OPEN": "Szukaj",
+    "SEARCH_CLOSE": "Zamknij wyszukiwanie",
+    "SEARCH_PLACEHOLDER": "Szukaj galerii",
+    "SORT": "Sortuj",
+    "SORT_BY": {
+      "date": "Najnowsze",
+      "popular": "Popularne: od zawsze",
+      "popular-today": "Popularne: dziś",
+      "popular-week": "Popularne: w tym tygodniu",
+      "popular-month": "Popularne: w tym miesiącu"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Ustawienia",
+    "LANGUAGE": "Język",
+    "DATA": "Dane",
+    "EXPORT": "Eksportuj bazę danych",
+    "EXPORT_HINT": "Zapisz kopię zapasową jako plik JSON na urządzeniu lub ją udostępnij.",
+    "IMPORT": "Importuj bazę danych",
+    "IMPORT_HINT": "Przywróć kopię zapasową utworzoną przez Eksport.",
+    "IMPORT_CONFIRM_TITLE": "Zastąpić dane?",
+    "IMPORT_CONFIRM_MESSAGE": "Import kopii zapasowej zastąpi wszystko, co jest obecnie zapisane w aplikacji.",
+    "IMPORT_CONFIRM": "Importuj",
+    "CANCEL": "Anuluj",
+    "EXPORT_DONE": "Baza danych wyeksportowana.",
+    "EXPORT_ERROR": "Nie udało się wyeksportować bazy danych.",
+    "IMPORT_DONE": "Baza danych zaimportowana.",
+    "IMPORT_ERROR": "Ten plik nie jest prawidłową kopią zapasową nMangaloide.",
+    "IMPORT_NEWER": "Ta kopia zapasowa pochodzi z nowszej wersji aplikacji. Zaktualizuj aplikację, aby ją zaimportować.",
+    "READER": "Czytnik",
+    "READER_MODE": {
+      "scroll": "Przewijanie ciągłe",
+      "paged": "Jedna strona naraz"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Wszystkie strony w jednym ciągłym pionowym przewijaniu.",
+      "paged": "Dotknij, aby przechodzić między stronami."
+    },
+    "PAGE_DIRECTION": "Kierunek przewracania stron",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Od prawej do lewej",
+      "ltr": "Od lewej do prawej"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Dotknij prawej strony, aby przejść dalej, a lewej, aby wrócić.",
+      "ltr": "Dotknij lewej strony, aby przejść dalej, a prawej, aby wrócić."
+    },
+    "SETTINGS_LOAD_ERROR": "Nie udało się wczytać ustawień.",
+    "SETTINGS_SAVE_ERROR": "Nie udało się zapisać ustawienia.",
+    "THEME": "Motyw",
+    "THEMES": {
+      "system": "Systemowy",
+      "light": "Jasny",
+      "dark": "Ciemny",
+      "oled": "Czarny OLED"
+    },
+    "EXPORT_TO_DEVICE": "Zapisz na urządzeniu…",
+    "EXPORT_SHARE": "Udostępnij…",
+    "EXPORT_SAVED": "Kopia zapasowa zapisana.",
+    "DOWNLOADS": "Pobieranie",
+    "DOWNLOAD_FOLDER": "Folder pobierania",
+    "DOWNLOAD_FOLDER_NONE": "Jeszcze nie wybrano",
+    "DOWNLOAD_FOLDER_HINT": "Każdy komiks jest zapisywany jako jeden plik CBZ nazwany jego numerem, który mogą otworzyć także inne czytniki komiksów. Skopiuj folder na inny telefon, aby zabrać pobrane pliki ze sobą.",
+    "DOWNLOAD_FOLDER_CHANGED": "Folder pobierania zmieniony.",
+    "DOWNLOAD_FOLDER_ERROR": "Nie można użyć tego folderu.",
+    "DOWNLOADS_FILES_APP": "Pobrane pliki są zapisywane w folderze aplikacji w aplikacji Pliki (Na moim iPhonie › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Pobrane pliki są zapisywane w tej przeglądarce.",
+    "ACCOUNT": "Konto",
+    "API_KEY": "Klucz API",
+    "API_KEY_PLACEHOLDER": "Wklej swój klucz API",
+    "API_KEY_HINT": "Potrzebny do ulubionych, czarnej listy i konta. Utwórz go na nhentai.net → Settings → API keys. Jest wysyłany z każdym zapytaniem do API.",
+    "API_KEY_SAVED": "Klucz API zapisany.",
+    "API_KEY_REMOVED": "Klucz API usunięty.",
+    "FAVORITES_SYNC": {
+      "checking": "Sprawdzanie ulubionych na Twoim koncie…",
+      "syncing": "Synchronizowanie ulubionych: pozostało {{pending}}",
+      "done": "Ulubione są zsynchronizowane z Twoim kontem.",
+      "done_with_failures": "Ulubione zsynchronizowane; nie udało się zmienić {{failed}}, zostanie ponowiona próba następnym razem.",
+      "error": "Nie udało się zsynchronizować ulubionych. Sprawdź klucz API i połączenie."
+    }
+  },
+  "COMMON": {
+    "BACK": "Wstecz"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Wybrane",
+    "HINT": "Dotknij tagu, aby go włączyć, ponownie, aby go wykluczyć, i jeszcze raz, aby go wyczyścić.",
+    "STATE_ENABLED": "włączony",
+    "STATE_DISABLED": "wykluczony",
+    "STATE_NONE": "niewybrany",
+    "SELECTED_EMPTY": "Nie wybrano jeszcze żadnych tagów.",
+    "BROWSE_ALL": "Przeglądaj tagi",
+    "SELECTED_ERROR": "Nie udało się wczytać zapisanych tagów.",
+    "ALL_ERROR": "Nie udało się wczytać tagów.",
+    "RETRY": "Spróbuj ponownie",
+    "SAVE_ERROR": "Nie udało się zapisać tagu.",
+    "SEARCH_PLACEHOLDER": "Szukaj tagów",
+    "NO_MATCHES": "Żaden tag nie pasuje do wyszukiwania.",
+    "TYPE_EMPTY": "Brak tagów tego typu.",
+    "TYPES": {
+      "tag": "Tagi",
+      "artist": "Artyści",
+      "character": "Postacie",
+      "parody": "Parodie",
+      "group": "Grupy",
+      "language": "Języki",
+      "category": "Kategorie"
+    },
+    "KIND": {
+      "tag": "Tag",
+      "artist": "Artysta",
+      "character": "Postać",
+      "parody": "Parodia",
+      "group": "Grupa",
+      "language": "Język",
+      "category": "Kategoria"
+    }
+  },
+  "GALLERY": {
+    "TITLE": "Galeria",
+    "PAGES": "Strony: {{count}}",
+    "FAVORITES": "Ulubione: {{count}}",
+    "UPLOADED": "Dodano {{date}}",
+    "READ": "Czytaj",
+    "ERROR": "Nie udało się wczytać tej galerii.",
+    "RETRY": "Spróbuj ponownie",
+    "SCANLATOR": "Tłumaczenie: {{name}}",
+    "PAGE": "Strona {{number}}",
+    "SEARCH_TAG": "Pokaż galerie z tagiem {{tag}}",
+    "FAVORITE_ADD": "Dodaj do ulubionych",
+    "FAVORITE_REMOVE": "Usuń z ulubionych",
+    "FAVORITE_ERROR": "Nie udało się zaktualizować ulubionych.",
+    "DOWNLOAD": "Pobierz",
+    "DOWNLOAD_STARTED": "Pobieranie rozpoczęte. Śledź je w sekcji Pobieranie.",
+    "DOWNLOAD_ERROR": "Nie udało się rozpocząć pobierania.",
+    "DOWNLOADING": "Pobieranie: zobacz postęp",
+    "DOWNLOAD_FAILED": "Pobieranie nieudane: spróbuj ponownie",
+    "DOWNLOADED": "Pobrano: usuń pobrany plik",
+    "DELETE_DOWNLOAD_TITLE": "Usunąć pobrany plik?",
+    "DELETE_DOWNLOAD_MESSAGE": "Pobrane strony zostaną usunięte z tego urządzenia.",
+    "DELETE": "Usuń",
+    "CANCEL": "Anuluj",
+    "CHOOSE_FOLDER_TITLE": "Gdzie zapisywać pobrane pliki?",
+    "CHOOSE_FOLDER_MESSAGE": "Wybierz folder w telefonie na pobrane komiksy. Możesz go później zmienić w Ustawieniach.",
+    "CHOOSE_FOLDER": "Wybierz folder"
+  },
+  "READER": {
+    "TITLE": "Czytnik",
+    "ERROR": "Nie udało się wczytać stron.",
+    "NO_PAGES": "Ta galeria nie ma stron.",
+    "PAGE_ALT": "Strona {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Poprzednia strona",
+    "NEXT": "Następna strona"
+  },
+  "FAVORITES": {
+    "EMPTY": "Brak ulubionych.",
+    "EMPTY_HINT": "Dotknij serca w galerii, aby ją tu zapisać.",
+    "ERROR": "Nie udało się wczytać ulubionych.",
+    "RETRY": "Spróbuj ponownie"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Nic nie jest pobierane.",
+    "HINT": "Pobieranie trwa, gdy dalej korzystasz z aplikacji.",
+    "PROGRESS": "{{done}} / {{total}} stron",
+    "STATUS": {
+      "queued": "Oczekuje",
+      "downloading": "Pobieranie",
+      "failed": "Nieudane"
+    },
+    "RETRY": "Ponów pobieranie",
+    "CANCEL": "Anuluj pobieranie",
+    "NEEDS_FOLDER": "Wybierz folder pobierania, aby rozpocząć pobieranie.",
+    "CHOOSE_FOLDER": "Wybierz folder"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Brak pobranych plików.",
+    "EMPTY_HINT": "Dotknij przycisku pobierania w galerii, aby czytać ją offline.",
+    "ERROR": "Nie udało się wczytać pobranych plików.",
+    "RETRY": "Spróbuj ponownie",
+    "IN_PROGRESS": "Pobieranie ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Krok {{step}} z {{total}}",
+    "BACK": "Wstecz",
+    "NEXT": "Dalej",
+    "FINISH": "Zacznij korzystać z aplikacji",
+    "PREFERENCES_TITLE": "Witaj w nMangaloide",
+    "PREFERENCES_TEXT": "Kilka rzeczy do ustawienia na początek. Wszystkie możesz później zmienić w Ustawieniach.",
+    "LANGUAGE": "Język",
+    "READER": "Jak chcesz czytać?",
+    "FOLDER_TITLE": "Folder pobierania",
+    "FOLDER_TEXT": "Wybierz folder na pobrane komiksy. Każdy komiks jest zapisywany jako jeden plik CBZ nazwany jego numerem, więc możesz skopiować je na inny telefon lub otworzyć w innych czytnikach komiksów.",
+    "FOLDER_CHOOSE": "Wybierz folder",
+    "FOLDER_CHANGE": "Zmień folder",
+    "FOLDER_CHOSEN": "Zapisywanie do: {{name}}",
+    "FOLDER_LATER": "Możesz pominąć ten krok i wybrać folder później w Ustawieniach.",
+    "FOLDER_ERROR": "Nie można użyć tego folderu.",
+    "IMPORT_TITLE": "Przenieś swoje dane",
+    "IMPORT_TEXT": "Przechodzisz z innego telefonu? Zaimportuj kopię zapasową utworzoną przez Eksport w Ustawieniach, aby przywrócić ulubione, tagi i ustawienia. Ten krok jest opcjonalny.",
+    "IMPORT_BUTTON": "Importuj kopię zapasową",
+    "IMPORT_DONE": "Kopia zapasowa zaimportowana.",
+    "IMPORT_DOWNLOADS": "Pobrane pliki nie są częścią kopii zapasowej: znajdują się w folderze pobierania, więc skopiuj także ten folder."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Pobieranie",
+    "TITLE_ONE": "Pobieranie 1 komiksu",
+    "TITLE_OTHER": "Pobieranie komiksów: {{count}}",
+    "BODY": "{{done}} / {{total}} stron · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japoński",
+      "chinese": "Chiński",
+      "english": "Angielski"
+    }
+  }
+}

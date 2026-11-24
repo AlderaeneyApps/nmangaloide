@@ -55,6 +55,15 @@
       "scroll": "Alla sidor i en sammanhängande lodrät rullning.",
       "paged": "Tryck för att byta mellan sidorna."
     },
+    "PAGE_DIRECTION": "Sidbyte",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Höger till vänster",
+      "ltr": "Vänster till höger"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Tryck på höger sida för att gå framåt och vänster sida för att gå bakåt.",
+      "ltr": "Tryck på vänster sida för att gå framåt och höger sida för att gå bakåt."
+    },
     "SETTINGS_LOAD_ERROR": "Det gick inte att läsa in dina inställningar.",
     "SETTINGS_SAVE_ERROR": "Det gick inte att spara inställningen.",
     "THEME": "Tema",

@@ -55,6 +55,15 @@
       "scroll": "Toutes les pages dans un seul défilement vertical.",
       "paged": "Touchez pour passer d’une page à l’autre."
     },
+    "PAGE_DIRECTION": "Tourner les pages",
+    "PAGE_DIRECTIONS": {
+      "rtl": "De droite à gauche",
+      "ltr": "De gauche à droite"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Touchez le côté droit pour avancer et le côté gauche pour reculer.",
+      "ltr": "Touchez le côté gauche pour avancer et le côté droit pour reculer."
+    },
     "SETTINGS_LOAD_ERROR": "Impossible de charger vos paramètres.",
     "SETTINGS_SAVE_ERROR": "Impossible d’enregistrer le paramètre.",
     "THEME": "Thème",

@@ -39,6 +39,7 @@ describe('LanguageService', () => {
       { code: 'da', name: 'Dansk' },
       { code: 'nb', name: 'Norsk bokmål' },
       { code: 'sv', name: 'Svenska' },
+      { code: 'pl', name: 'Polski' },
       { code: 'ja', name: '日本語' },
       { code: 'zh-Hans', name: '简体中文' },
       { code: 'zh-Hant', name: '繁體中文' },

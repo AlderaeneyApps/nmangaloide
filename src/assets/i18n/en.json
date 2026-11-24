@@ -55,6 +55,15 @@
       "scroll": "All pages in one continuous vertical scroll.",
       "paged": "Tap to move between pages."
     },
+    "PAGE_DIRECTION": "Page turning",
+    "PAGE_DIRECTIONS": {
+      "rtl": "Right to left",
+      "ltr": "Left to right"
+    },
+    "PAGE_DIRECTION_HINT": {
+      "rtl": "Tap the right side to go forward and the left side to go back.",
+      "ltr": "Tap the left side to go forward and the right side to go back."
+    },
     "SETTINGS_LOAD_ERROR": "Could not load your settings.",
     "SETTINGS_SAVE_ERROR": "Could not save the setting.",
     "THEME": "Theme",
