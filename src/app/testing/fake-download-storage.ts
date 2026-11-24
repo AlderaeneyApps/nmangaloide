@@ -1,4 +1,5 @@
-import { base64ToBytes, bytesToBase64, concat } from '../native/cbz';
+import { concat } from '../native/cbz';
+import { base64ToBytes, bytesToBase64 } from '../native/encoding';
 import {
   APP_FILES,
   AppFiles,

@@ -17,6 +17,14 @@ export const LANGUAGE_NAMES: Record<string, string> = {
   ca: 'Català',
   fr: 'Français',
   de: 'Deutsch',
+  pt: 'Português',
+  ru: 'Русский',
+  uk: 'Українська',
+  bg: 'Български',
+  fi: 'Suomi',
+  da: 'Dansk',
+  nb: 'Norsk bokmål',
+  sv: 'Svenska',
   ja: '日本語',
   'zh-Hans': '简体中文',
   'zh-Hant': '繁體中文',
@@ -24,6 +32,9 @@ export const LANGUAGE_NAMES: Record<string, string> = {
 
 /** Regions whose Chinese is written in traditional characters (when the tag names no script). */
 const TRADITIONAL_CHINESE_REGIONS = ['tw', 'hk', 'mo'];
+
+/** Primary tags that should use another language's file: plain and Nynorsk Norwegian use Bokmål. */
+const LANGUAGE_ALIASES: Record<string, string> = { no: 'nb', nn: 'nb' };
 
 /**
  * The supported language for a language tag such as `de-AT`, `pt_BR` or `zh-Hant-HK`,
@@ -46,7 +57,8 @@ export function matchLanguage(tag: string | null | undefined, available: readonl
     const code = traditional ? 'zh-Hant' : 'zh-Hans';
     return available.includes(code) ? code : null;
   }
-  return available.find((code) => code.toLowerCase() === primary) ?? null;
+  const target = LANGUAGE_ALIASES[primary] ?? primary;
+  return available.find((code) => code.toLowerCase() === target) ?? null;
 }
 
 const LANG_SETTING_KEY = 'lang';
@@ -75,7 +87,8 @@ export class LanguageService {
    */
   async init(): Promise<void> {
     const available = this.availableLangs();
-    const saved = (await this.getLangSetting()).value;
+    // If the setting can't be read, the device's language is used (and not saved over it).
+    const saved = await this.getLangSetting().catch(() => undefined);
     const fromSetting = matchLanguage(saved, available);
     const fromDevice = [navigator.language, ...(navigator.languages ?? [])]
       .map((tag) => matchLanguage(tag, available))
@@ -83,12 +96,13 @@ export class LanguageService {
     const languageToSet = fromSetting ?? fromDevice ?? DEFAULT_LANG;
     this.activate(languageToSet);
 
-    if (!saved) {
-      await this.setLangSetting(languageToSet);
+    if (saved !== undefined && !saved) {
+      // Remembered so a later change of the device's language doesn't change the app's.
+      await this.setLangSetting(languageToSet).catch(() => undefined);
     }
   }
 
-  /** Switches to `lang` and saves it as the user's setting. */
+  /** Switches to `lang` and saves it as the user's setting. Rejects if it can't be saved (it's still applied). */
   async setLanguage(lang: string): Promise<void> {
     if (!this.isAvailable(lang)) {
       throw new Error(`Unsupported language: ${lang}`);
@@ -114,16 +128,11 @@ export class LanguageService {
     return this.availableLangs().includes(lang);
   }
 
-  private async getLangSetting() {
-    return await Preferences.get({
-      key: LANG_SETTING_KEY,
-    });
+  private async getLangSetting(): Promise<string | null> {
+    return (await Preferences.get({ key: LANG_SETTING_KEY })).value;
   }
 
-  private async setLangSetting(lang: string) {
-    await Preferences.set({
-      key: LANG_SETTING_KEY,
-      value: lang,
-    });
+  private setLangSetting(lang: string): Promise<void> {
+    return Preferences.set({ key: LANG_SETTING_KEY, value: lang });
   }
 }

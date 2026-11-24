@@ -169,26 +169,8 @@ public class DownloadFolderPlugin extends Plugin {
             return;
         }
         try {
-            String folder = find(tree, path, true);
-            ContentResolver resolver = getContext().getContentResolver();
-            Child existing = child(tree, folder, name);
-            Uri file;
-            if (existing != null && !existing.directory) {
-                file = DocumentsContract.buildDocumentUriUsingTree(tree, existing.id);
-            } else {
-                Uri parent = DocumentsContract.buildDocumentUriUsingTree(tree, folder);
-                file = DocumentsContract.createDocument(resolver, parent, call.getString("mimeType", "application/octet-stream"), name);
-                if (file == null) {
-                    throw new IOException("Could not create " + name);
-                }
-            }
-            byte[] bytes = Base64.decode(data, Base64.DEFAULT);
-            try (OutputStream out = resolver.openOutputStream(file, "wt")) {
-                if (out == null) {
-                    throw new IOException("Could not open " + name);
-                }
-                out.write(bytes);
-            }
+            Uri file = openOrCreate(tree, path, name, call.getString("mimeType", "application/octet-stream"));
+            write(file, name, data, "wt");
             JSObject ret = new JSObject();
             ret.put("uri", file.toString());
             call.resolve(ret);
@@ -212,26 +194,7 @@ public class DownloadFolderPlugin extends Plugin {
             return;
         }
         try {
-            String folder = find(tree, path, true);
-            ContentResolver resolver = getContext().getContentResolver();
-            Child existing = child(tree, folder, name);
-            Uri file;
-            if (existing != null && !existing.directory) {
-                file = DocumentsContract.buildDocumentUriUsingTree(tree, existing.id);
-            } else {
-                Uri parent = DocumentsContract.buildDocumentUriUsingTree(tree, folder);
-                file = DocumentsContract.createDocument(resolver, parent, "application/octet-stream", name);
-                if (file == null) {
-                    throw new IOException("Could not create " + name);
-                }
-            }
-            byte[] bytes = Base64.decode(data, Base64.DEFAULT);
-            try (OutputStream out = resolver.openOutputStream(file, "wa")) {
-                if (out == null) {
-                    throw new IOException("Could not open " + name);
-                }
-                out.write(bytes);
-            }
+            write(openOrCreate(tree, path, name, "application/octet-stream"), name, data, "wa");
             call.resolve();
         } catch (Exception e) {
             call.reject("Could not write the file", "WRITE_FAILED", e);
@@ -337,6 +300,32 @@ public class DownloadFolderPlugin extends Plugin {
     }
 
     // --- Helpers ---
+
+    /** The file `name` in `path` (folders created as needed), created with `mimeType` if it doesn't exist. */
+    private Uri openOrCreate(Uri tree, List<String> path, String name, String mimeType) throws IOException {
+        String folder = find(tree, path, true);
+        Child existing = child(tree, folder, name);
+        if (existing != null && !existing.directory) {
+            return DocumentsContract.buildDocumentUriUsingTree(tree, existing.id);
+        }
+        Uri parent = DocumentsContract.buildDocumentUriUsingTree(tree, folder);
+        Uri created = DocumentsContract.createDocument(getContext().getContentResolver(), parent, mimeType, name);
+        if (created == null) {
+            throw new IOException("Could not create " + name);
+        }
+        return created;
+    }
+
+    /** Writes base64 `data` to `file`: `mode` "wt" replaces its contents, "wa" appends to them. */
+    private void write(Uri file, String name, String data, String mode) throws IOException {
+        byte[] bytes = Base64.decode(data, Base64.DEFAULT);
+        try (OutputStream out = getContext().getContentResolver().openOutputStream(file, mode)) {
+            if (out == null) {
+                throw new IOException("Could not open " + name);
+            }
+            out.write(bytes);
+        }
+    }
 
     private Uri treeUri(PluginCall call) {
         String value = call.getString("uri");

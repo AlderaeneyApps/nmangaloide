@@ -74,7 +74,20 @@
     "DOWNLOAD_FOLDER_CHANGED": "S'ha canviat la carpeta de baixades.",
     "DOWNLOAD_FOLDER_ERROR": "No s'ha pogut fer servir aquesta carpeta.",
     "DOWNLOADS_FILES_APP": "Les baixades es desen a la carpeta de l'app a Fitxers (Al meu iPhone › nMangaloide).",
-    "DOWNLOADS_BROWSER": "Les baixades es desen en aquest navegador."
+    "DOWNLOADS_BROWSER": "Les baixades es desen en aquest navegador.",
+    "ACCOUNT": "Compte",
+    "API_KEY": "Clau d'API",
+    "API_KEY_PLACEHOLDER": "Enganxa la teva clau d'API",
+    "API_KEY_HINT": "Necessària per als preferits, la llista negra i el teu compte. Crea-la a nhentai.net → Configuració → Claus d'API. S'envia amb cada petició a l'API.",
+    "API_KEY_SAVED": "Clau d'API desada.",
+    "API_KEY_REMOVED": "Clau d'API eliminada.",
+    "FAVORITES_SYNC": {
+      "checking": "Comprovant els preferits del teu compte…",
+      "syncing": "Sincronitzant preferits: en queden {{pending}}",
+      "done": "Els preferits estan sincronitzats amb el teu compte.",
+      "done_with_failures": "Preferits sincronitzats; {{failed}} no s'han pogut canviar i es tornaran a provar la propera vegada.",
+      "error": "No s'han pogut sincronitzar els preferits. Comprova la clau d'API i la connexió."
+    }
   },
   "COMMON": {
     "BACK": "Enrere"

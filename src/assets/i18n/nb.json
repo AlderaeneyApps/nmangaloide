@@ -1,0 +1,228 @@
+{
+  "MENU": {
+    "HOME": "Hjem",
+    "TAGS": "Tagger",
+    "FAVORITES": "Favoritter",
+    "DOWNLOADED": "Nedlastet",
+    "SETTINGS": "Innstillinger",
+    "DOWNLOADING": "Laster ned",
+    "OPEN": "Meny"
+  },
+  "HOME": {
+    "TITLE": "Hjem",
+    "ERROR": "Kunne ikke laste inn gallerier.",
+    "RETRY": "Prøv igjen",
+    "EMPTY": "Fant ingen gallerier.",
+    "CLEAR_SEARCH": "Tøm søket og vis de nyeste galleriene",
+    "NO_RESULTS": "Ingen gallerier samsvarer med dette søket.",
+    "SAVED_TAGS": "Dine tagger ({{count}})",
+    "SAVED_TAGS_HINT": "Viser gallerier filtrert etter de lagrede taggene dine. Åpne Tagger-siden for å endre dem.",
+    "SEARCH_OPEN": "Søk",
+    "SEARCH_CLOSE": "Lukk søk",
+    "SEARCH_PLACEHOLDER": "Søk i gallerier",
+    "SORT": "Sorter",
+    "SORT_BY": {
+      "date": "Nyeste",
+      "popular": "Populære: gjennom tidene",
+      "popular-today": "Populære: i dag",
+      "popular-week": "Populære: denne uken",
+      "popular-month": "Populære: denne måneden"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Innstillinger",
+    "LANGUAGE": "Språk",
+    "DATA": "Data",
+    "EXPORT": "Eksporter database",
+    "EXPORT_HINT": "Lagre sikkerhetskopien som en JSON-fil på enheten, eller del den.",
+    "IMPORT": "Importer database",
+    "IMPORT_HINT": "Gjenopprett en sikkerhetskopi laget med Eksporter.",
+    "IMPORT_CONFIRM_TITLE": "Erstatte dataene dine?",
+    "IMPORT_CONFIRM_MESSAGE": "Import av en sikkerhetskopi erstatter alt som er lagret i appen nå.",
+    "IMPORT_CONFIRM": "Importer",
+    "CANCEL": "Avbryt",
+    "EXPORT_DONE": "Databasen er eksportert.",
+    "EXPORT_ERROR": "Kunne ikke eksportere databasen.",
+    "IMPORT_DONE": "Databasen er importert.",
+    "IMPORT_ERROR": "Filen er ikke en gyldig nMangaloide-sikkerhetskopi.",
+    "IMPORT_NEWER": "Denne sikkerhetskopien er fra en nyere versjon av appen. Oppdater appen for å importere den.",
+    "READER": "Leser",
+    "READER_MODE": {
+      "scroll": "Uendelig rulling",
+      "paged": "Én side om gangen"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Alle sidene i én sammenhengende loddrett rulling.",
+      "paged": "Trykk for å bytte mellom sidene."
+    },
+    "SETTINGS_LOAD_ERROR": "Kunne ikke laste inn innstillingene dine.",
+    "SETTINGS_SAVE_ERROR": "Kunne ikke lagre innstillingen.",
+    "THEME": "Tema",
+    "THEMES": {
+      "system": "System",
+      "light": "Lyst",
+      "dark": "Mørkt",
+      "oled": "OLED-svart"
+    },
+    "EXPORT_TO_DEVICE": "Lagre på enheten…",
+    "EXPORT_SHARE": "Del…",
+    "EXPORT_SAVED": "Sikkerhetskopien er lagret.",
+    "DOWNLOADS": "Nedlastinger",
+    "DOWNLOAD_FOLDER": "Nedlastingsmappe",
+    "DOWNLOAD_FOLDER_NONE": "Ikke valgt ennå",
+    "DOWNLOAD_FOLDER_HINT": "Hver tegneserie lagres som én CBZ-fil oppkalt etter nummeret sitt, som andre tegneserieapper også kan åpne. Kopier mappen til en annen telefon for å ta med deg nedlastingene.",
+    "DOWNLOAD_FOLDER_CHANGED": "Nedlastingsmappen er endret.",
+    "DOWNLOAD_FOLDER_ERROR": "Kunne ikke bruke den mappen.",
+    "DOWNLOADS_FILES_APP": "Nedlastinger lagres i appens mappe i Filer-appen (På min iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Nedlastinger lagres i denne nettleseren.",
+    "ACCOUNT": "Konto",
+    "API_KEY": "API-nøkkel",
+    "API_KEY_PLACEHOLDER": "Lim inn API-nøkkelen din",
+    "API_KEY_HINT": "Trengs for favoritter, svarteliste og kontoen din. Opprett en på nhentai.net → Settings → API keys. Den sendes med hver forespørsel til API-et.",
+    "API_KEY_SAVED": "API-nøkkelen er lagret.",
+    "API_KEY_REMOVED": "API-nøkkelen er fjernet.",
+    "FAVORITES_SYNC": {
+      "checking": "Sjekker favorittene på kontoen din…",
+      "syncing": "Synkroniserer favoritter: {{pending}} igjen",
+      "done": "Favorittene er synkronisert med kontoen din.",
+      "done_with_failures": "Favoritter synkronisert; {{failed}} kunne ikke endres og blir forsøkt igjen neste gang.",
+      "error": "Favorittene kunne ikke synkroniseres. Sjekk API-nøkkelen og tilkoblingen din."
+    }
+  },
+  "COMMON": {
+    "BACK": "Tilbake"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Valgte",
+    "HINT": "Trykk på en tagg for å slå den på, igjen for å utelukke den og én gang til for å fjerne den.",
+    "STATE_ENABLED": "på",
+    "STATE_DISABLED": "utelukket",
+    "STATE_NONE": "ikke valgt",
+    "SELECTED_EMPTY": "Ingen tagger valgt ennå.",
+    "BROWSE_ALL": "Bla gjennom tagger",
+    "SELECTED_ERROR": "Kunne ikke laste inn de lagrede taggene dine.",
+    "ALL_ERROR": "Kunne ikke laste inn tagger.",
+    "RETRY": "Prøv igjen",
+    "SAVE_ERROR": "Kunne ikke lagre taggen.",
+    "SEARCH_PLACEHOLDER": "Søk i tagger",
+    "NO_MATCHES": "Ingen tagger samsvarer med søket ditt.",
+    "TYPE_EMPTY": "Ingen tagger av denne typen.",
+    "TYPES": {
+      "tag": "Tagger",
+      "artist": "Kunstnere",
+      "character": "Figurer",
+      "parody": "Parodier",
+      "group": "Grupper",
+      "language": "Språk",
+      "category": "Kategorier"
+    },
+    "KIND": {
+      "tag": "Tagg",
+      "artist": "Kunstner",
+      "character": "Figur",
+      "parody": "Parodi",
+      "group": "Gruppe",
+      "language": "Språk",
+      "category": "Kategori"
+    }
+  },
+  "GALLERY": {
+    "TITLE": "Galleri",
+    "PAGES": "{{count}} sider",
+    "FAVORITES": "{{count}} favoritter",
+    "UPLOADED": "Lastet opp {{date}}",
+    "READ": "Les",
+    "ERROR": "Kunne ikke laste inn dette galleriet.",
+    "RETRY": "Prøv igjen",
+    "SCANLATOR": "Oversatt av {{name}}",
+    "PAGE": "Side {{number}}",
+    "SEARCH_TAG": "Vis gallerier med {{tag}}",
+    "FAVORITE_ADD": "Legg til i favoritter",
+    "FAVORITE_REMOVE": "Fjern fra favoritter",
+    "FAVORITE_ERROR": "Kunne ikke oppdatere favorittene dine.",
+    "DOWNLOAD": "Last ned",
+    "DOWNLOAD_STARTED": "Nedlastingen har startet. Følg den under Laster ned.",
+    "DOWNLOAD_ERROR": "Kunne ikke starte nedlastingen.",
+    "DOWNLOADING": "Laster ned: se fremdrift",
+    "DOWNLOAD_FAILED": "Nedlastingen mislyktes: prøv igjen",
+    "DOWNLOADED": "Nedlastet: slett nedlasting",
+    "DELETE_DOWNLOAD_TITLE": "Slette nedlastingen?",
+    "DELETE_DOWNLOAD_MESSAGE": "De nedlastede sidene fjernes fra denne enheten.",
+    "DELETE": "Slett",
+    "CANCEL": "Avbryt",
+    "CHOOSE_FOLDER_TITLE": "Hvor skal nedlastinger lagres?",
+    "CHOOSE_FOLDER_MESSAGE": "Velg en mappe på telefonen for nedlastede tegneserier. Du kan endre den senere i Innstillinger.",
+    "CHOOSE_FOLDER": "Velg mappe"
+  },
+  "READER": {
+    "TITLE": "Leser",
+    "ERROR": "Kunne ikke laste inn sidene.",
+    "NO_PAGES": "Dette galleriet har ingen sider.",
+    "PAGE_ALT": "Side {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Forrige side",
+    "NEXT": "Neste side"
+  },
+  "FAVORITES": {
+    "EMPTY": "Ingen favoritter ennå.",
+    "EMPTY_HINT": "Trykk på hjertet på et galleri for å lagre det her.",
+    "ERROR": "Kunne ikke laste inn favorittene dine.",
+    "RETRY": "Prøv igjen"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Ingenting lastes ned.",
+    "HINT": "Nedlastingene fortsetter mens du bruker appen.",
+    "PROGRESS": "{{done}} / {{total}} sider",
+    "STATUS": {
+      "queued": "Venter",
+      "downloading": "Laster ned",
+      "failed": "Mislyktes"
+    },
+    "RETRY": "Prøv nedlastingen igjen",
+    "CANCEL": "Avbryt nedlastingen",
+    "NEEDS_FOLDER": "Velg en nedlastingsmappe for å begynne å laste ned.",
+    "CHOOSE_FOLDER": "Velg mappe"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Ingen nedlastinger ennå.",
+    "EMPTY_HINT": "Trykk på nedlastingsknappen på et galleri for å lese det uten nett.",
+    "ERROR": "Kunne ikke laste inn nedlastingene dine.",
+    "RETRY": "Prøv igjen",
+    "IN_PROGRESS": "Laster ned ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Trinn {{step}} av {{total}}",
+    "BACK": "Tilbake",
+    "NEXT": "Neste",
+    "FINISH": "Begynn å bruke appen",
+    "PREFERENCES_TITLE": "Velkommen til nMangaloide",
+    "PREFERENCES_TEXT": "Noen ting som må stilles inn før du begynner. Du kan endre alt senere i Innstillinger.",
+    "LANGUAGE": "Språk",
+    "READER": "Hvordan vil du lese?",
+    "FOLDER_TITLE": "Nedlastingsmappe",
+    "FOLDER_TEXT": "Velg en mappe for nedlastede tegneserier. Hver tegneserie lagres som én CBZ-fil oppkalt etter nummeret sitt, så du kan kopiere dem til en annen telefon eller åpne dem i andre tegneserielesere.",
+    "FOLDER_CHOOSE": "Velg mappe",
+    "FOLDER_CHANGE": "Bytt mappe",
+    "FOLDER_CHOSEN": "Lagrer i: {{name}}",
+    "FOLDER_LATER": "Du kan hoppe over dette og velge den senere i Innstillinger.",
+    "FOLDER_ERROR": "Kunne ikke bruke den mappen.",
+    "IMPORT_TITLE": "Ta med deg dataene dine",
+    "IMPORT_TEXT": "Kommer du fra en annen telefon? Importer en sikkerhetskopi laget med Eksporter i Innstillinger for å gjenopprette favorittene, taggene og innstillingene dine. Dette trinnet er valgfritt.",
+    "IMPORT_BUTTON": "Importer en sikkerhetskopi",
+    "IMPORT_DONE": "Sikkerhetskopien er importert.",
+    "IMPORT_DOWNLOADS": "Nedlastinger er ikke med i sikkerhetskopier: de ligger i nedlastingsmappen, så kopier den også."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Nedlastinger",
+    "TITLE_ONE": "Laster ned 1 tegneserie",
+    "TITLE_OTHER": "Laster ned {{count}} tegneserier",
+    "BODY": "{{done}} / {{total}} sider · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japansk",
+      "chinese": "Kinesisk",
+      "english": "Engelsk"
+    }
+  }
+}

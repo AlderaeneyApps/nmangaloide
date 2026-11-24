@@ -86,6 +86,13 @@ describe('SQLiteService', () => {
     });
   });
 
+  it('rejects with an Error (not a bare string) when the web store cannot start', async () => {
+    service.sqliteConnection = { initWebStore: vi.fn().mockRejectedValue(new Error('blocked')) } as never;
+    const error = await service.initWebStore().catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe('initWebStore: blocked');
+  });
+
   it('generates distinct 256-bit passphrases', () => {
     const a = generatePassphrase();
     expect(a).toMatch(/^[0-9a-f]{64}$/);

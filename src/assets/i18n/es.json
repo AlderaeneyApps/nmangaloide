@@ -74,7 +74,20 @@
     "DOWNLOAD_FOLDER_CHANGED": "Carpeta de descargas cambiada.",
     "DOWNLOAD_FOLDER_ERROR": "No se ha podido usar esa carpeta.",
     "DOWNLOADS_FILES_APP": "Las descargas se guardan en la carpeta de la app en Archivos (En mi iPhone › nMangaloide).",
-    "DOWNLOADS_BROWSER": "Las descargas se guardan en este navegador."
+    "DOWNLOADS_BROWSER": "Las descargas se guardan en este navegador.",
+    "ACCOUNT": "Cuenta",
+    "API_KEY": "Clave de API",
+    "API_KEY_PLACEHOLDER": "Pega tu clave de API",
+    "API_KEY_HINT": "Necesaria para favoritos, lista negra y tu cuenta. Créala en nhentai.net → Ajustes → Claves de API. Se envía con cada petición a la API.",
+    "API_KEY_SAVED": "Clave de API guardada.",
+    "API_KEY_REMOVED": "Clave de API eliminada.",
+    "FAVORITES_SYNC": {
+      "checking": "Comprobando los favoritos de tu cuenta…",
+      "syncing": "Sincronizando favoritos: quedan {{pending}}",
+      "done": "Los favoritos están sincronizados con tu cuenta.",
+      "done_with_failures": "Favoritos sincronizados; {{failed}} no se pudieron cambiar y se reintentarán la próxima vez.",
+      "error": "No se pudieron sincronizar los favoritos. Comprueba la clave de API y la conexión."
+    }
   },
   "COMMON": {
     "BACK": "Atrás"

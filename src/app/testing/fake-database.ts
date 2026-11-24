@@ -123,6 +123,10 @@ export class FakeDatabase {
         .filter((row) => row['language'] === null || row['language'] === undefined)
         .map((row) => ({ id: row['id'], details_json: row['details_json'] }));
     }
+    if (sql === 'SELECT cover_base64 FROM saved_galleries WHERE id = ?') {
+      const row = this.saved.get(values[0] as number);
+      return row ? [{ cover_base64: row['cover_base64'] ?? null }] : [];
+    }
     if (sql === 'SELECT details_json FROM saved_galleries WHERE id = ?') {
       const row = this.saved.get(values[0] as number);
       return row ? [{ details_json: row['details_json'] }] : [];

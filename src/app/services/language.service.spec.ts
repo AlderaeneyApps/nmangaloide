@@ -31,6 +31,14 @@ describe('LanguageService', () => {
       { code: 'ca', name: 'Català' },
       { code: 'fr', name: 'Français' },
       { code: 'de', name: 'Deutsch' },
+      { code: 'pt', name: 'Português' },
+      { code: 'ru', name: 'Русский' },
+      { code: 'uk', name: 'Українська' },
+      { code: 'bg', name: 'Български' },
+      { code: 'fi', name: 'Suomi' },
+      { code: 'da', name: 'Dansk' },
+      { code: 'nb', name: 'Norsk bokmål' },
+      { code: 'sv', name: 'Svenska' },
       { code: 'ja', name: '日本語' },
       { code: 'zh-Hans', name: '简体中文' },
       { code: 'zh-Hant', name: '繁體中文' },
@@ -105,6 +113,27 @@ describe('LanguageService', () => {
     expect(service.current()).toBe('zh-Hant');
   });
 
+  it('uses the device language without overwriting the setting when it cannot be read', async () => {
+    // Capacitor Preferences keeps its values in localStorage on the web.
+    vi.spyOn(localStorage, 'getItem').mockImplementation(() => {
+      throw new Error('storage unavailable');
+    });
+    const set = vi.spyOn(localStorage, 'setItem');
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('fr-FR');
+    await expect(service.init()).resolves.toBeUndefined();
+    expect(service.current()).toBe('fr');
+    expect(set).not.toHaveBeenCalled();
+  });
+
+  it('still applies the device language when it cannot be saved', async () => {
+    vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+      throw new Error('storage full');
+    });
+    vi.spyOn(navigator, 'language', 'get').mockReturnValue('es-ES');
+    await expect(service.init()).resolves.toBeUndefined();
+    expect(service.current()).toBe('es');
+  });
+
   it('can switch to the new languages', async () => {
     await service.setLanguage('ja');
     expect(transloco.getActiveLang()).toBe('ja');
@@ -131,5 +160,13 @@ describe('matchLanguage', () => {
     expect(matchLanguage('ko', available)).toBeNull();
     expect(matchLanguage('', available)).toBeNull();
     expect(matchLanguage(null, available)).toBeNull();
+  });
+
+  it('maps every Norwegian tag to Bokmål', () => {
+    const withNorwegian = [...available, 'nb'];
+    expect(matchLanguage('nb-NO', withNorwegian)).toBe('nb');
+    expect(matchLanguage('no', withNorwegian)).toBe('nb');
+    expect(matchLanguage('nn_NO', withNorwegian)).toBe('nb');
+    expect(matchLanguage('no', available)).toBeNull();
   });
 });

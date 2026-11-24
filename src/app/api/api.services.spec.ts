@@ -9,7 +9,7 @@ import { CommentsService } from './comments.service';
 import { FavoritesService } from './favorites.service';
 import { GalleriesService } from './galleries.service';
 import { MetaService } from './meta.service';
-import { nhentaiInterceptor } from './nhentai.interceptor';
+import { isApiUrl, nhentaiInterceptor } from './nhentai.interceptor';
 import { SearchService } from './search.service';
 import { TagsService } from './tags.service';
 import { UserService } from './user.service';
@@ -112,6 +112,14 @@ describe('nhentai API services', () => {
       TestBed.inject(ApiKeyService).set('  secret  ');
       TestBed.inject(UserService).getMe().subscribe();
       expect(http.expectOne(`${BASE}/user`).request.headers.get('Authorization')).toBe('Key secret');
+    });
+
+    it('recognises the API URL only, not one that merely starts the same', () => {
+      expect(isApiUrl(BASE, BASE)).toBe(true);
+      expect(isApiUrl(`${BASE}/user`, BASE)).toBe(true);
+      expect(isApiUrl(`${BASE}?x=1`, BASE)).toBe(true);
+      expect(isApiUrl(`${BASE}-beta/user`, BASE)).toBe(false);
+      expect(isApiUrl('https://nhentai.net/api/v1/user', BASE)).toBe(false);
     });
 
     it('does not touch other requests', async () => {

@@ -90,6 +90,15 @@ describe('SavedGalleriesService', () => {
     expect(db.saved.get(42)).toMatchObject({ is_favorite: 1, cover_base64: null });
   });
 
+  it('keeps showing the cover saved before (e.g. with a download) when it cannot be fetched again', async () => {
+    db.seedSaved({ id: 42, is_favorite: 0, is_downloaded: 1, cover_base64: 'data:image/webp;base64,OLD' });
+    const adding = service.addFavorite(GALLERY);
+    await answerCover('fail');
+    await adding;
+    expect(db.saved.get(42)).toMatchObject({ is_favorite: 1, cover_base64: 'data:image/webp;base64,OLD' });
+    expect(service.favorites()[0].cover_base64).toBe('data:image/webp;base64,OLD');
+  });
+
   it('removes a favorite that is not downloaded', async () => {
     db.seedSaved({ id: 42 });
     await service.load();

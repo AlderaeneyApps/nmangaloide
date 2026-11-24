@@ -19,7 +19,7 @@ import { BackButtonComponent } from '../../components/back-button/back-button.co
 import { GalleryCardComponent } from '../../components/gallery-card/gallery-card.component';
 import { BACK_PARAM } from '../../navigation';
 import { DownloadService } from '../../services/download.service';
-import { flagLanguageOf, toGalleryListItem } from '../../services/saved-galleries.service';
+import { toCardItem } from '../../services/saved-galleries.service';
 import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
 
 /** Galleries downloaded to the device, readable offline. Independent from favorites. */
@@ -49,13 +49,7 @@ export class DownloadedPage implements OnInit {
 
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
-  protected readonly items = computed(() =>
-    this.downloads.downloaded().map((gallery) => ({
-      gallery: toGalleryListItem(gallery),
-      cover: gallery.cover_base64,
-      language: flagLanguageOf(gallery),
-    })),
-  );
+  protected readonly items = computed(() => this.downloads.downloaded().map(toCardItem));
   protected readonly inProgress = computed(() => this.downloads.jobs().length);
   /** Gallery pages come back here. */
   protected readonly backParams = { [BACK_PARAM]: '/downloaded' };

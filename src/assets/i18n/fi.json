@@ -1,0 +1,228 @@
+{
+  "MENU": {
+    "HOME": "Etusivu",
+    "TAGS": "Tagit",
+    "FAVORITES": "Suosikit",
+    "DOWNLOADED": "Ladatut",
+    "SETTINGS": "Asetukset",
+    "DOWNLOADING": "Lataukset",
+    "OPEN": "Valikko"
+  },
+  "HOME": {
+    "TITLE": "Etusivu",
+    "ERROR": "Gallerioita ei voitu ladata.",
+    "RETRY": "Yritä uudelleen",
+    "EMPTY": "Gallerioita ei löytynyt.",
+    "CLEAR_SEARCH": "Tyhjennä haku ja näytä uusimmat galleriat",
+    "NO_RESULTS": "Tällä haulla ei löytynyt gallerioita.",
+    "SAVED_TAGS": "Omat tagit ({{count}})",
+    "SAVED_TAGS_HINT": "Näytetään galleriat tallennettujen tagiesi mukaan suodatettuina. Voit muuttaa niitä Tagit-sivulla.",
+    "SEARCH_OPEN": "Hae",
+    "SEARCH_CLOSE": "Sulje haku",
+    "SEARCH_PLACEHOLDER": "Hae gallerioita",
+    "SORT": "Järjestä",
+    "SORT_BY": {
+      "date": "Uusimmat",
+      "popular": "Suositut: kaikkien aikojen",
+      "popular-today": "Suositut: tänään",
+      "popular-week": "Suositut: tällä viikolla",
+      "popular-month": "Suositut: tässä kuussa"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Asetukset",
+    "LANGUAGE": "Kieli",
+    "DATA": "Tiedot",
+    "EXPORT": "Vie tietokanta",
+    "EXPORT_HINT": "Tallenna varmuuskopio JSON-tiedostona laitteellesi tai jaa se.",
+    "IMPORT": "Tuo tietokanta",
+    "IMPORT_HINT": "Palauta Vie-toiminnolla tehty varmuuskopio.",
+    "IMPORT_CONFIRM_TITLE": "Korvataanko tietosi?",
+    "IMPORT_CONFIRM_MESSAGE": "Varmuuskopion tuominen korvaa kaiken sovellukseen tällä hetkellä tallennetun.",
+    "IMPORT_CONFIRM": "Tuo",
+    "CANCEL": "Peruuta",
+    "EXPORT_DONE": "Tietokanta viety.",
+    "EXPORT_ERROR": "Tietokantaa ei voitu viedä.",
+    "IMPORT_DONE": "Tietokanta tuotu.",
+    "IMPORT_ERROR": "Tiedosto ei ole kelvollinen nMangaloide-varmuuskopio.",
+    "IMPORT_NEWER": "Tämä varmuuskopio on tehty sovelluksen uudemmalla versiolla. Päivitä sovellus tuodaksesi sen.",
+    "READER": "Lukija",
+    "READER_MODE": {
+      "scroll": "Loputon vieritys",
+      "paged": "Sivu kerrallaan"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Kaikki sivut yhtenä jatkuvana pystysuuntaisena vierityksenä.",
+      "paged": "Siirry sivulta toiselle napauttamalla."
+    },
+    "SETTINGS_LOAD_ERROR": "Asetuksia ei voitu ladata.",
+    "SETTINGS_SAVE_ERROR": "Asetusta ei voitu tallentaa.",
+    "THEME": "Teema",
+    "THEMES": {
+      "system": "Järjestelmä",
+      "light": "Vaalea",
+      "dark": "Tumma",
+      "oled": "OLED-musta"
+    },
+    "EXPORT_TO_DEVICE": "Tallenna laitteelle…",
+    "EXPORT_SHARE": "Jaa…",
+    "EXPORT_SAVED": "Varmuuskopio tallennettu.",
+    "DOWNLOADS": "Lataukset",
+    "DOWNLOAD_FOLDER": "Latauskansio",
+    "DOWNLOAD_FOLDER_NONE": "Ei vielä valittu",
+    "DOWNLOAD_FOLDER_HINT": "Jokainen sarjakuva tallennetaan yhtenä CBZ-tiedostona, joka on nimetty sen numerolla, ja muutkin sarjakuvasovellukset voivat avata sen. Kopioi kansio toiseen puhelimeen, niin lataukset kulkevat mukanasi.",
+    "DOWNLOAD_FOLDER_CHANGED": "Latauskansio vaihdettu.",
+    "DOWNLOAD_FOLDER_ERROR": "Kansiota ei voitu käyttää.",
+    "DOWNLOADS_FILES_APP": "Lataukset tallennetaan sovelluksen kansioon Tiedostot-sovelluksessa (Omassa iPhonessa › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Lataukset tallennetaan tähän selaimeen.",
+    "ACCOUNT": "Tili",
+    "API_KEY": "API-avain",
+    "API_KEY_PLACEHOLDER": "Liitä API-avaimesi",
+    "API_KEY_HINT": "Tarvitaan suosikkeihin, estolistaan ja tiliisi. Luo avain osoitteessa nhentai.net → Settings → API keys. Se lähetetään jokaisen API-pyynnön mukana.",
+    "API_KEY_SAVED": "API-avain tallennettu.",
+    "API_KEY_REMOVED": "API-avain poistettu.",
+    "FAVORITES_SYNC": {
+      "checking": "Tarkistetaan tilisi suosikkeja…",
+      "syncing": "Synkronoidaan suosikkeja: {{pending}} jäljellä",
+      "done": "Suosikit ovat synkronissa tilisi kanssa.",
+      "done_with_failures": "Suosikit synkronoitu; {{failed}} ei voitu muuttaa, ja niitä yritetään uudelleen ensi kerralla.",
+      "error": "Suosikkeja ei voitu synkronoida. Tarkista API-avain ja yhteytesi."
+    }
+  },
+  "COMMON": {
+    "BACK": "Takaisin"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Valitut",
+    "HINT": "Napauta tagia ottaaksesi sen käyttöön, uudelleen sulkeaksesi sen pois ja vielä kerran tyhjentääksesi sen.",
+    "STATE_ENABLED": "käytössä",
+    "STATE_DISABLED": "poissuljettu",
+    "STATE_NONE": "ei valittu",
+    "SELECTED_EMPTY": "Tageja ei ole vielä valittu.",
+    "BROWSE_ALL": "Selaa tageja",
+    "SELECTED_ERROR": "Tallennettuja tageja ei voitu ladata.",
+    "ALL_ERROR": "Tageja ei voitu ladata.",
+    "RETRY": "Yritä uudelleen",
+    "SAVE_ERROR": "Tagia ei voitu tallentaa.",
+    "SEARCH_PLACEHOLDER": "Hae tageja",
+    "NO_MATCHES": "Hakuasi vastaavia tageja ei ole.",
+    "TYPE_EMPTY": "Tämän tyyppisiä tageja ei ole.",
+    "TYPES": {
+      "tag": "Tagit",
+      "artist": "Taiteilijat",
+      "character": "Hahmot",
+      "parody": "Parodiat",
+      "group": "Ryhmät",
+      "language": "Kielet",
+      "category": "Kategoriat"
+    },
+    "KIND": {
+      "tag": "Tagi",
+      "artist": "Taiteilija",
+      "character": "Hahmo",
+      "parody": "Parodia",
+      "group": "Ryhmä",
+      "language": "Kieli",
+      "category": "Kategoria"
+    }
+  },
+  "GALLERY": {
+    "TITLE": "Galleria",
+    "PAGES": "{{count}} sivua",
+    "FAVORITES": "{{count}} suosikkia",
+    "UPLOADED": "Lisätty {{date}}",
+    "READ": "Lue",
+    "ERROR": "Galleriaa ei voitu ladata.",
+    "RETRY": "Yritä uudelleen",
+    "SCANLATOR": "Käännös: {{name}}",
+    "PAGE": "Sivu {{number}}",
+    "SEARCH_TAG": "Näytä galleriat tagilla {{tag}}",
+    "FAVORITE_ADD": "Lisää suosikkeihin",
+    "FAVORITE_REMOVE": "Poista suosikeista",
+    "FAVORITE_ERROR": "Suosikkeja ei voitu päivittää.",
+    "DOWNLOAD": "Lataa",
+    "DOWNLOAD_STARTED": "Lataus aloitettu. Seuraa sitä Lataukset-sivulla.",
+    "DOWNLOAD_ERROR": "Latausta ei voitu aloittaa.",
+    "DOWNLOADING": "Ladataan: näytä edistyminen",
+    "DOWNLOAD_FAILED": "Lataus epäonnistui: yritä uudelleen",
+    "DOWNLOADED": "Ladattu: poista lataus",
+    "DELETE_DOWNLOAD_TITLE": "Poistetaanko lataus?",
+    "DELETE_DOWNLOAD_MESSAGE": "Ladatut sivut poistetaan tältä laitteelta.",
+    "DELETE": "Poista",
+    "CANCEL": "Peruuta",
+    "CHOOSE_FOLDER_TITLE": "Minne lataukset tallennetaan?",
+    "CHOOSE_FOLDER_MESSAGE": "Valitse puhelimestasi kansio ladatuille sarjakuville. Voit vaihtaa sen myöhemmin asetuksissa.",
+    "CHOOSE_FOLDER": "Valitse kansio"
+  },
+  "READER": {
+    "TITLE": "Lukija",
+    "ERROR": "Sivuja ei voitu ladata.",
+    "NO_PAGES": "Tässä galleriassa ei ole sivuja.",
+    "PAGE_ALT": "Sivu {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Edellinen sivu",
+    "NEXT": "Seuraava sivu"
+  },
+  "FAVORITES": {
+    "EMPTY": "Ei vielä suosikkeja.",
+    "EMPTY_HINT": "Napauta gallerian sydäntä tallentaaksesi sen tänne.",
+    "ERROR": "Suosikkeja ei voitu ladata.",
+    "RETRY": "Yritä uudelleen"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Mitään ei ladata.",
+    "HINT": "Lataukset jatkuvat, kun käytät sovellusta.",
+    "PROGRESS": "{{done}} / {{total}} sivua",
+    "STATUS": {
+      "queued": "Odottaa",
+      "downloading": "Ladataan",
+      "failed": "Epäonnistui"
+    },
+    "RETRY": "Yritä latausta uudelleen",
+    "CANCEL": "Peruuta lataus",
+    "NEEDS_FOLDER": "Valitse latauskansio aloittaaksesi lataamisen.",
+    "CHOOSE_FOLDER": "Valitse kansio"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Ei vielä latauksia.",
+    "EMPTY_HINT": "Napauta gallerian latauspainiketta lukeaksesi sen offline-tilassa.",
+    "ERROR": "Latauksia ei voitu ladata.",
+    "RETRY": "Yritä uudelleen",
+    "IN_PROGRESS": "Ladataan ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Vaihe {{step}}/{{total}}",
+    "BACK": "Takaisin",
+    "NEXT": "Seuraava",
+    "FINISH": "Aloita sovelluksen käyttö",
+    "PREFERENCES_TITLE": "Tervetuloa nMangaloideen",
+    "PREFERENCES_TEXT": "Muutama asia asetettavaksi ennen aloittamista. Voit muuttaa ne kaikki myöhemmin asetuksissa.",
+    "LANGUAGE": "Kieli",
+    "READER": "Miten haluat lukea?",
+    "FOLDER_TITLE": "Latauskansio",
+    "FOLDER_TEXT": "Valitse kansio ladatuille sarjakuville. Jokainen sarjakuva tallennetaan yhtenä CBZ-tiedostona, joka on nimetty sen numerolla, joten voit kopioida ne toiseen puhelimeen tai avata ne muissa sarjakuvalukijoissa.",
+    "FOLDER_CHOOSE": "Valitse kansio",
+    "FOLDER_CHANGE": "Vaihda kansio",
+    "FOLDER_CHOSEN": "Tallennetaan kohteeseen: {{name}}",
+    "FOLDER_LATER": "Voit ohittaa tämän ja valita kansion myöhemmin asetuksissa.",
+    "FOLDER_ERROR": "Kansiota ei voitu käyttää.",
+    "IMPORT_TITLE": "Tuo tietosi",
+    "IMPORT_TEXT": "Tuletko toisesta puhelimesta? Tuo asetusten Vie-toiminnolla tehty varmuuskopio palauttaaksesi suosikkisi, tagisi ja asetuksesi. Tämä vaihe on valinnainen.",
+    "IMPORT_BUTTON": "Tuo varmuuskopio",
+    "IMPORT_DONE": "Varmuuskopio tuotu.",
+    "IMPORT_DOWNLOADS": "Lataukset eivät sisälly varmuuskopioihin: ne ovat latauskansiossa, joten kopioi myös se."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Lataukset",
+    "TITLE_ONE": "Ladataan 1 sarjakuva",
+    "TITLE_OTHER": "Ladataan {{count}} sarjakuvaa",
+    "BODY": "{{done}} / {{total}} sivua · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japani",
+      "chinese": "Kiina",
+      "english": "Englanti"
+    }
+  }
+}

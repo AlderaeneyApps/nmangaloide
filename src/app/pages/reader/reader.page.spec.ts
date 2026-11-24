@@ -6,7 +6,8 @@ import { provideRouter } from '@angular/router';
 
 import { GalleryDetailResponse, PageInfo, TagResponse } from '../../api';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
-import { ZipWriter, bytesToBase64, concat } from '../../native/cbz';
+import { ZipWriter, concat } from '../../native/cbz';
+import { bytesToBase64 } from '../../native/encoding';
 import { FakeAppFiles, FakeDownloadStorage, TEST_FOLDER, provideFakeDownloads } from '../../testing/fake-download-storage';
 
 /** A downloaded gallery's CBZ with the given pages. */
@@ -157,6 +158,30 @@ describe('ReaderPage', () => {
 
     fixture.destroy();
     await vi.waitFor(() => expect(appFiles.keys('reader')).toEqual([]));
+  });
+
+  it('still removes the unpacked pages on leaving after loading again (Retry)', async () => {
+    await open('scroll', undefined, (fake) => fake.seed(TEST_FOLDER.uri, '42.cbz', cbz([1, 2])));
+    await settle();
+    await fixture.componentInstance.load();
+    await fixture.componentInstance.load();
+    await settle();
+    expect(appFiles.keys('reader')).toEqual(['42/001.webp', '42/002.webp']);
+
+    fixture.destroy();
+    await vi.waitFor(() => expect(appFiles.keys('reader')).toEqual([]));
+  });
+
+  it('drops a late answer for an earlier load', async () => {
+    await open('paged');
+    const reader = fixture.componentInstance;
+    // Gallery 7 is still loading when the page loads gallery 42 again.
+    const late = reader.load(7);
+    await reader.load(42);
+    http.expectOne(`${API}/galleries/7`).flush({ ...GALLERY, id: 7, title: { ...GALLERY.title, pretty: 'Other' } });
+    await late;
+    fixture.detectChanges();
+    expect(el().querySelector('ion-title')?.textContent).toContain('Pretty title');
   });
 
   it('falls back to the CDN for a downloaded page that fails to load', async () => {

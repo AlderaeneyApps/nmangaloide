@@ -19,6 +19,8 @@ import {
   provideFakeDownloads,
 } from '../../testing/fake-download-storage';
 
+import { ApiKeyService } from '../../api/api-key.service';
+import { FAVORITES_SYNC_INTERVAL } from '../../services/favorites-sync.service';
 import { describe, beforeEach, it, expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 
 const API = 'https://nhentai.net/api/v2';
@@ -108,6 +110,7 @@ describe('GalleryPage', () => {
         { provide: ToastController, useValue: { create: toastCreate } },
         { provide: AlertController, useValue: { create: alertCreate } },
         { provide: DOWNLOAD_SLEEP, useValue: async () => undefined },
+        { provide: FAVORITES_SYNC_INTERVAL, useValue: 0 },
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -217,6 +220,18 @@ describe('GalleryPage', () => {
     expect(navigateRoot).toHaveBeenLastCalledWith(['/'], { queryParams: { q: 'tag:"full color"' } });
   });
 
+  it('drops a late answer for an earlier gallery', async () => {
+    flush();
+    await settle();
+    const page = fixture.componentInstance;
+    const late = page.load(7);
+    await page.load(42);
+    http.expectOne(`${API}/galleries/7`).flush({ ...GALLERY, id: 7, title: { ...GALLERY.title, pretty: 'Other' } });
+    await late;
+    await settle();
+    expect(el().querySelector('ion-title')?.textContent).toContain('Pretty title');
+  });
+
   it('shows an error with retry', async () => {
     http.expectOne(`${API}/galleries/42`).flush('boom', { status: 500, statusText: 'Server Error' });
     http.expectOne(`${API}/cdn`).flush({ thumb_servers: [], image_servers: [] });
@@ -278,6 +293,32 @@ describe('GalleryPage', () => {
       expect(db.saved.has(42)).toBe(false);
       expect(heart().dataset['state']).toBe('off');
       expect(label()).toBe('Add to favorites');
+    });
+
+    it('makes the same change on the account when an API key is set', async () => {
+      TestBed.inject(ApiKeyService).set('secret');
+      flush();
+      await settle();
+
+      heart().click();
+      await answerCover();
+      await vi.waitFor(() => expect(db.saved.get(42)).toBeDefined());
+      await vi.waitFor(() => http.expectOne({ method: 'POST', url: `${API}/galleries/42/favorite` }).flush({ favorited: true }));
+
+      heart().click();
+      await settle();
+      expect(db.saved.has(42)).toBe(false);
+      await vi.waitFor(() => http.expectOne({ method: 'DELETE', url: `${API}/galleries/42/favorite` }).flush({}));
+    });
+
+    it('does not touch the account without an API key', async () => {
+      flush();
+      await settle();
+      heart().click();
+      await answerCover();
+      await vi.waitFor(() => expect(db.saved.get(42)).toBeDefined());
+      await settle();
+      http.expectNone({ method: 'POST', url: `${API}/galleries/42/favorite` });
     });
 
     it('shows a favorite from the database without calling the API', async () => {

@@ -4,20 +4,13 @@ import { firstValueFrom } from 'rxjs';
 
 import { CdnService, GalleryDetailResponse } from '../api';
 import { NATIVE_DOWNLOADER, NativeDownloadState } from '../native/background-downloads';
-import { ZipWriter, base64ToBytes, bytesToBase64, comicInfoXml, readZip } from '../native/cbz';
-import {
-  APP_FILES,
-  DOWNLOAD_STORAGE,
-  FolderEntry,
-  PickedFolder,
-  base64ToText,
-  mimeTypeOf,
-  stripDataUrl,
-} from '../native/download-folder';
+import { ZipWriter, comicInfoXml, readZip } from '../native/cbz';
+import { APP_FILES, DOWNLOAD_STORAGE, FolderEntry, PickedFolder, mimeTypeOf } from '../native/download-folder';
 import { APP_ACTIVE_LISTENER } from '../native/download-keep-alive';
+import { base64ToBytes, base64ToText, blobToDataUrl, bytesToBase64, stripDataUrl } from '../native/encoding';
 import { DatabaseService } from '../sql-services/database.service';
 import { DownloadFolderService } from './download-folder.service';
-import { SUMMARY_COLUMNS, SavedGalleriesService, SavedGallery, blobToDataUrl } from './saved-galleries.service';
+import { SUMMARY_COLUMNS, SavedGalleriesService, SavedGallery } from './saved-galleries.service';
 
 /** Wait between page downloads, so the image servers' rate limit isn't hit. */
 export const DOWNLOAD_PAGE_DELAY = new InjectionToken<number>('DOWNLOAD_PAGE_DELAY', {
@@ -126,6 +119,12 @@ export class DownloadService {
   private readonly _downloaded = signal<SavedGallery[]>([]);
   private readonly details = new Map<number, GalleryDetailResponse>();
   private readonly cancelled = new Set<number>();
+  /**
+   * How many times each gallery was removed. A worker still busy with a removed gallery
+   * stops when this changes, even if the gallery was queued again meanwhile (which takes it
+   * out of `cancelled`): the new download is the next worker run's.
+   */
+  private readonly removals = new Map<number, number>();
   private worker: Promise<void> | null = null;
   private initializing: Promise<void> | null = null;
   private loadingDownloaded: Promise<void> | null = null;
@@ -227,6 +226,7 @@ export class DownloadService {
   /** Stops a download (if running) and deletes its files. The gallery stays saved if it's a favorite. */
   async remove(id: number): Promise<void> {
     this.cancelled.add(id);
+    this.removals.set(id, (this.removals.get(id) ?? 0) + 1);
     this._jobs.update((jobs) => jobs.filter((job) => job.id !== id));
     this._downloaded.update((rows) => rows.filter((row) => row.id !== id));
     await this.native?.cancel(id).catch(() => undefined);
@@ -314,6 +314,7 @@ export class DownloadService {
   async resetAfterImport(): Promise<void> {
     for (const job of this._jobs()) {
       this.cancelled.add(job.id);
+      this.removals.set(job.id, (this.removals.get(job.id) ?? 0) + 1);
       await this.native?.cancel(job.id).catch(() => undefined);
     }
     this._jobs.set([]);
@@ -472,6 +473,9 @@ export class DownloadService {
   private async downloadGallery(id: number): Promise<void> {
     this.updateJob(id, { status: 'downloading' });
     const dir = String(id);
+    const removal = this.removals.get(id) ?? 0;
+    /** Removed since this download started (and maybe queued again: then it's a new download). */
+    const stopped = () => this.cancelled.has(id) || (this.removals.get(id) ?? 0) !== removal;
     try {
       const gallery = this.details.get(id) ?? (await this.saved.getDetails(id));
       if (!gallery) {
@@ -484,7 +488,7 @@ export class DownloadService {
 
       let first = true;
       for (const page of pages) {
-        if (this.cancelled.has(id)) {
+        if (stopped()) {
           return;
         }
         if (done.has(page.number)) {
@@ -494,11 +498,11 @@ export class DownloadService {
           await this.sleep(this.pageDelay);
         }
         first = false;
-        if (this.cancelled.has(id)) {
+        if (stopped()) {
           return;
         }
         const data = await this.fetchPage(page.path);
-        if (this.cancelled.has(id)) {
+        if (stopped()) {
           return;
         }
         const name = pageFileName(page.number, pages.length, page.path);
@@ -506,18 +510,21 @@ export class DownloadService {
         done.set(page.number, name);
         this.updateJob(id, { downloadedPages: done.size });
       }
-      if (this.cancelled.has(id)) {
+      if (stopped()) {
         return;
       }
 
-      await this.writeCbz(gallery, done);
-      if (this.cancelled.has(id)) {
-        await this.deleteFiles(id);
+      await this.writeCbz(gallery, done, stopped);
+      if (stopped()) {
+        // Queued again meanwhile: the new download needs the staged pages.
+        if (this.cancelled.has(id)) {
+          await this.deleteFiles(id);
+        }
         return;
       }
       await this.complete(id);
     } catch {
-      if (!this.cancelled.has(id)) {
+      if (!stopped()) {
         await this.fail(id);
       }
     }
@@ -641,7 +648,11 @@ export class DownloadService {
    * Packs the staged pages into `<id>.cbz`, one entry at a time (so a large gallery
    * is never in memory at once), under a temporary name renamed once it's complete.
    */
-  private async writeCbz(gallery: GalleryDetailResponse, pages: Map<number, string>): Promise<void> {
+  private async writeCbz(
+    gallery: GalleryDetailResponse,
+    pages: Map<number, string>,
+    stopped: () => boolean,
+  ): Promise<void> {
     const root = this.folders.root();
     const part = partName(gallery.id);
     const zip = new ZipWriter();
@@ -660,7 +671,7 @@ export class DownloadService {
     await put(zip.add(DETAILS_FILE, encoder.encode(JSON.stringify(gallery, null, 2))));
     await put(zip.add(COMIC_INFO_FILE, encoder.encode(comicInfoXml(gallery))));
     for (const number of [...pages.keys()].sort((a, b) => a - b)) {
-      if (this.cancelled.has(gallery.id)) {
+      if (stopped()) {
         return;
       }
       const name = pages.get(number)!;

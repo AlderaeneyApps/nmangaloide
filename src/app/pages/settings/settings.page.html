@@ -42,6 +42,40 @@
     </ion-item>
   </ion-list>
 
+  <ion-list [inset]="true" data-section="account">
+    <ion-list-header>
+      <ion-label>{{ 'SETTINGS.ACCOUNT' | transloco }}</ion-label>
+    </ion-list-header>
+    <ion-item data-setting="api-key">
+      <ion-icon slot="start" name="key-outline" aria-hidden="true"></ion-icon>
+      <ion-input
+        type="password"
+        labelPlacement="stacked"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        [label]="'SETTINGS.API_KEY' | transloco"
+        [placeholder]="'SETTINGS.API_KEY_PLACEHOLDER' | transloco"
+        [value]="settings.apiKey() ?? ''"
+        [clearInput]="true"
+        (ionChange)="onApiKeyChange($event)"
+      ></ion-input>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-note class="ion-text-wrap">{{ 'SETTINGS.API_KEY_HINT' | transloco }}</ion-note>
+    </ion-item>
+    @if (settings.apiKey()) {
+      <!-- A live region, so screen readers announce how the sync goes. -->
+      <ion-item lines="none" data-state="favorites-sync" role="status">
+        @if (syncMessage(); as message) {
+          <ion-note class="ion-text-wrap" [color]="message.error ? 'danger' : undefined">
+            {{ message.key | transloco: message.params }}
+          </ion-note>
+        }
+      </ion-item>
+    }
+  </ion-list>
+
   <ion-list [inset]="true" data-section="reader">
     <ion-list-header>
       <ion-label>{{ 'SETTINGS.READER' | transloco }}</ion-label>

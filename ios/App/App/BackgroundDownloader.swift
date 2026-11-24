@@ -87,11 +87,13 @@ final class BackgroundDownloader: NSObject {
     }()
 
     private let files = FileManager.default
-    private lazy var stagingRoot: URL = files.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+    // Plain constants, not `lazy var`s: they're read from both `queue` and the URLSession
+    // delegate queue, and initialising a lazy var from two threads at once is a data race.
+    private let stagingRoot: URL = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("NoCloud", isDirectory: true)
         .appendingPathComponent("downloading", isDirectory: true)
-    private lazy var downloadFolder: URL = files.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    private lazy var stateFile: URL = files.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+    private let downloadFolder: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    private let stateFile: URL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("background-downloads.json")
 
     private override init() {
@@ -565,8 +567,17 @@ private struct StoredZip {
         date = UInt16((max(c.year ?? 1980, 1980) - 1980) << 9 | (c.month ?? 1) << 5 | (c.day ?? 1))
     }
 
+    /// The comic doesn't fit a plain ZIP (over 4 GB, or 65 535 files): its download fails
+    /// instead of the arithmetic below trapping (crashing the app).
+    struct TooLarge: Error {}
+
     mutating func add(_ fileName: String, _ data: Data, to handle: FileHandle) throws {
         let name = Data(fileName.utf8)
+        guard let size = UInt32(exactly: data.count), let nameLength = UInt16(exactly: name.count),
+              let next = UInt32(exactly: UInt64(offset) + 30 + UInt64(name.count) + UInt64(data.count)),
+              records.count < Int(UInt16.max) else {
+            throw TooLarge()
+        }
         let crc = CRC32.checksum(data)
         var header = Data()
         header.le32(0x0403_4b50)
@@ -576,18 +587,21 @@ private struct StoredZip {
         header.le16(time)
         header.le16(date)
         header.le32(crc)
-        header.le32(UInt32(data.count))
-        header.le32(UInt32(data.count))
-        header.le16(UInt16(name.count))
+        header.le32(size)
+        header.le32(size)
+        header.le16(nameLength)
         header.le16(0)
         header.append(name)
         try handle.write(contentsOf: header)
         try handle.write(contentsOf: data)
-        records.append(Record(name: name, crc: crc, size: UInt32(data.count), offset: offset))
-        offset += UInt32(header.count + data.count)
+        records.append(Record(name: name, crc: crc, size: size, offset: offset))
+        offset = next
     }
 
     func finish(_ handle: FileHandle) throws {
+        guard let count = UInt16(exactly: records.count) else {
+            throw TooLarge()
+        }
         var central = Data()
         for record in records {
             central.le32(0x0201_4b50)
@@ -613,9 +627,12 @@ private struct StoredZip {
         end.le32(0x0605_4b50)
         end.le16(0)
         end.le16(0)
-        end.le16(UInt16(records.count))
-        end.le16(UInt16(records.count))
-        end.le32(UInt32(central.count))
+        end.le16(count)
+        end.le16(count)
+        guard let centralSize = UInt32(exactly: central.count) else {
+            throw TooLarge()
+        }
+        end.le32(centralSize)
         end.le32(offset)
         end.le16(0)
         try handle.write(contentsOf: central)

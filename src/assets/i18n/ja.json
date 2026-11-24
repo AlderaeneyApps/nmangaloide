@@ -74,7 +74,20 @@
     "DOWNLOAD_FOLDER_CHANGED": "ダウンロードフォルダを変更しました。",
     "DOWNLOAD_FOLDER_ERROR": "このフォルダは使用できません。",
     "DOWNLOADS_FILES_APP": "ダウンロードは「ファイル」アプリ内のこのアプリのフォルダ（このiPhone内 › nMangaloide）に保存されます。",
-    "DOWNLOADS_BROWSER": "ダウンロードはこのブラウザに保存されます。"
+    "DOWNLOADS_BROWSER": "ダウンロードはこのブラウザに保存されます。",
+    "ACCOUNT": "アカウント",
+    "API_KEY": "APIキー",
+    "API_KEY_PLACEHOLDER": "APIキーを貼り付け",
+    "API_KEY_HINT": "お気に入り、ブラックリスト、アカウント機能に必要です。nhentai.net → 設定 → APIキー で作成できます。APIへのすべてのリクエストに送信されます。",
+    "API_KEY_SAVED": "APIキーを保存しました。",
+    "API_KEY_REMOVED": "APIキーを削除しました。",
+    "FAVORITES_SYNC": {
+      "checking": "アカウントのお気に入りを確認しています…",
+      "syncing": "お気に入りを同期中：残り {{pending}} 件",
+      "done": "お気に入りはアカウントと同期されています。",
+      "done_with_failures": "お気に入りを同期しました。{{failed}} 件は変更できなかったため、次回再試行します。",
+      "error": "お気に入りを同期できませんでした。APIキーと接続を確認してください。"
+    }
   },
   "COMMON": {
     "BACK": "戻る"

@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { MenuController, NavController, Platform, ToastController } from '@ionic/angular';
+import { NavController, Platform, ToastController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 
 import { BackupService } from '../../services/backup.service';
@@ -22,7 +22,6 @@ describe('WelcomePage', () => {
   let preferences: FakePreferences;
   let fixture: ComponentFixture<WelcomePage>;
   let navigateRoot: ReturnType<typeof vi.fn>;
-  let menuEnable: ReturnType<typeof vi.fn>;
   let toastCreate: ReturnType<typeof vi.fn>;
   let importFromFile: ReturnType<typeof vi.fn>;
   let backHandler: ((next: () => void) => void) | null;
@@ -32,7 +31,6 @@ describe('WelcomePage', () => {
     storage = new FakeDownloadStorage(kind);
     preferences = new FakePreferences();
     navigateRoot = vi.fn().mockResolvedValue(true);
-    menuEnable = vi.fn().mockResolvedValue(undefined);
     toastCreate = vi.fn().mockResolvedValue({ present: vi.fn().mockResolvedValue(undefined) });
     importFromFile = vi.fn().mockResolvedValue(undefined);
     backHandler = null;
@@ -46,7 +44,6 @@ describe('WelcomePage', () => {
         provideFakeDownloads(storage, preferences, false),
         { provide: DOWNLOAD_SLEEP, useValue: async () => undefined },
         { provide: NavController, useValue: { navigateRoot } },
-        { provide: MenuController, useValue: { enable: menuEnable } },
         { provide: ToastController, useValue: { create: toastCreate } },
         { provide: BackupService, useValue: { importFromFile } },
         {
@@ -89,7 +86,7 @@ describe('WelcomePage', () => {
     expect(el().querySelector('h1')?.textContent).toContain('Welcome to nMangaloide');
     expect(el().querySelector('.step-count')?.textContent).toContain('Step 1 of 3');
     const languages = [...el().querySelectorAll('[data-setting="language"] ion-radio')].map((r) => r.textContent?.trim());
-    expect(languages).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', '日本語', '简体中文', '繁體中文']);
+    expect(languages).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', 'Português', 'Русский', 'Українська', 'Български', 'Suomi', 'Dansk', 'Norsk bokmål', 'Svenska', '日本語', '简体中文', '繁體中文']);
     expect(el().querySelector('[data-setting="language"] ion-radio-group')?.classList).toContain('language-scroll');
     const modes = [...el().querySelectorAll('[data-setting="reader"] ion-radio')].map((r) => r.getAttribute('value'));
     expect(modes).toEqual(['scroll', 'paged']);
@@ -187,10 +184,8 @@ describe('WelcomePage', () => {
     expect(el().querySelector('.chosen')).toBeNull();
   });
 
-  it("hides the side menu, and Android's back button goes to the previous step", async () => {
+  it("Android's back button goes to the previous step", async () => {
     await render();
-    fixture.componentInstance.ionViewWillEnter();
-    expect(menuEnable).toHaveBeenCalledWith(false);
     fixture.componentInstance.ionViewDidEnter(); // no layout in tests: must not throw
 
     await press('next');
@@ -202,8 +197,33 @@ describe('WelcomePage', () => {
     // On the first step it does what it does elsewhere (closes the app).
     backHandler!(next);
     expect(next).toHaveBeenCalled();
+  });
 
-    fixture.componentInstance.ionViewWillLeave();
-    expect(menuEnable).toHaveBeenLastCalledWith(true);
+  it('stays on the last step with an error when finishing cannot be saved', async () => {
+    await render('files-app');
+    vi.spyOn(TestBed.inject(SetupService), 'complete').mockRejectedValue(new Error('storage full'));
+    await press('next');
+    await press('finish');
+    expect(navigateRoot).not.toHaveBeenCalled();
+    expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ color: 'danger' }));
+    expect(step()).toBe('import');
+    expect(fab('finish')).not.toBeNull();
+  });
+
+  it('shows an error when the language cannot be remembered, keeping it applied', async () => {
+    await render();
+    // Capacitor Preferences keeps the language in localStorage on the web.
+    const setItem = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+      throw new Error('storage full');
+    });
+    try {
+      el().querySelector('[data-setting="language"] ion-radio-group')!.dispatchEvent(
+        new CustomEvent('ionChange', { detail: { value: 'de' } }),
+      );
+      await vi.waitFor(() => expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ color: 'danger' })));
+      expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('de');
+    } finally {
+      setItem.mockRestore();
+    }
   });
 });

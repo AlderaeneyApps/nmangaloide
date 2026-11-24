@@ -38,6 +38,7 @@ import { isCancelled } from '../../native/file-saver';
 import { BACK_PARAM, SEARCH_PARAM } from '../../navigation';
 import { DownloadService } from '../../services/download.service';
 import { GalleryDetailsService } from '../../services/gallery-details.service';
+import { FavoritesSyncService } from '../../services/favorites-sync.service';
 import { SavedGalleriesService } from '../../services/saved-galleries.service';
 import { buildGallerySearchQuery } from '../../services/tag-preferences.service';
 import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
@@ -83,6 +84,7 @@ export class GalleryPage implements OnDestroy {
   private readonly navController = inject(NavController);
   private readonly toasts = inject(ToastController);
   private readonly saved = inject(SavedGalleriesService);
+  private readonly favoritesSync = inject(FavoritesSyncService);
   private readonly downloads = inject(DownloadService);
   private readonly alerts = inject(AlertController);
 
@@ -97,6 +99,8 @@ export class GalleryPage implements OnDestroy {
   private readonly localPages = signal<ReadonlyMap<number, string>>(new Map());
   /** The gallery whose unpacked pages this page is holding, if any. */
   private heldPages: number | null = null;
+  /** Increases with every load, so a late answer for an earlier one is dropped. */
+  private loads = 0;
   protected readonly loading = signal(true);
   protected readonly error = signal(false);
 
@@ -294,7 +298,10 @@ export class GalleryPage implements OnDestroy {
     await toast.present();
   }
 
-  /** Adds the gallery to the favorites (saving its details and cover on the device), or removes it. */
+  /**
+   * Adds the gallery to the favorites (saving its details and cover on the device), or
+   * removes it; either way the account gets the same change queued.
+   */
   protected async toggleFavorite(): Promise<void> {
     const gallery = this.gallery();
     if (!gallery || this.savingFavorite()) {
@@ -302,14 +309,11 @@ export class GalleryPage implements OnDestroy {
     }
     this.savingFavorite.set(true);
     try {
-      await this.saved.toggleFavorite(gallery);
+      const favorite = await this.saved.toggleFavorite(gallery);
+      // Make the same change on the nhentai account (in the background, when an API key is set).
+      void (favorite ? this.favoritesSync.addToAccount(gallery.id) : this.favoritesSync.removeFromAccount(gallery.id));
     } catch {
-      const toast = await this.toasts.create({
-        message: this.transloco.translate('GALLERY.FAVORITE_ERROR'),
-        duration: 3000,
-        color: 'danger',
-      });
-      await toast.present();
+      await this.toast('GALLERY.FAVORITE_ERROR', 'danger');
     } finally {
       this.savingFavorite.set(false);
     }
@@ -322,16 +326,23 @@ export class GalleryPage implements OnDestroy {
   }
 
   async load(id: number = Number(this.id())): Promise<void> {
+    const load = ++this.loads;
     this.loading.set(true);
     this.error.set(false);
     try {
       const [gallery] = await Promise.all([this.details.get(id), this.cdn.load().catch(() => undefined)]);
-      this.gallery.set(gallery);
+      if (load === this.loads) {
+        this.gallery.set(gallery);
+      }
     } catch {
-      this.gallery.set(null);
-      this.error.set(true);
+      if (load === this.loads) {
+        this.gallery.set(null);
+        this.error.set(true);
+      }
     } finally {
-      this.loading.set(false);
+      if (load === this.loads) {
+        this.loading.set(false);
+      }
     }
   }
 }

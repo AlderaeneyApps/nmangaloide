@@ -32,13 +32,20 @@ export const FILE_SAVER = new InjectionToken<FileSaverPlugin>('FILE_SAVER', {
   factory: () => ({ saveAs: (options) => FileSaver.saveAs(options) }),
 });
 
-/** Whether `error` means the user closed a picker or share sheet without choosing. */
+/** What @capacitor/share rejects with (no error code) when the share sheet is closed. */
+const SHARE_CANCELLED_MESSAGE = 'Share canceled';
+
+/**
+ * Whether `error` means the user closed a picker or share sheet without choosing: the
+ * `CANCELLED` code of the app's own plugins, the Share plugin's message, or the browser's
+ * AbortError from `navigator.share`. Other errors that merely mention "cancel" are real errors.
+ */
 export function isCancelled(error: unknown): boolean {
-  if (error && typeof error === 'object' && 'code' in error && (error as { code?: unknown }).code === 'CANCELLED') {
-    return true;
+  if (!error || typeof error !== 'object') {
+    return false;
   }
-  const message = error instanceof Error ? error.message : String(error);
-  return /cancel/i.test(message);
+  const { code, message, name } = error as { code?: unknown; message?: unknown; name?: unknown };
+  return code === 'CANCELLED' || message === SHARE_CANCELLED_MESSAGE || name === 'AbortError';
 }
 
 /** Writes and removes files in the app's cache folder; a token so tests can replace it. */

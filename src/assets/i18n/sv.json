@@ -1,0 +1,228 @@
+{
+  "MENU": {
+    "HOME": "Hem",
+    "TAGS": "Taggar",
+    "FAVORITES": "Favoriter",
+    "DOWNLOADED": "Nedladdat",
+    "SETTINGS": "Inställningar",
+    "DOWNLOADING": "Laddar ned",
+    "OPEN": "Meny"
+  },
+  "HOME": {
+    "TITLE": "Hem",
+    "ERROR": "Det gick inte att läsa in gallerier.",
+    "RETRY": "Försök igen",
+    "EMPTY": "Inga gallerier hittades.",
+    "CLEAR_SEARCH": "Rensa sökningen och visa de senaste gallerierna",
+    "NO_RESULTS": "Inga gallerier matchar sökningen.",
+    "SAVED_TAGS": "Dina taggar ({{count}})",
+    "SAVED_TAGS_HINT": "Visar gallerier filtrerade efter dina sparade taggar. Öppna sidan Taggar för att ändra dem.",
+    "SEARCH_OPEN": "Sök",
+    "SEARCH_CLOSE": "Stäng sökning",
+    "SEARCH_PLACEHOLDER": "Sök gallerier",
+    "SORT": "Sortera",
+    "SORT_BY": {
+      "date": "Senaste",
+      "popular": "Populära: genom tiderna",
+      "popular-today": "Populära: i dag",
+      "popular-week": "Populära: denna vecka",
+      "popular-month": "Populära: denna månad"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Inställningar",
+    "LANGUAGE": "Språk",
+    "DATA": "Data",
+    "EXPORT": "Exportera databas",
+    "EXPORT_HINT": "Spara säkerhetskopian som en JSON-fil på enheten, eller dela den.",
+    "IMPORT": "Importera databas",
+    "IMPORT_HINT": "Återställ en säkerhetskopia som gjorts med Exportera.",
+    "IMPORT_CONFIRM_TITLE": "Ersätta dina data?",
+    "IMPORT_CONFIRM_MESSAGE": "Om du importerar en säkerhetskopia ersätts allt som för närvarande är sparat i appen.",
+    "IMPORT_CONFIRM": "Importera",
+    "CANCEL": "Avbryt",
+    "EXPORT_DONE": "Databasen har exporterats.",
+    "EXPORT_ERROR": "Det gick inte att exportera databasen.",
+    "IMPORT_DONE": "Databasen har importerats.",
+    "IMPORT_ERROR": "Filen är inte en giltig nMangaloide-säkerhetskopia.",
+    "IMPORT_NEWER": "Den här säkerhetskopian kommer från en nyare version av appen. Uppdatera appen för att importera den.",
+    "READER": "Läsare",
+    "READER_MODE": {
+      "scroll": "Oändlig rullning",
+      "paged": "En sida i taget"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Alla sidor i en sammanhängande lodrät rullning.",
+      "paged": "Tryck för att byta mellan sidorna."
+    },
+    "SETTINGS_LOAD_ERROR": "Det gick inte att läsa in dina inställningar.",
+    "SETTINGS_SAVE_ERROR": "Det gick inte att spara inställningen.",
+    "THEME": "Tema",
+    "THEMES": {
+      "system": "System",
+      "light": "Ljust",
+      "dark": "Mörkt",
+      "oled": "OLED-svart"
+    },
+    "EXPORT_TO_DEVICE": "Spara på enheten…",
+    "EXPORT_SHARE": "Dela…",
+    "EXPORT_SAVED": "Säkerhetskopian har sparats.",
+    "DOWNLOADS": "Nedladdningar",
+    "DOWNLOAD_FOLDER": "Nedladdningsmapp",
+    "DOWNLOAD_FOLDER_NONE": "Inte vald än",
+    "DOWNLOAD_FOLDER_HINT": "Varje serie sparas som en CBZ-fil namngiven efter sitt nummer, som även andra serieläsarappar kan öppna. Kopiera mappen till en annan telefon för att ta med dina nedladdningar.",
+    "DOWNLOAD_FOLDER_CHANGED": "Nedladdningsmappen har ändrats.",
+    "DOWNLOAD_FOLDER_ERROR": "Det gick inte att använda den mappen.",
+    "DOWNLOADS_FILES_APP": "Nedladdningar sparas i appens mapp i appen Filer (På min iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Nedladdningar sparas i den här webbläsaren.",
+    "ACCOUNT": "Konto",
+    "API_KEY": "API-nyckel",
+    "API_KEY_PLACEHOLDER": "Klistra in din API-nyckel",
+    "API_KEY_HINT": "Behövs för favoriter, svartlista och ditt konto. Skapa en på nhentai.net → Settings → API keys. Den skickas med varje begäran till API:et.",
+    "API_KEY_SAVED": "API-nyckeln har sparats.",
+    "API_KEY_REMOVED": "API-nyckeln har tagits bort.",
+    "FAVORITES_SYNC": {
+      "checking": "Kontrollerar favoriterna på ditt konto…",
+      "syncing": "Synkroniserar favoriter: {{pending}} kvar",
+      "done": "Favoriterna är synkroniserade med ditt konto.",
+      "done_with_failures": "Favoriterna har synkroniserats; {{failed}} kunde inte ändras och försöks igen nästa gång.",
+      "error": "Det gick inte att synkronisera favoriterna. Kontrollera API-nyckeln och din anslutning."
+    }
+  },
+  "COMMON": {
+    "BACK": "Tillbaka"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Valda",
+    "HINT": "Tryck på en tagg för att aktivera den, igen för att utesluta den och en gång till för att rensa den.",
+    "STATE_ENABLED": "aktiverad",
+    "STATE_DISABLED": "utesluten",
+    "STATE_NONE": "inte vald",
+    "SELECTED_EMPTY": "Inga taggar valda än.",
+    "BROWSE_ALL": "Bläddra bland taggar",
+    "SELECTED_ERROR": "Det gick inte att läsa in dina sparade taggar.",
+    "ALL_ERROR": "Det gick inte att läsa in taggar.",
+    "RETRY": "Försök igen",
+    "SAVE_ERROR": "Det gick inte att spara taggen.",
+    "SEARCH_PLACEHOLDER": "Sök taggar",
+    "NO_MATCHES": "Inga taggar matchar sökningen.",
+    "TYPE_EMPTY": "Inga taggar av den här typen.",
+    "TYPES": {
+      "tag": "Taggar",
+      "artist": "Konstnärer",
+      "character": "Figurer",
+      "parody": "Parodier",
+      "group": "Grupper",
+      "language": "Språk",
+      "category": "Kategorier"
+    },
+    "KIND": {
+      "tag": "Tagg",
+      "artist": "Konstnär",
+      "character": "Figur",
+      "parody": "Parodi",
+      "group": "Grupp",
+      "language": "Språk",
+      "category": "Kategori"
+    }
+  },
+  "GALLERY": {
+    "TITLE": "Galleri",
+    "PAGES": "{{count}} sidor",
+    "FAVORITES": "{{count}} favoriter",
+    "UPLOADED": "Uppladdat {{date}}",
+    "READ": "Läs",
+    "ERROR": "Det gick inte att läsa in det här galleriet.",
+    "RETRY": "Försök igen",
+    "SCANLATOR": "Översatt av {{name}}",
+    "PAGE": "Sida {{number}}",
+    "SEARCH_TAG": "Visa gallerier med {{tag}}",
+    "FAVORITE_ADD": "Lägg till i favoriter",
+    "FAVORITE_REMOVE": "Ta bort från favoriter",
+    "FAVORITE_ERROR": "Det gick inte att uppdatera dina favoriter.",
+    "DOWNLOAD": "Ladda ned",
+    "DOWNLOAD_STARTED": "Nedladdningen har startat. Följ den under Laddar ned.",
+    "DOWNLOAD_ERROR": "Det gick inte att starta nedladdningen.",
+    "DOWNLOADING": "Laddar ned: visa förlopp",
+    "DOWNLOAD_FAILED": "Nedladdningen misslyckades: försök igen",
+    "DOWNLOADED": "Nedladdat: ta bort nedladdning",
+    "DELETE_DOWNLOAD_TITLE": "Ta bort nedladdningen?",
+    "DELETE_DOWNLOAD_MESSAGE": "De nedladdade sidorna tas bort från den här enheten.",
+    "DELETE": "Ta bort",
+    "CANCEL": "Avbryt",
+    "CHOOSE_FOLDER_TITLE": "Var ska nedladdningar sparas?",
+    "CHOOSE_FOLDER_MESSAGE": "Välj en mapp på telefonen för nedladdade serier. Du kan ändra den senare i Inställningar.",
+    "CHOOSE_FOLDER": "Välj mapp"
+  },
+  "READER": {
+    "TITLE": "Läsare",
+    "ERROR": "Det gick inte att läsa in sidorna.",
+    "NO_PAGES": "Det här galleriet har inga sidor.",
+    "PAGE_ALT": "Sida {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Föregående sida",
+    "NEXT": "Nästa sida"
+  },
+  "FAVORITES": {
+    "EMPTY": "Inga favoriter än.",
+    "EMPTY_HINT": "Tryck på hjärtat på ett galleri för att spara det här.",
+    "ERROR": "Det gick inte att läsa in dina favoriter.",
+    "RETRY": "Försök igen"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Inget laddas ned.",
+    "HINT": "Nedladdningarna fortsätter medan du använder appen.",
+    "PROGRESS": "{{done}} / {{total}} sidor",
+    "STATUS": {
+      "queued": "Väntar",
+      "downloading": "Laddar ned",
+      "failed": "Misslyckades"
+    },
+    "RETRY": "Försök ladda ned igen",
+    "CANCEL": "Avbryt nedladdningen",
+    "NEEDS_FOLDER": "Välj en nedladdningsmapp för att börja ladda ned.",
+    "CHOOSE_FOLDER": "Välj mapp"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Inga nedladdningar än.",
+    "EMPTY_HINT": "Tryck på nedladdningsknappen på ett galleri för att läsa det offline.",
+    "ERROR": "Det gick inte att läsa in dina nedladdningar.",
+    "RETRY": "Försök igen",
+    "IN_PROGRESS": "Laddar ned ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Steg {{step}} av {{total}}",
+    "BACK": "Tillbaka",
+    "NEXT": "Nästa",
+    "FINISH": "Börja använda appen",
+    "PREFERENCES_TITLE": "Välkommen till nMangaloide",
+    "PREFERENCES_TEXT": "Några saker att ställa in innan du börjar. Du kan ändra allt senare i Inställningar.",
+    "LANGUAGE": "Språk",
+    "READER": "Hur vill du läsa?",
+    "FOLDER_TITLE": "Nedladdningsmapp",
+    "FOLDER_TEXT": "Välj en mapp för nedladdade serier. Varje serie sparas som en CBZ-fil namngiven efter sitt nummer, så att du kan kopiera dem till en annan telefon eller öppna dem i andra serieläsare.",
+    "FOLDER_CHOOSE": "Välj mapp",
+    "FOLDER_CHANGE": "Byt mapp",
+    "FOLDER_CHOSEN": "Sparar i: {{name}}",
+    "FOLDER_LATER": "Du kan hoppa över detta och välja den senare i Inställningar.",
+    "FOLDER_ERROR": "Det gick inte att använda den mappen.",
+    "IMPORT_TITLE": "Ta med dina data",
+    "IMPORT_TEXT": "Kommer du från en annan telefon? Importera en säkerhetskopia som gjorts med Exportera i Inställningar för att återställa dina favoriter, taggar och inställningar. Det här steget är valfritt.",
+    "IMPORT_BUTTON": "Importera en säkerhetskopia",
+    "IMPORT_DONE": "Säkerhetskopian har importerats.",
+    "IMPORT_DOWNLOADS": "Nedladdningar ingår inte i säkerhetskopior: de finns i nedladdningsmappen, så kopiera den också."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Nedladdningar",
+    "TITLE_ONE": "Laddar ned 1 serie",
+    "TITLE_OTHER": "Laddar ned {{count}} serier",
+    "BODY": "{{done}} / {{total}} sidor · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japanska",
+      "chinese": "Kinesiska",
+      "english": "Engelska"
+    }
+  }
+}

@@ -17,6 +17,8 @@ export class DatabaseService {
   private readonly versions = inject(DbnameVersionService);
 
   private db: SQLiteDBConnection | null = null;
+  /** Statements started and not finished yet; an import lets them finish before closing the connection. */
+  private readonly running = new Set<Promise<unknown>>();
   private resolveReady!: (db: SQLiteDBConnection) => void;
   private rejectReady!: (error: unknown) => void;
   private ready = new Promise<SQLiteDBConnection>((resolve, reject) => {
@@ -37,6 +39,15 @@ export class DatabaseService {
       this.rejectReady(error);
       throw error;
     }
+  }
+
+  /**
+   * Marks the database as unavailable when starting up failed before `open()` could run
+   * (e.g. the SQLite plugin or the web store). Without it, everything waiting in
+   * `connection()` would wait forever instead of showing an error. No effect once opened.
+   */
+  fail(error: unknown): void {
+    this.rejectReady(error);
   }
 
   /**
@@ -64,10 +75,13 @@ export class DatabaseService {
       throw new InvalidBackupError();
     }
 
-    // Queries wait for the reopened database instead of using the closed one.
+    // Statements already started finish on the current connection; later ones wait for the
+    // reopened database instead of using the closed one.
+    const started = [...this.running];
     let importError: unknown = null;
     const reopened = (async () => {
       await this.connection().catch(() => undefined);
+      await Promise.allSettled(started);
       await this.sqlite.closeConnection(DB_NMANGALOIDE, false);
       this.db = null;
       try {
@@ -92,19 +106,32 @@ export class DatabaseService {
     return this.ready;
   }
 
-  async query<T>(statement: string, values: unknown[] = []): Promise<T[]> {
-    const db = await this.connection();
-    const result = await db.query(statement, values);
-    return (result.values ?? []) as T[];
+  query<T>(statement: string, values: unknown[] = []): Promise<T[]> {
+    return this.track(async () => {
+      const db = await this.connection();
+      const result = await db.query(statement, values);
+      return (result.values ?? []) as T[];
+    });
   }
 
   /** Runs a write and, on the web, saves the in-memory database to IndexedDB. */
-  async run(statement: string, values: unknown[] = []): Promise<void> {
-    const db = await this.connection();
-    await db.run(statement, values);
-    if (this.sqlite.platform === 'web') {
-      await this.sqlite.saveToStore(DB_NMANGALOIDE);
-    }
+  run(statement: string, values: unknown[] = []): Promise<void> {
+    return this.track(async () => {
+      const db = await this.connection();
+      await db.run(statement, values);
+      if (this.sqlite.platform === 'web') {
+        await this.sqlite.saveToStore(DB_NMANGALOIDE);
+      }
+    });
+  }
+
+  /** Runs `work`, keeping it in `running` until it settles. */
+  private track<T>(work: () => Promise<T>): Promise<T> {
+    const promise = work();
+    this.running.add(promise);
+    const done = () => this.running.delete(promise);
+    promise.then(done, done);
+    return promise;
   }
 
   private async connect(): Promise<SQLiteDBConnection> {

@@ -124,13 +124,18 @@ public class DownloadForegroundService extends Service {
         } else {
             startForeground(NOTIFICATION_ID, notification);
         }
+        startWorker();
+        // Not restarted by the system if killed: the app hands the queue over again when opened.
+        return START_NOT_STICKY;
+    }
+
+    /** Starts the worker thread, unless one is running already (on the main thread). */
+    private void startWorker() {
         if (!stopping && DownloadQueue.claimWorker()) {
             Thread worker = new Thread(this::work, "nMangaloide downloads");
             worker.setPriority(Thread.NORM_PRIORITY - 1);
             worker.start();
         }
-        // Not restarted by the system if killed: the app hands the queue over again when opened.
-        return START_NOT_STICKY;
     }
 
     /** Android 15+: the daily time allowed for data sync services is used up. */
@@ -181,7 +186,16 @@ public class DownloadForegroundService extends Service {
             // On the main thread, so it can't interleave with onStartCommand: if a job was added
             // meanwhile, a new worker is running (or the newer start keeps the service going).
             main.post(() -> {
-                if (!DownloadQueue.isWorkerActive()) {
+                DownloadForegroundService current = instance;
+                if (current != null && current != this) {
+                    // This instance was destroyed and the service started again while this worker
+                    // was finishing: the new instance couldn't claim the worker then, so it starts
+                    // one now (or stops itself if nothing is left).
+                    current.startWorker();
+                    if (!DownloadQueue.isWorkerActive()) {
+                        current.stopSelfResult(current.lastStartId);
+                    }
+                } else if (!DownloadQueue.isWorkerActive()) {
                     stopSelfResult(lastStartId);
                 }
             });

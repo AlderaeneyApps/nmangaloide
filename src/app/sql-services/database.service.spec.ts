@@ -82,6 +82,18 @@ describe('DatabaseService', () => {
     await expect(service.query('SELECT 1')).rejects.toThrow('wrong key');
   });
 
+  it('rejects waiting queries when starting up failed before opening', async () => {
+    const rows = service.query('SELECT 1');
+    service.fail(new Error('no web store'));
+    await expect(rows).rejects.toThrow('no web store');
+  });
+
+  it('ignores fail() once the database is open', async () => {
+    await service.open();
+    service.fail(new Error('too late'));
+    await expect(service.query('SELECT 1')).resolves.toEqual([{ id: 1 }]);
+  });
+
   describe('backups', () => {
     beforeEach(() => service.open());
 
@@ -103,6 +115,22 @@ describe('DatabaseService', () => {
       expect(imported.tables).toEqual(BACKUP.tables);
       expect(sqlite.openDatabase).toHaveBeenCalledTimes(2);
       expect(await service.connection()).toBe(reopened);
+    });
+
+    it('lets statements already running finish before closing the database', async () => {
+      let finishWrite!: () => void;
+      db.run.mockImplementationOnce(() => new Promise((resolve) => (finishWrite = () => resolve({}))));
+      const write = service.run('UPDATE x');
+      await vi.waitFor(() => expect(db.run).toHaveBeenCalled());
+
+      const importing = service.importJson(JSON.stringify(BACKUP));
+      await new Promise((resolve) => setTimeout(resolve));
+      expect(sqlite.closeConnection).not.toHaveBeenCalled();
+
+      finishWrite();
+      await write;
+      await importing;
+      expect(sqlite.closeConnection).toHaveBeenCalled();
     });
 
     it('rejects files that are not backups without touching the database', async () => {

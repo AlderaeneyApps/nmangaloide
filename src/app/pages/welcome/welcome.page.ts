@@ -13,7 +13,6 @@ import {
   IonRadioGroup,
   IonSpinner,
   IonText,
-  MenuController,
   NavController,
   Platform,
   ToastController,
@@ -68,7 +67,6 @@ export class WelcomePage {
   private readonly backup = inject(BackupService);
   private readonly setup = inject(SetupService);
   private readonly navController = inject(NavController);
-  private readonly menu = inject(MenuController);
   private readonly toasts = inject(ToastController);
   private readonly transloco = inject(TranslocoService);
 
@@ -122,15 +120,6 @@ export class WelcomePage {
     this.languageListAtEnd.set(!!list && list.clientHeight > 0 && list.scrollTop + list.clientHeight >= list.scrollHeight - 2);
   }
 
-  /** The side menu stays hidden during the setup. */
-  ionViewWillEnter(): void {
-    void this.menu.enable(false);
-  }
-
-  ionViewWillLeave(): void {
-    void this.menu.enable(true);
-  }
-
   protected back(): void {
     if (!this.busy()) {
       this.index.update((index) => Math.max(index - 1, 0));
@@ -150,6 +139,9 @@ export class WelcomePage {
     try {
       await this.setup.complete();
       await this.navController.navigateRoot('/');
+    } catch {
+      // Not saved: stay on the last step, so finishing can be tried again.
+      await this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger');
     } finally {
       this.busy.set(null);
     }
@@ -158,7 +150,8 @@ export class WelcomePage {
   protected async onLanguageChange(event: Event): Promise<void> {
     const lang = (event as CustomEvent<{ value: string }>).detail.value;
     if (lang && lang !== this.language.current()) {
-      await this.language.setLanguage(lang);
+      // Applied either way; only remembering it for the next start can fail.
+      await this.language.setLanguage(lang).catch(() => this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger'));
     }
   }
 

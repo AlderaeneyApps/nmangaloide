@@ -1,0 +1,228 @@
+{
+  "MENU": {
+    "HOME": "Início",
+    "TAGS": "Tags",
+    "FAVORITES": "Favoritos",
+    "DOWNLOADED": "Baixados",
+    "SETTINGS": "Configurações",
+    "DOWNLOADING": "Baixando",
+    "OPEN": "Menu"
+  },
+  "HOME": {
+    "TITLE": "Início",
+    "ERROR": "Não foi possível carregar as galerias.",
+    "RETRY": "Tentar novamente",
+    "EMPTY": "Nenhuma galeria encontrada.",
+    "CLEAR_SEARCH": "Limpar a busca e mostrar as galerias mais recentes",
+    "NO_RESULTS": "Nenhuma galeria corresponde a esta busca.",
+    "SAVED_TAGS": "Suas tags ({{count}})",
+    "SAVED_TAGS_HINT": "Mostrando galerias filtradas pelas suas tags salvas. Abra a página Tags para alterá-las.",
+    "SEARCH_OPEN": "Buscar",
+    "SEARCH_CLOSE": "Fechar busca",
+    "SEARCH_PLACEHOLDER": "Buscar galerias",
+    "SORT": "Ordenar",
+    "SORT_BY": {
+      "date": "Recentes",
+      "popular": "Populares: de todos os tempos",
+      "popular-today": "Populares: hoje",
+      "popular-week": "Populares: esta semana",
+      "popular-month": "Populares: este mês"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Configurações",
+    "LANGUAGE": "Idioma",
+    "DATA": "Dados",
+    "EXPORT": "Exportar banco de dados",
+    "EXPORT_HINT": "Salve o backup como um arquivo JSON no seu dispositivo ou compartilhe-o.",
+    "IMPORT": "Importar banco de dados",
+    "IMPORT_HINT": "Restaure um backup feito com Exportar.",
+    "IMPORT_CONFIRM_TITLE": "Substituir seus dados?",
+    "IMPORT_CONFIRM_MESSAGE": "Importar um backup substitui tudo o que está salvo no app.",
+    "IMPORT_CONFIRM": "Importar",
+    "CANCEL": "Cancelar",
+    "EXPORT_DONE": "Banco de dados exportado.",
+    "EXPORT_ERROR": "Não foi possível exportar o banco de dados.",
+    "IMPORT_DONE": "Banco de dados importado.",
+    "IMPORT_ERROR": "Esse arquivo não é um backup válido do nMangaloide.",
+    "IMPORT_NEWER": "Este backup é de uma versão mais nova do app. Atualize o app para importá-lo.",
+    "READER": "Leitor",
+    "READER_MODE": {
+      "scroll": "Rolagem infinita",
+      "paged": "Uma página por vez"
+    },
+    "READER_MODE_HINT": {
+      "scroll": "Todas as páginas em uma rolagem vertical contínua.",
+      "paged": "Toque para passar de uma página para outra."
+    },
+    "SETTINGS_LOAD_ERROR": "Não foi possível carregar suas configurações.",
+    "SETTINGS_SAVE_ERROR": "Não foi possível salvar a configuração.",
+    "THEME": "Tema",
+    "THEMES": {
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Escuro",
+      "oled": "Preto OLED"
+    },
+    "EXPORT_TO_DEVICE": "Salvar no dispositivo…",
+    "EXPORT_SHARE": "Compartilhar…",
+    "EXPORT_SAVED": "Backup salvo.",
+    "DOWNLOADS": "Downloads",
+    "DOWNLOAD_FOLDER": "Pasta de downloads",
+    "DOWNLOAD_FOLDER_NONE": "Ainda não escolhida",
+    "DOWNLOAD_FOLDER_HINT": "Cada quadrinho é salvo como um arquivo CBZ com o número dele no nome, que outros apps de leitura de quadrinhos também conseguem abrir. Copie a pasta para outro celular para levar seus downloads com você.",
+    "DOWNLOAD_FOLDER_CHANGED": "Pasta de downloads alterada.",
+    "DOWNLOAD_FOLDER_ERROR": "Não foi possível usar essa pasta.",
+    "DOWNLOADS_FILES_APP": "Os downloads são salvos na pasta do app no app Arquivos (No Meu iPhone › nMangaloide).",
+    "DOWNLOADS_BROWSER": "Os downloads são salvos neste navegador.",
+    "ACCOUNT": "Conta",
+    "API_KEY": "Chave de API",
+    "API_KEY_PLACEHOLDER": "Cole sua chave de API",
+    "API_KEY_HINT": "Necessária para favoritos, lista negra e sua conta. Crie uma em nhentai.net → Settings → API keys. Ela é enviada em cada requisição à API.",
+    "API_KEY_SAVED": "Chave de API salva.",
+    "API_KEY_REMOVED": "Chave de API removida.",
+    "FAVORITES_SYNC": {
+      "checking": "Verificando os favoritos da sua conta…",
+      "syncing": "Sincronizando favoritos: faltam {{pending}}",
+      "done": "Os favoritos estão sincronizados com sua conta.",
+      "done_with_failures": "Favoritos sincronizados; {{failed}} não puderam ser alterados e serão tentados de novo na próxima vez.",
+      "error": "Não foi possível sincronizar os favoritos. Verifique a chave de API e sua conexão."
+    }
+  },
+  "COMMON": {
+    "BACK": "Voltar"
+  },
+  "TAGS": {
+    "TAB_SELECTED": "Selecionadas",
+    "HINT": "Toque em uma tag para ativá-la, de novo para desativá-la e mais uma vez para limpá-la.",
+    "STATE_ENABLED": "ativada",
+    "STATE_DISABLED": "desativada",
+    "STATE_NONE": "não selecionada",
+    "SELECTED_EMPTY": "Nenhuma tag selecionada ainda.",
+    "BROWSE_ALL": "Explorar tags",
+    "SELECTED_ERROR": "Não foi possível carregar suas tags salvas.",
+    "ALL_ERROR": "Não foi possível carregar as tags.",
+    "RETRY": "Tentar novamente",
+    "SAVE_ERROR": "Não foi possível salvar a tag.",
+    "SEARCH_PLACEHOLDER": "Buscar tags",
+    "NO_MATCHES": "Nenhuma tag corresponde à sua busca.",
+    "TYPE_EMPTY": "Nenhuma tag deste tipo.",
+    "TYPES": {
+      "tag": "Tags",
+      "artist": "Artistas",
+      "character": "Personagens",
+      "parody": "Paródias",
+      "group": "Grupos",
+      "language": "Idiomas",
+      "category": "Categorias"
+    },
+    "KIND": {
+      "tag": "Tag",
+      "artist": "Artista",
+      "character": "Personagem",
+      "parody": "Paródia",
+      "group": "Grupo",
+      "language": "Idioma",
+      "category": "Categoria"
+    }
+  },
+  "GALLERY": {
+    "TITLE": "Galeria",
+    "PAGES": "{{count}} páginas",
+    "FAVORITES": "{{count}} favoritos",
+    "UPLOADED": "Enviado em {{date}}",
+    "READ": "Ler",
+    "ERROR": "Não foi possível carregar esta galeria.",
+    "RETRY": "Tentar novamente",
+    "SCANLATOR": "Tradução de {{name}}",
+    "PAGE": "Página {{number}}",
+    "SEARCH_TAG": "Mostrar galerias com {{tag}}",
+    "FAVORITE_ADD": "Adicionar aos favoritos",
+    "FAVORITE_REMOVE": "Remover dos favoritos",
+    "FAVORITE_ERROR": "Não foi possível atualizar seus favoritos.",
+    "DOWNLOAD": "Baixar",
+    "DOWNLOAD_STARTED": "Download iniciado. Acompanhe em Baixando.",
+    "DOWNLOAD_ERROR": "Não foi possível iniciar o download.",
+    "DOWNLOADING": "Baixando: ver progresso",
+    "DOWNLOAD_FAILED": "Falha no download: tentar novamente",
+    "DOWNLOADED": "Baixado: excluir download",
+    "DELETE_DOWNLOAD_TITLE": "Excluir download?",
+    "DELETE_DOWNLOAD_MESSAGE": "As páginas baixadas serão removidas deste dispositivo.",
+    "DELETE": "Excluir",
+    "CANCEL": "Cancelar",
+    "CHOOSE_FOLDER_TITLE": "Onde salvar os downloads?",
+    "CHOOSE_FOLDER_MESSAGE": "Escolha uma pasta no seu celular para os quadrinhos baixados. Você pode alterá-la depois nas Configurações.",
+    "CHOOSE_FOLDER": "Escolher pasta"
+  },
+  "READER": {
+    "TITLE": "Leitor",
+    "ERROR": "Não foi possível carregar as páginas.",
+    "NO_PAGES": "Esta galeria não tem páginas.",
+    "PAGE_ALT": "Página {{page}}",
+    "PAGE_OF": "{{page}} / {{total}}",
+    "PREVIOUS": "Página anterior",
+    "NEXT": "Próxima página"
+  },
+  "FAVORITES": {
+    "EMPTY": "Nenhum favorito ainda.",
+    "EMPTY_HINT": "Toque no coração de uma galeria para salvá-la aqui.",
+    "ERROR": "Não foi possível carregar seus favoritos.",
+    "RETRY": "Tentar novamente"
+  },
+  "DOWNLOADING": {
+    "EMPTY": "Nada está sendo baixado.",
+    "HINT": "Os downloads continuam enquanto você usa o app.",
+    "PROGRESS": "{{done}} / {{total}} páginas",
+    "STATUS": {
+      "queued": "Aguardando",
+      "downloading": "Baixando",
+      "failed": "Falhou"
+    },
+    "RETRY": "Tentar download novamente",
+    "CANCEL": "Cancelar download",
+    "NEEDS_FOLDER": "Escolha uma pasta de downloads para começar a baixar.",
+    "CHOOSE_FOLDER": "Escolher pasta"
+  },
+  "DOWNLOADED": {
+    "EMPTY": "Nenhum download ainda.",
+    "EMPTY_HINT": "Toque no botão de download de uma galeria para lê-la offline.",
+    "ERROR": "Não foi possível carregar seus downloads.",
+    "RETRY": "Tentar novamente",
+    "IN_PROGRESS": "Baixando ({{count}})"
+  },
+  "WELCOME": {
+    "STEP": "Passo {{step}} de {{total}}",
+    "BACK": "Voltar",
+    "NEXT": "Avançar",
+    "FINISH": "Começar a usar o app",
+    "PREFERENCES_TITLE": "Bem-vindo ao nMangaloide",
+    "PREFERENCES_TEXT": "Algumas coisas para configurar antes de começar. Você pode alterar tudo depois nas Configurações.",
+    "LANGUAGE": "Idioma",
+    "READER": "Como você quer ler?",
+    "FOLDER_TITLE": "Pasta de downloads",
+    "FOLDER_TEXT": "Escolha uma pasta para os quadrinhos baixados. Cada quadrinho é salvo como um arquivo CBZ com o número dele no nome, então você pode copiá-los para outro celular ou abri-los em outros leitores de quadrinhos.",
+    "FOLDER_CHOOSE": "Escolher pasta",
+    "FOLDER_CHANGE": "Trocar pasta",
+    "FOLDER_CHOSEN": "Salvando em: {{name}}",
+    "FOLDER_LATER": "Você pode pular isto e escolher depois nas Configurações.",
+    "FOLDER_ERROR": "Não foi possível usar essa pasta.",
+    "IMPORT_TITLE": "Traga seus dados",
+    "IMPORT_TEXT": "Vindo de outro celular? Importe um backup feito com Exportar nas Configurações para restaurar seus favoritos, tags e configurações. Este passo é opcional.",
+    "IMPORT_BUTTON": "Importar um backup",
+    "IMPORT_DONE": "Backup importado.",
+    "IMPORT_DOWNLOADS": "Os downloads não fazem parte dos backups: eles ficam na pasta de downloads, então copie essa pasta também."
+  },
+  "NOTIFICATION": {
+    "CHANNEL": "Downloads",
+    "TITLE_ONE": "Baixando 1 quadrinho",
+    "TITLE_OTHER": "Baixando {{count}} quadrinhos",
+    "BODY": "{{done}} / {{total}} páginas · {{title}}"
+  },
+  "CARD": {
+    "LANGUAGE": {
+      "japanese": "Japonês",
+      "chinese": "Chinês",
+      "english": "Inglês"
+    }
+  }
+}

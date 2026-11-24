@@ -3,6 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { CdnService, GalleryDetailResponse, GalleryListItem } from '../api';
+import { blobToDataUrl } from '../native/encoding';
 import { DatabaseService } from '../sql-services/database.service';
 import { GalleryLanguage, isFlagLanguage, languageOfDetails } from './gallery-language.service';
 
@@ -95,6 +96,17 @@ export function toGalleryListItem(saved: SavedGallery): GalleryListItem {
     tag_ids: [],
     blacklisted: false,
   };
+}
+
+/** What the Favorites and Downloaded grids show for a saved gallery: the card, its saved cover and flag. */
+export interface SavedCardItem {
+  gallery: GalleryListItem;
+  cover: string | null;
+  language: GalleryLanguage | null;
+}
+
+export function toCardItem(saved: SavedGallery): SavedCardItem {
+  return { gallery: toGalleryListItem(saved), cover: saved.cover_base64, language: flagLanguageOf(saved) };
 }
 
 /**
@@ -203,7 +215,8 @@ export class SavedGalleriesService {
   /**
    * Saves the gallery's details and its cover (as base64) on the device, without
    * changing whether it's a favorite or downloaded. Shared by favorites and downloads.
-   * Resolves with the saved cover (or null if it couldn't be fetched).
+   * Resolves with the cover now saved: the one just fetched or, when it can't be fetched
+   * (offline), the one saved before; null if there's none.
    */
   async saveGallery(gallery: GalleryDetailResponse): Promise<string | null> {
     const cover = await this.downloadCover(gallery.cover.path);
@@ -238,7 +251,16 @@ export class SavedGalleriesService {
         Date.now(),
       ],
     );
-    return cover;
+    return cover ?? (await this.savedCover(gallery.id));
+  }
+
+  /** The cover kept in the database for a saved gallery, if any. */
+  private async savedCover(id: number): Promise<string | null> {
+    const [row] = await this.db.query<{ cover_base64: string | null }>(
+      'SELECT cover_base64 FROM saved_galleries WHERE id = ?',
+      [id],
+    );
+    return row?.cover_base64 ?? null;
   }
 
   private async writeAdd(gallery: GalleryDetailResponse): Promise<void> {
@@ -290,13 +312,4 @@ export class SavedGalleriesService {
     this.writes = result.catch(() => undefined);
     return result;
   }
-}
-
-export function blobToDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(blob);
-  });
 }

@@ -74,7 +74,20 @@
     "DOWNLOAD_FOLDER_CHANGED": "下載資料夾已變更。",
     "DOWNLOAD_FOLDER_ERROR": "無法使用此資料夾。",
     "DOWNLOADS_FILES_APP": "下載內容儲存在「檔案」App 中本 App 的資料夾裡（我的 iPhone › nMangaloide）。",
-    "DOWNLOADS_BROWSER": "下載內容儲存在此瀏覽器中。"
+    "DOWNLOADS_BROWSER": "下載內容儲存在此瀏覽器中。",
+    "ACCOUNT": "帳戶",
+    "API_KEY": "API 金鑰",
+    "API_KEY_PLACEHOLDER": "貼上你的 API 金鑰",
+    "API_KEY_HINT": "收藏、黑名單和帳戶功能需要它。在 nhentai.net → 設定 → API 金鑰 中建立。它會隨每個 API 請求一起傳送。",
+    "API_KEY_SAVED": "API 金鑰已儲存。",
+    "API_KEY_REMOVED": "API 金鑰已刪除。",
+    "FAVORITES_SYNC": {
+      "checking": "正在檢查帳戶中的收藏…",
+      "syncing": "正在同步收藏：剩餘 {{pending}} 個",
+      "done": "收藏已與你的帳戶同步。",
+      "done_with_failures": "收藏已同步；有 {{failed}} 個無法變更，下次會重試。",
+      "error": "無法同步收藏。請檢查 API 金鑰和網路連線。"
+    }
   },
   "COMMON": {
     "BACK": "返回"

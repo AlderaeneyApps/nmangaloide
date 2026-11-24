@@ -74,7 +74,20 @@
     "DOWNLOAD_FOLDER_CHANGED": "Download-Ordner geändert.",
     "DOWNLOAD_FOLDER_ERROR": "Dieser Ordner kann nicht verwendet werden.",
     "DOWNLOADS_FILES_APP": "Downloads werden im Ordner der App in der Dateien-App gespeichert (Auf meinem iPhone › nMangaloide).",
-    "DOWNLOADS_BROWSER": "Downloads werden in diesem Browser gespeichert."
+    "DOWNLOADS_BROWSER": "Downloads werden in diesem Browser gespeichert.",
+    "ACCOUNT": "Konto",
+    "API_KEY": "API-Schlüssel",
+    "API_KEY_PLACEHOLDER": "API-Schlüssel einfügen",
+    "API_KEY_HINT": "Wird für Favoriten, Blacklist und dein Konto benötigt. Erstelle ihn auf nhentai.net → Einstellungen → API-Schlüssel. Er wird mit jeder Anfrage an die API gesendet.",
+    "API_KEY_SAVED": "API-Schlüssel gespeichert.",
+    "API_KEY_REMOVED": "API-Schlüssel entfernt.",
+    "FAVORITES_SYNC": {
+      "checking": "Favoriten deines Kontos werden geprüft …",
+      "syncing": "Favoriten werden synchronisiert: noch {{pending}}",
+      "done": "Die Favoriten sind mit deinem Konto synchronisiert.",
+      "done_with_failures": "Favoriten synchronisiert; {{failed}} konnten nicht geändert werden und werden beim nächsten Mal erneut versucht.",
+      "error": "Die Favoriten konnten nicht synchronisiert werden. Prüfe den API-Schlüssel und deine Verbindung."
+    }
   },
   "COMMON": {
     "BACK": "Zurück"

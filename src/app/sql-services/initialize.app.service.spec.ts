@@ -16,10 +16,10 @@ describe('InitializeAppService', () => {
     saveToStore: ReturnType<typeof vi.fn>;
   };
 
-  let databaseServiceMock: { open: ReturnType<typeof vi.fn> };
+  let databaseServiceMock: { open: ReturnType<typeof vi.fn>; fail: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    databaseServiceMock = { open: vi.fn().mockResolvedValue(undefined) };
+    databaseServiceMock = { open: vi.fn().mockResolvedValue(undefined), fail: vi.fn() };
     sqliteServiceMock = {
       platform: 'web',
       initializePlugin: vi.fn().mockResolvedValue(true),
@@ -61,5 +61,27 @@ describe('InitializeAppService', () => {
     expect(databaseServiceMock.open).toHaveBeenCalled();
     expect(sqliteServiceMock.saveToStore).not.toHaveBeenCalled();
     expect(service.isAppInit).toBe(true);
+  });
+
+  it('fails the database (instead of leaving it waiting forever) when the web store cannot start', async () => {
+    const error = new Error('no IndexedDB');
+    sqliteServiceMock.initWebStore.mockRejectedValue(error);
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await expect(service.initializeApp()).resolves.toBeUndefined();
+
+    expect(databaseServiceMock.open).not.toHaveBeenCalled();
+    expect(databaseServiceMock.fail).toHaveBeenCalledWith(error);
+    expect(service.isAppInit).toBe(false);
+  });
+
+  it('also fails the database when the plugin itself cannot start', async () => {
+    sqliteServiceMock.initializePlugin.mockRejectedValue(new Error('no plugin'));
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await service.initializeApp();
+
+    expect(databaseServiceMock.fail).toHaveBeenCalled();
+    expect(databaseServiceMock.open).not.toHaveBeenCalled();
   });
 });

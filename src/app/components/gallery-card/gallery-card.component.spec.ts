@@ -90,6 +90,8 @@ describe('GalleryCardComponent', () => {
     // Cut to MAX_TITLE_LENGTH characters, with the full title kept in the tooltip.
     expect(title.textContent?.trim()).toBe(`${GALLERY.english_title.slice(0, MAX_TITLE_LENGTH).trimEnd()}...`);
     expect(title.getAttribute('title')).toBe(GALLERY.english_title);
+    // Read once, in full, from the alt text: the shortened copy is hidden from screen readers.
+    expect(title.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('should reserve space using the thumbnail size', async () => {
@@ -109,6 +111,8 @@ describe('GalleryCardComponent', () => {
     const el = await create(GALLERY, null);
     expect(el.querySelector('img')).toBeNull();
     expect(el.querySelector('.title')?.textContent).toContain('A very long');
+    // With no cover (and so no alt text), screen readers read the title itself.
+    expect(el.querySelector('.title')?.hasAttribute('aria-hidden')).toBe(false);
   });
 
   it('should fall back to the Japanese title', async () => {

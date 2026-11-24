@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import {
   ActionSheetController,
   AlertController,
@@ -6,6 +6,7 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
   IonList,
@@ -23,7 +24,14 @@ import {
 import { Capacitor } from '@capacitor/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { cloudDownloadOutline, cloudUploadOutline, folderOpenOutline, folderOutline, shareOutline } from 'ionicons/icons';
+import {
+  cloudDownloadOutline,
+  cloudUploadOutline,
+  folderOpenOutline,
+  folderOutline,
+  keyOutline,
+  shareOutline,
+} from 'ionicons/icons';
 
 import { BackButtonComponent } from '../../components/back-button/back-button.component';
 import { APP_THEMES, AppSettingsService, AppTheme, READER_MODES, ReaderMode } from '../../services/app-settings.service';
@@ -31,6 +39,7 @@ import { isCancelled } from '../../native/file-saver';
 import { BackupService, ExportDestination } from '../../services/backup.service';
 import { DownloadFolderService } from '../../services/download-folder.service';
 import { DownloadService } from '../../services/download.service';
+import { FavoritesSyncService } from '../../services/favorites-sync.service';
 import { LanguageService } from '../../services/language.service';
 import { NewerBackupError } from '../../sql-services/database.service';
 import { MenuButtonComponent } from '../../components/menu-button/menu-button.component';
@@ -50,6 +59,7 @@ import { MenuButtonComponent } from '../../components/menu-button/menu-button.co
     IonItem,
     IonLabel,
     IonIcon,
+    IonInput,
     IonSpinner,
     IonSelect,
     IonSelectOption,
@@ -75,11 +85,23 @@ export class SettingsPage implements OnInit {
 
   private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('importFile');
 
+  private readonly syncStatus = inject(FavoritesSyncService).status;
+
+  /** What the favorites sync with the account is doing (nothing to show while idle). */
+  protected readonly syncMessage = computed(() => {
+    const { state, pending, failed } = this.syncStatus();
+    if (state === 'idle') {
+      return null;
+    }
+    const key = state === 'done' && failed > 0 ? 'done_with_failures' : state;
+    return { key: `SETTINGS.FAVORITES_SYNC.${key}`, params: { pending, failed }, error: state === 'error' };
+  });
+
   /** The backup action in progress, if any. */
   protected readonly busy = signal<'export' | 'import' | 'folder' | null>(null);
 
   constructor() {
-    addIcons({ cloudUploadOutline, cloudDownloadOutline, folderOpenOutline, folderOutline, shareOutline });
+    addIcons({ cloudUploadOutline, cloudDownloadOutline, folderOpenOutline, folderOutline, keyOutline, shareOutline });
   }
 
   ngOnInit(): void {
@@ -124,6 +146,20 @@ export class SettingsPage implements OnInit {
     }
     try {
       await this.settings.setReaderMode(mode);
+    } catch {
+      await this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger');
+    }
+  }
+
+  /** Saves the API key when the field is committed (blur or Enter); an empty field removes it. */
+  protected async onApiKeyChange(event: Event): Promise<void> {
+    const value = String((event as CustomEvent<{ value: string | null | undefined }>).detail.value ?? '').trim();
+    if (value === (this.settings.apiKey() ?? '')) {
+      return;
+    }
+    try {
+      await this.settings.setApiKey(value);
+      await this.toast(value ? 'SETTINGS.API_KEY_SAVED' : 'SETTINGS.API_KEY_REMOVED', 'success');
     } catch {
       await this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger');
     }
@@ -219,7 +255,8 @@ export class SettingsPage implements OnInit {
   protected async onLanguageChange(event: Event): Promise<void> {
     const lang = (event as CustomEvent<{ value: string }>).detail.value;
     if (lang && lang !== this.language.current()) {
-      await this.language.setLanguage(lang);
+      // Applied either way; only remembering it for the next start can fail.
+      await this.language.setLanguage(lang).catch(() => this.toast('SETTINGS.SETTINGS_SAVE_ERROR', 'danger'));
     }
   }
 }

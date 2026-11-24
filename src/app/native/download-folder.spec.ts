@@ -1,20 +1,13 @@
-import { DownloadFolderPlugin, base64ToText, mimeTypeOf, pickedFolderStorage, stripDataUrl, textToBase64 } from './download-folder';
+import { DownloadFolderPlugin, mimeTypeOf, pickedFolderStorage } from './download-folder';
 
 import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
 
 describe('download folder helpers', () => {
-  it('round-trips UTF-8 text through base64', () => {
-    const text = JSON.stringify({ title: '日本語のタイトル — ça marche' });
-    expect(base64ToText(textToBase64(text))).toBe(text);
-    expect(textToBase64('abc')).toBe(btoa('abc'));
-  });
-
   it('knows the image types', () => {
     expect(mimeTypeOf('001.webp')).toBe('image/webp');
     expect(mimeTypeOf('002.JPG')).toBe('image/jpeg');
     expect(mimeTypeOf('gallery.json')).toBe('application/json');
     expect(mimeTypeOf('notes')).toBe('application/octet-stream');
-    expect(stripDataUrl('data:image/webp;base64,QUJD')).toBe('QUJD');
   });
 
   it('passes the picked folder and the path to the Android plugin', async () => {

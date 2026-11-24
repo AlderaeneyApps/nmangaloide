@@ -74,7 +74,20 @@
     "DOWNLOAD_FOLDER_CHANGED": "Dossier de téléchargement modifié.",
     "DOWNLOAD_FOLDER_ERROR": "Impossible d’utiliser ce dossier.",
     "DOWNLOADS_FILES_APP": "Les téléchargements sont enregistrés dans le dossier de l’app dans Fichiers (Sur mon iPhone › nMangaloide).",
-    "DOWNLOADS_BROWSER": "Les téléchargements sont enregistrés dans ce navigateur."
+    "DOWNLOADS_BROWSER": "Les téléchargements sont enregistrés dans ce navigateur.",
+    "ACCOUNT": "Compte",
+    "API_KEY": "Clé d'API",
+    "API_KEY_PLACEHOLDER": "Collez votre clé d'API",
+    "API_KEY_HINT": "Nécessaire pour les favoris, la liste noire et votre compte. Créez-la sur nhentai.net → Paramètres → Clés d'API. Elle est envoyée avec chaque requête à l'API.",
+    "API_KEY_SAVED": "Clé d'API enregistrée.",
+    "API_KEY_REMOVED": "Clé d'API supprimée.",
+    "FAVORITES_SYNC": {
+      "checking": "Vérification des favoris de votre compte…",
+      "syncing": "Synchronisation des favoris : {{pending}} restants",
+      "done": "Les favoris sont synchronisés avec votre compte.",
+      "done_with_failures": "Favoris synchronisés ; {{failed}} n'ont pas pu être modifiés et seront réessayés la prochaine fois.",
+      "error": "Les favoris n'ont pas pu être synchronisés. Vérifiez la clé d'API et votre connexion."
+    }
   },
   "COMMON": {
     "BACK": "Retour"

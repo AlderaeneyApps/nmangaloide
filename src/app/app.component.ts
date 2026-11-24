@@ -15,7 +15,9 @@ import {
 } from 'ionicons/icons';
 
 import { BOTTOM_BAR_PAGES, injectCurrentUrl, injectOnTopLevelPage } from './app-pages';
+import { pathOf, pathSegments } from './navigation';
 import { DownloadNotificationService } from './services/download-notification.service';
+import { FavoritesSyncService } from './services/favorites-sync.service';
 import { DownloadService } from './services/download.service';
 import { HardwareBackService } from './services/hardware-back.service';
 import { LanguageService } from './services/language.service';
@@ -23,11 +25,8 @@ import { ThemeService } from './services/theme.service';
 
 /** Whether `url` shows the bottom bar: every page but the reader and the first-start setup. */
 export function showsBottomBar(url: string): boolean {
-  const segments = new URL(url, 'https://app.invalid').pathname.split('/').filter(Boolean);
-  if (segments[0] === 'welcome') {
-    return false;
-  }
-  return !(segments[0] === 'gallery' && segments[2] === 'read');
+  const [first, , third] = pathSegments(url);
+  return first !== 'welcome' && !(first === 'gallery' && third === 'read');
 }
 
 @Component({
@@ -47,7 +46,6 @@ export function showsBottomBar(url: string): boolean {
   ],
 })
 export class AppComponent {
-  private readonly language = inject(LanguageService);
   private readonly url = injectCurrentUrl();
 
   /**
@@ -60,7 +58,7 @@ export class AppComponent {
 
   /** The bottom bar tab of the current page, if it is one of them. */
   protected readonly selectedTab = computed(() => {
-    const path = new URL(this.url(), 'https://app.invalid').pathname;
+    const path = pathOf(this.url());
     return this.bottomPages.find((p) => p.url === path)?.url;
   });
 
@@ -77,13 +75,15 @@ export class AppComponent {
       downloadOutline,
       downloadSharp,
     });
-    void this.language.init();
+    // Neither rejects: a setting that can't be read falls back to the default.
+    void inject(LanguageService).init();
     void inject(ThemeService).init();
     inject(HardwareBackService).init();
     // Resume unfinished downloads in the background.
     inject(DownloadService).init().catch(() => undefined);
     // Download progress notification, and downloads kept going in the background.
     inject(DownloadNotificationService).init();
+    // Keeps the device's and the nhentai account's favorites the same, once an API key is set.
+    inject(FavoritesSyncService).init();
   }
-
 }

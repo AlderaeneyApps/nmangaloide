@@ -8,7 +8,6 @@ import {
   SQLiteConnection,
   SQLiteDBConnection,
 } from '@capacitor-community/sqlite';
-import { DB_NMANGALOIDE } from '../constants';
 
 export interface EncryptionOptions {
   encrypted: boolean;
@@ -22,35 +21,32 @@ export function generatePassphrase(): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-
+/** Thin wrapper around the Capacitor SQLite plugin, so the database code can be tested with a fake. */
 @Injectable()
 export class SQLiteService {
   sqliteConnection!: SQLiteConnection;
-  isService: boolean = false;
+  isService = false;
+  /** 'android', 'ios' or 'web'; set by `initializePlugin()`. */
   platform!: string;
   sqlitePlugin!: CapacitorSQLitePlugin;
-  native: boolean = false;
+  native = false;
 
-  constructor() {}
-
-  /**
-   * Plugin Initialization
-   */
   async initializePlugin(): Promise<boolean> {
     this.platform = Capacitor.getPlatform();
-    if (this.platform === 'ios' || this.platform === 'android') this.native = true;
+    this.native = this.platform === 'ios' || this.platform === 'android';
     this.sqlitePlugin = CapacitorSQLite;
     this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
     this.isService = true;
     return true;
   }
 
+  /** The web build keeps the database in IndexedDB, through the <jeep-sqlite> element. */
   async initWebStore(): Promise<void> {
     try {
       await this.sqliteConnection.initWebStore();
-    } catch (err: any) {
-      const msg = err.message ? err.message : err;
-      return Promise.reject(`initWebStore: ${msg}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`initWebStore: ${message}`, { cause: error });
     }
   }
 
@@ -61,14 +57,12 @@ export class SQLiteService {
     version: number,
     readonly: boolean,
   ): Promise<SQLiteDBConnection> {
-    let db: SQLiteDBConnection;
-    const retCC = (await this.sqliteConnection.checkConnectionsConsistency()).result;
-    let isConn = (await this.sqliteConnection.isConnection(dbName, readonly)).result;
-    if (retCC && isConn) {
-      db = await this.sqliteConnection.retrieveConnection(dbName, readonly);
-    } else {
-      db = await this.sqliteConnection.createConnection(dbName, encrypted, mode, version, readonly);
-    }
+    const consistent = (await this.sqliteConnection.checkConnectionsConsistency()).result;
+    const connected = (await this.sqliteConnection.isConnection(dbName, readonly)).result;
+    const db =
+      consistent && connected
+        ? await this.sqliteConnection.retrieveConnection(dbName, readonly)
+        : await this.sqliteConnection.createConnection(dbName, encrypted, mode, version, readonly);
     await db.open();
     return db;
   }
@@ -94,22 +88,20 @@ export class SQLiteService {
     return { encrypted: true, mode: 'secret' };
   }
 
-  async retrieveConnection(dbName: string, readonly: boolean): Promise<SQLiteDBConnection> {
-    return await this.sqliteConnection.retrieveConnection(dbName, readonly);
+  retrieveConnection(dbName: string, readonly: boolean): Promise<SQLiteDBConnection> {
+    return this.sqliteConnection.retrieveConnection(dbName, readonly);
   }
 
-  async closeConnection(database: string, readonly?: boolean): Promise<void> {
-    const readOnly = readonly ? readonly : false;
-    return await this.sqliteConnection.closeConnection(database, readOnly);
+  closeConnection(database: string, readonly = false): Promise<void> {
+    return this.sqliteConnection.closeConnection(database, readonly);
   }
 
-  async addUpgradeStatement(options: capSQLiteUpgradeOptions): Promise<void> {
-    await this.sqlitePlugin.addUpgradeStatement(options);
-    return;
+  addUpgradeStatement(options: capSQLiteUpgradeOptions): Promise<void> {
+    return this.sqlitePlugin.addUpgradeStatement(options);
   }
 
-  async saveToStore(database: string): Promise<void> {
-    return await this.sqliteConnection.saveToStore(database);
+  saveToStore(database: string): Promise<void> {
+    return this.sqliteConnection.saveToStore(database);
   }
 
   async isJsonValid(json: string): Promise<boolean> {

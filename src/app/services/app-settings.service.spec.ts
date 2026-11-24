@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
+import { ApiKeyService } from '../api/api-key.service';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 import { AppSettingsService } from './app-settings.service';
 
@@ -85,6 +86,37 @@ describe('AppSettingsService', () => {
       await service.setReaderMode('paged');
       expect(db.settings.get('theme')).toBe('dark');
       expect(db.settings.get('reader_mode')).toBe('paged');
+    });
+  });
+
+  describe('API key', () => {
+    it('has no key by default', async () => {
+      await service.load();
+      expect(service.apiKey()).toBeNull();
+      expect(TestBed.inject(ApiKeyService).hasKey()).toBe(false);
+    });
+
+    it('loads the saved key into the API key service', async () => {
+      db.settings.set('api_key', 'secret');
+      await service.load();
+      expect(TestBed.inject(ApiKeyService).key()).toBe('secret');
+    });
+
+    it('saves a trimmed key, and an empty value removes it', async () => {
+      await service.setApiKey('  secret  ');
+      expect(db.settings.get('api_key')).toBe('secret');
+      expect(service.apiKey()).toBe('secret');
+
+      await service.setApiKey('   ');
+      expect(db.settings.get('api_key')).toBe('');
+      expect(service.apiKey()).toBeNull();
+    });
+
+    it('keeps the previous key when saving fails', async () => {
+      await service.setApiKey('old');
+      db.failNext = new Error('disk full');
+      await expect(service.setApiKey('new')).rejects.toThrow('disk full');
+      expect(service.apiKey()).toBe('old');
     });
   });
 });

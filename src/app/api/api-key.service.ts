@@ -5,8 +5,8 @@ import { Injectable, computed, signal } from '@angular/core';
  * https://nhentai.net/user/settings#apikeys). Endpoints that need an account
  * (favorites, blacklist, downloads, current user) fail with 401 until it is set.
  *
- * The key only lives in memory; persist it (e.g. in the SQLite store) and call
- * `set` on startup.
+ * AppSettingsService saves it in the `app_settings` table, edited from the
+ * settings page, and sets it here when the settings load at startup.
  */
 @Injectable({ providedIn: 'root' })
 export class ApiKeyService {

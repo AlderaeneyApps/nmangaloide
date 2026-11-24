@@ -54,7 +54,7 @@ export class GalleryCardComponent {
   });
 
   protected readonly imageUrl = computed(() => this.coverSrc() || this.cdn.thumbnailUrl(this.gallery().thumbnail));
-  /** The full title, kept for the tooltip and the image's alt text. */
+  /** The full title, for the tooltip and the cover's alt text (the one screen readers read). */
   protected readonly title = computed(() => this.gallery().english_title || this.gallery().japanese_title || '');
   protected readonly shortTitle = computed(() => truncateTitle(this.title()));
   /** Reserves the image's space before it loads, so the grid doesn't jump. */

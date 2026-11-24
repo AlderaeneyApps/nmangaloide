@@ -6,6 +6,7 @@ import { DatabaseService } from '../sql-services/database.service';
 import { BackupService, backupFileName } from './backup.service';
 import { AppSettingsService } from './app-settings.service';
 import { DownloadService } from './download.service';
+import { FavoritesSyncService } from './favorites-sync.service';
 import { SavedGalleriesService } from './saved-galleries.service';
 import { TagPreferencesService } from './tag-preferences.service';
 
@@ -17,6 +18,7 @@ describe('BackupService', () => {
   let settings: { reload: ReturnType<typeof vi.fn> };
   let savedGalleries: { reload: ReturnType<typeof vi.fn> };
   let downloads: { resetAfterImport: ReturnType<typeof vi.fn> };
+  let favoritesSync: { stop: ReturnType<typeof vi.fn>; resync: ReturnType<typeof vi.fn> };
   let saveAs: ReturnType<typeof vi.fn>;
   let cacheFiles: { write: ReturnType<typeof vi.fn>; remove: ReturnType<typeof vi.fn> };
   let service: BackupService;
@@ -30,6 +32,7 @@ describe('BackupService', () => {
     settings = { reload: vi.fn().mockResolvedValue(undefined) };
     savedGalleries = { reload: vi.fn().mockResolvedValue(undefined) };
     downloads = { resetAfterImport: vi.fn().mockResolvedValue(undefined) };
+    favoritesSync = { stop: vi.fn(), resync: vi.fn() };
     saveAs = vi.fn().mockResolvedValue({ uri: 'content://picked/backup.json' });
     cacheFiles = {
       write: vi.fn().mockResolvedValue('file:///data/user/0/com.alderaeney/cache/nmangaloide-backup-2026-10-18.json'),
@@ -42,6 +45,7 @@ describe('BackupService', () => {
         { provide: AppSettingsService, useValue: settings },
         { provide: SavedGalleriesService, useValue: savedGalleries },
         { provide: DownloadService, useValue: downloads },
+        { provide: FavoritesSyncService, useValue: favoritesSync },
         { provide: FILE_SAVER, useValue: { saveAs } },
         { provide: CACHE_FILES, useValue: cacheFiles },
       ],
@@ -112,5 +116,20 @@ describe('BackupService', () => {
     database.importJson.mockRejectedValue(new Error('bad file'));
     await expect(service.importFromFile(new Blob(['x']))).rejects.toThrow('bad file');
     expect(tags.reload).not.toHaveBeenCalled();
+  });
+
+  it('stops the favorites sync during an import and starts it over with the imported favorites', async () => {
+    database.importJson.mockImplementation(async () => {
+      expect(favoritesSync.stop).toHaveBeenCalled();
+      expect(favoritesSync.resync).not.toHaveBeenCalled();
+    });
+    await service.importFromFile(new Blob(['{"tables":[]}']));
+    expect(favoritesSync.resync).toHaveBeenCalledTimes(1);
+  });
+
+  it('starts the favorites sync over even when the import fails', async () => {
+    database.importJson.mockRejectedValue(new Error('bad file'));
+    await expect(service.importFromFile(new Blob(['x']))).rejects.toThrow('bad file');
+    expect(favoritesSync.resync).toHaveBeenCalledTimes(1);
   });
 });

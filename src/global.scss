@@ -108,3 +108,14 @@
     }
   }
 }
+
+// A page's loading, empty or error message, centred in the page.
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 16px;
+  text-align: center;
+}

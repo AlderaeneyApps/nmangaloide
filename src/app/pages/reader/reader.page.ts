@@ -125,6 +125,15 @@ export class ReaderPage implements OnDestroy {
   private lastTap: { time: number; x: number; y: number } | null = null;
   private pendingTap: ReturnType<typeof setTimeout> | undefined;
 
+  /**
+   * The downloaded gallery whose unpacked pages this page holds. DownloadService counts
+   * every getPages() call, so a gallery is asked for once (not on every Retry) and
+   * released when another one is opened or the page closes.
+   */
+  private held: { id: number; pages: Promise<ReadonlyMap<number, string>> } | null = null;
+  /** Increases with every load, so a late answer for an earlier one is dropped. */
+  private loads = 0;
+
   constructor() {
     addIcons({ chevronBackOutline, chevronForwardOutline });
     effect(() => {
@@ -146,6 +155,7 @@ export class ReaderPage implements OnDestroy {
   }
 
   async load(id: number = Number(this.id())): Promise<void> {
+    const load = ++this.loads;
     this.loading.set(true);
     this.error.set(false);
     this.zoom.set(1);
@@ -153,23 +163,58 @@ export class ReaderPage implements OnDestroy {
       const [gallery, offline] = await Promise.all([
         this.details.get(id),
         // A download's pages are unpacked from its CBZ to work offline; missing ones come from the CDN.
-        this.downloads.getPages(id).catch(() => new Map<number, string>()),
+        this.holdPages(id),
         this.cdn.load().catch(() => undefined),
         // Fall back to the default mode if the setting can't be read.
         this.settings.load().catch(() => undefined),
       ]);
+      if (load !== this.loads) {
+        return;
+      }
       this.offlinePages.set(offline);
       this.gallery.set(gallery);
       const start = Number(this.page()) - 1;
       this.index.set(Number.isInteger(start) ? Math.min(Math.max(start, 0), Math.max(gallery.pages.length - 1, 0)) : 0);
     } catch {
+      if (load !== this.loads) {
+        return;
+      }
       this.gallery.set(null);
       this.error.set(true);
     } finally {
-      this.loading.set(false);
+      if (load === this.loads) {
+        this.loading.set(false);
+      }
     }
-    if (this.mode() === 'scroll' && this.index() > 0) {
+    if (load === this.loads && this.mode() === 'scroll' && this.index() > 0) {
       afterNextRender({ read: () => void this.scrollToPage(this.index()) }, { injector: this.injector });
+    }
+  }
+
+  /** The unpacked pages of gallery `id` (empty if it isn't downloaded), releasing any other gallery's. */
+  private holdPages(id: number): Promise<ReadonlyMap<number, string>> {
+    if (this.held?.id === id) {
+      return this.held.pages;
+    }
+    this.releaseHeldPages();
+    const held = {
+      id,
+      pages: this.downloads.getPages(id).catch(() => {
+        // Nothing is held after a failure (DownloadService forgets it), so a retry asks again.
+        if (this.held === held) {
+          this.held = null;
+        }
+        return new Map<number, string>();
+      }),
+    };
+    this.held = held;
+    return held.pages;
+  }
+
+  private releaseHeldPages(): void {
+    if (this.held) {
+      void this.downloads.releasePages(this.held.id);
+      this.held = null;
     }
   }
 
@@ -188,7 +233,7 @@ export class ReaderPage implements OnDestroy {
   /** The pages unpacked from a downloaded gallery's CBZ are temporary: removed on leaving. */
   ngOnDestroy(): void {
     clearTimeout(this.pendingTap);
-    void this.downloads.releasePages(Number(this.id()));
+    this.releaseHeldPages();
   }
 
   /** A downloaded page that can't be shown (e.g. its file was deleted) falls back to the CDN. */

@@ -5,7 +5,10 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
 import { TranslocoService } from '@jsverse/transloco';
 
 import { BackupService } from '../../services/backup.service';
+import { AppSettingsService } from '../../services/app-settings.service';
 import { LanguageService } from '../../services/language.service';
+import { FavoritesSyncService, FavoritesSyncStatus } from '../../services/favorites-sync.service';
+import { signal } from '@angular/core';
 import { NewerBackupError } from '../../sql-services/database.service';
 import { FakeDatabase, provideFakeDatabase } from '../../testing/fake-database';
 import { DOWNLOAD_STORAGE } from '../../native/download-folder';
@@ -26,10 +29,12 @@ describe('SettingsPage', () => {
   let actionSheetCreate: ReturnType<typeof vi.fn>;
 
   let storage: FakeDownloadStorage;
+  const syncStatus = signal<FavoritesSyncStatus>({ state: 'idle', pending: 0, completed: 0, failed: 0 });
 
   beforeEach(async () => {
     db = new FakeDatabase();
     storage = new FakeDownloadStorage();
+    syncStatus.set({ state: 'idle', pending: 0, completed: 0, failed: 0 });
     sheetChoice = { data: 'device' };
     actionSheetCreate = vi.fn().mockImplementation(async () => ({
       present: vi.fn().mockResolvedValue(undefined),
@@ -50,6 +55,7 @@ describe('SettingsPage', () => {
       providers: [
         provideRouter([]),
         { provide: BackupService, useValue: backup },
+        { provide: FavoritesSyncService, useValue: { status: syncStatus } },
         { provide: ToastController, useValue: { create: toastCreate } },
         { provide: AlertController, useValue: { create: alertCreate } },
         { provide: ActionSheetController, useValue: { create: actionSheetCreate } },
@@ -68,7 +74,7 @@ describe('SettingsPage', () => {
     expect(el.querySelector('ion-title')?.textContent).toContain('Settings');
     expect((el.querySelector('[data-setting="language"] ion-select') as HTMLIonSelectElement).label).toBe('Language');
     const options = [...el.querySelectorAll('[data-setting="language"] ion-select-option')].map((o) => o.textContent?.trim());
-    expect(options).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', '日本語', '简体中文', '繁體中文']);
+    expect(options).toEqual(['English', 'Español', 'Català', 'Français', 'Deutsch', 'Português', 'Русский', 'Українська', 'Български', 'Suomi', 'Dansk', 'Norsk bokmål', 'Svenska', '日本語', '简体中文', '繁體中文']);
   });
 
   it('should switch and save the language when a new one is picked', async () => {
@@ -81,6 +87,26 @@ describe('SettingsPage', () => {
     await vi.waitFor(() => expect(localStorage.getItem('CapacitorStorage.lang')).toBe('fr'));
     expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('fr');
     expect(TestBed.inject(LanguageService).current()).toBe('fr');
+  });
+
+  it('reports a language that cannot be remembered, keeping it applied', async () => {
+    // Capacitor Preferences keeps the language in localStorage on the web.
+    const setItem = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+      throw new Error('storage full');
+    });
+    try {
+      const fixture = TestBed.createComponent(SettingsPage);
+      fixture.detectChanges();
+      const select = fixture.nativeElement.querySelector('[data-setting="language"] ion-select') as HTMLElement;
+      select.dispatchEvent(new CustomEvent('ionChange', { detail: { value: 'de' } }));
+
+      await vi.waitFor(() =>
+        expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ color: 'danger' })),
+      );
+      expect(TestBed.inject(LanguageService).current()).toBe('de');
+    } finally {
+      setItem.mockRestore();
+    }
   });
 
   describe('download folder', () => {
@@ -226,7 +252,7 @@ describe('SettingsPage', () => {
     it('sits above the backup buttons and defaults to infinite scroll', async () => {
       const el: HTMLElement = (await render()).nativeElement;
       const sections = [...el.querySelectorAll('ion-list-header')].map((h) => h.textContent?.trim());
-      expect(sections).toEqual(['Reader', 'Downloads', 'Data']);
+      expect(sections).toEqual(['Account', 'Reader', 'Downloads', 'Data']);
       const options = [...el.querySelectorAll('[data-section="reader"] ion-radio')].map((r) => r.textContent);
       expect(options[0]).toContain('Infinite scroll');
       expect(options[1]).toContain('One page at a time');
@@ -297,6 +323,89 @@ describe('SettingsPage', () => {
       await settle();
       expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'Could not save the setting.' }));
       expect(db.settings.has('theme')).toBe(false);
+    });
+  });
+
+  describe('API key', () => {
+    const settle = () => new Promise((resolve) => setTimeout(resolve));
+
+    async function render() {
+      const fixture = TestBed.createComponent(SettingsPage);
+      fixture.detectChanges();
+      await settle();
+      fixture.detectChanges();
+      return fixture;
+    }
+
+    const input = (el: HTMLElement) => el.querySelector('[data-setting="api-key"] ion-input') as HTMLIonInputElement;
+    const commit = (el: HTMLElement, value: string) =>
+      input(el).dispatchEvent(new CustomEvent('ionChange', { detail: { value } }));
+
+    const syncNote = (fixture: { nativeElement: HTMLElement; detectChanges(): void }) => {
+      fixture.detectChanges();
+      return fixture.nativeElement.querySelector('[data-state="favorites-sync"]') as HTMLElement | null;
+    };
+
+    it('shows how the favorites sync goes, in a live region, once a key is set', async () => {
+      expect(syncNote(await render())).toBeNull();
+
+      db.settings.set('api_key', 'secret');
+      TestBed.inject(AppSettingsService).reload();
+      const fixture = await render();
+      expect(syncNote(fixture)?.getAttribute('role')).toBe('status');
+      expect(syncNote(fixture)?.textContent?.trim()).toBe('');
+
+      syncStatus.set({ state: 'syncing', pending: 3, completed: 0, failed: 0 });
+      expect(syncNote(fixture)?.textContent).toContain('Syncing favorites: 3 left');
+      syncStatus.set({ state: 'done', pending: 0, completed: 3, failed: 1 });
+      expect(syncNote(fixture)?.textContent).toContain("1 couldn't be changed");
+      syncStatus.set({ state: 'error', pending: 0, completed: 0, failed: 0 });
+      expect((syncNote(fixture)?.querySelector('ion-note') as HTMLIonNoteElement).color).toBe('danger');
+      expect(syncNote(fixture)?.textContent).toContain("couldn't be synced");
+    });
+
+    it('shows a hidden field with the saved key', async () => {
+      db.settings.set('api_key', 'secret');
+      const el: HTMLElement = (await render()).nativeElement;
+      expect(input(el).type).toBe('password');
+      expect(input(el).label).toBe('API key');
+      expect(input(el).value).toBe('secret');
+    });
+
+    it('saves the key and confirms it', async () => {
+      const fixture = await render();
+      commit(fixture.nativeElement, ' secret ');
+      await settle();
+      expect(db.settings.get('api_key')).toBe('secret');
+      expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'API key saved.' }));
+    });
+
+    it('removes the key when the field is cleared', async () => {
+      db.settings.set('api_key', 'secret');
+      const fixture = await render();
+      commit(fixture.nativeElement, '');
+      await settle();
+      expect(db.settings.get('api_key')).toBe('');
+      expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'API key removed.' }));
+    });
+
+    it('does nothing when the key did not change', async () => {
+      db.settings.set('api_key', 'secret');
+      const fixture = await render();
+      const runs = db.runs.length;
+      commit(fixture.nativeElement, 'secret');
+      await settle();
+      expect(db.runs.length).toBe(runs);
+      expect(toastCreate).not.toHaveBeenCalled();
+    });
+
+    it('reports a failed save', async () => {
+      const fixture = await render();
+      db.failNext = new Error('disk full');
+      commit(fixture.nativeElement, 'secret');
+      await settle();
+      expect(toastCreate).toHaveBeenCalledWith(expect.objectContaining({ message: 'Could not save the setting.' }));
+      expect(db.settings.has('api_key')).toBe(false);
     });
   });
 

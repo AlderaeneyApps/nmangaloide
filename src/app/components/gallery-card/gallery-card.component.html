@@ -13,5 +13,7 @@
       />
     }
   </div>
-  <p class="title" [title]="title()">{{ shortTitle() }}</p>
+  <!-- Screen readers get the full title once, from the cover's alt text, not this shortened
+       copy (which they read when there's no cover to show). -->
+  <p class="title" [title]="title()" [attr.aria-hidden]="imageUrl() ? 'true' : null">{{ shortTitle() }}</p>
 </ion-card>

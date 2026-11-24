@@ -3,6 +3,8 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 
+import { base64ToBytes, blobToDataUrl, stripDataUrl } from './encoding';
+
 /** A file or folder inside the downloads folder. */
 export interface FolderEntry {
   name: string;
@@ -107,7 +109,7 @@ export function pickedFolderStorage(plugin: DownloadFolderPlugin = DownloadFolde
         return await fetchBytes(entry.uri);
       } catch {
         // Through the plugin instead (slower: base64 over the bridge).
-        return base64ToBytesLocal((await plugin.readFile({ uri: need(root), path, name: entry.name })).data);
+        return base64ToBytes((await plugin.readFile({ uri: need(root), path, name: entry.name })).data);
       }
     },
     remove: (root, path) => plugin.remove({ uri: need(root), path }),
@@ -124,7 +126,7 @@ export function appFolderStorage(kind: 'files-app' | 'browser'): DownloadStorage
   const pathOf = (path: string[], name?: string) => [...base, ...path, ...(name ? [name] : [])].join('/');
   const read = async (path: string[], name: string) => {
     const { data } = await Filesystem.readFile({ path: pathOf(path, name), directory });
-    return typeof data === 'string' ? data : stripDataUrl(await blobToDataUrlString(data));
+    return typeof data === 'string' ? data : stripDataUrl(await blobToDataUrl(data));
   };
   return {
     kind,
@@ -148,7 +150,7 @@ export function appFolderStorage(kind: 'files-app' | 'browser'): DownloadStorage
     },
     read: (_root, path, name) => read(path, name),
     readBytes: async (_root, path, entry) =>
-      kind === 'files-app' ? fetchBytes(entry.uri) : base64ToBytesLocal(await read(path, entry.name)),
+      kind === 'files-app' ? fetchBytes(entry.uri) : base64ToBytes(await read(path, entry.name)),
     remove: async (_root, path) => {
       const target = { path: pathOf(path), directory };
       try {
@@ -204,7 +206,7 @@ export function filesystemAppFiles(platform = Capacitor.getPlatform()): AppFiles
   const pathOf = (area: AppFilesArea, ...parts: string[]) => [where(area).base, ...parts].join('/');
   const read = async (area: AppFilesArea, dir: string, name: string) => {
     const { data } = await Filesystem.readFile({ path: pathOf(area, dir, name), directory: where(area).directory });
-    return typeof data === 'string' ? data : stripDataUrl(await blobToDataUrlString(data));
+    return typeof data === 'string' ? data : stripDataUrl(await blobToDataUrl(data));
   };
   const entries = async (area: AppFilesArea, ...parts: string[]) => {
     try {
@@ -242,15 +244,6 @@ export const APP_FILES = new InjectionToken<AppFiles>('APP_FILES', {
   factory: () => filesystemAppFiles(),
 });
 
-function base64ToBytesLocal(base64: string): Uint8Array {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
-
 /** Small key/value settings kept only on this device (not in backups); a token so tests can replace it. */
 export interface DevicePreferences {
   get(key: string): Promise<string | null>;
@@ -280,35 +273,4 @@ const MIME_TYPES: Record<string, string> = {
 export function mimeTypeOf(fileName: string): string {
   const extension = /\.([a-z0-9]+)$/i.exec(fileName)?.[1]?.toLowerCase() ?? '';
   return MIME_TYPES[extension] ?? 'application/octet-stream';
-}
-
-export function stripDataUrl(dataUrl: string): string {
-  const comma = dataUrl.indexOf(',');
-  return comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
-}
-
-function blobToDataUrlString(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(blob);
-  });
-}
-
-/** UTF-8 text as base64. */
-export function textToBase64(text: string): string {
-  const bytes = new TextEncoder().encode(text);
-  let binary = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  }
-  return btoa(binary);
-}
-
-/** base64 back to UTF-8 text. */
-export function base64ToText(base64: string): string {
-  const binary = atob(base64);
-  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
 }

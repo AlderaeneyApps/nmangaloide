@@ -1,5 +1,5 @@
 import { GalleryDetailResponse, TagResponse } from '../api';
-import { ZipWriter, base64ToBytes, bytesToBase64, comicInfoXml, concat, crc32, readZip } from './cbz';
+import { ZipWriter, comicInfoXml, concat, crc32, readZip } from './cbz';
 
 const text = (value: string) => new TextEncoder().encode(value);
 
@@ -47,11 +47,6 @@ describe('CBZ files', () => {
     const file = concat([zip.add('pages/', new Uint8Array()), zip.add('pages/001.png', text('x')), zip.finish()]);
     expect(readZip(file).map((entry) => entry.name)).toEqual(['pages/001.png']);
     expect(() => readZip(text('not a zip at all, sorry'))).toThrow('Not a ZIP file');
-  });
-
-  it('converts between bytes and base64', () => {
-    const bytes = new Uint8Array(70000).map((_, i) => i % 256);
-    expect([...base64ToBytes(bytesToBase64(bytes))]).toEqual([...bytes]);
   });
 
   it('describes the gallery in ComicInfo.xml for other comic readers', () => {

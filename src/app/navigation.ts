@@ -1,6 +1,19 @@
 /** Query parameter holding the page to go back to, e.g. `/settings?from=/tags`. */
 export const BACK_PARAM = 'from';
 
+/** Router URLs are relative; any origin works to parse them. */
+const PARSE_BASE = 'https://app.invalid';
+
+/** The path of a router URL, without its query and fragment: `/gallery/1?from=/` → `/gallery/1`. */
+export function pathOf(url: string): string {
+  return new URL(url, PARSE_BASE).pathname;
+}
+
+/** The segments of a router URL's path: `/gallery/1/read?page=2` → `['gallery', '1', 'read']`. */
+export function pathSegments(url: string): string[] {
+  return pathOf(url).split('/').filter(Boolean);
+}
+
 /**
  * Returns `url` if it is a safe in-app path to go back to, or null. Only paths
  * starting with a single `/` are accepted, so the parameter can't be used to send
@@ -33,7 +46,7 @@ export const TOP_LEVEL_PAGES: readonly string[] = ['tags', 'favorites', 'downloa
 
 /** Whether `url` is one of the TOP_LEVEL_PAGES, whatever its query params are. */
 export function isTopLevelPage(url: string): boolean {
-  const segments = new URL(url, 'https://app.invalid').pathname.split('/').filter(Boolean);
+  const segments = pathSegments(url);
   return segments.length === 1 && TOP_LEVEL_PAGES.includes(segments[0]);
 }
 
@@ -47,8 +60,8 @@ export function isTopLevelPage(url: string): boolean {
  * - anything else: the home page
  */
 export function backUrlFor(url: string): string | null {
-  const parsed = new URL(url, 'https://app.invalid');
-  const segments = parsed.pathname.split('/').filter(Boolean);
+  const parsed = new URL(url, PARSE_BASE);
+  const segments = pathSegments(url);
   const from = safeBackUrl(parsed.searchParams.get(BACK_PARAM));
 
   if (segments.length === 0 || segments[0] === 'welcome') {

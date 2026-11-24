@@ -11,8 +11,8 @@ import {
   NativeDownloadState,
   NativeDownloader,
 } from '../native/background-downloads';
-import { ZipWriter, base64ToBytes, bytesToBase64, concat, readZip } from '../native/cbz';
-import { textToBase64 } from '../native/download-folder';
+import { ZipWriter, concat, readZip } from '../native/cbz';
+import { base64ToBytes, bytesToBase64, textToBase64 } from '../native/encoding';
 import { APP_ACTIVE_LISTENER } from '../native/download-keep-alive';
 import { FakeDatabase, provideFakeDatabase } from '../testing/fake-database';
 import {
@@ -315,6 +315,29 @@ describe('DownloadService', () => {
     expect(db.saved.has(1)).toBe(false);
     expect(storage.files.size).toBe(0);
     expect(appFiles.files.size).toBe(0);
+    expect(service.jobs()).toEqual([]);
+  });
+
+  it('starts over when a gallery is removed and queued again while a page is on its way', async () => {
+    db.seedSaved({ id: 1, is_favorite: 0, download_status: 'queued', details_json: JSON.stringify(gallery(1, 3)) });
+    setUp();
+    await service.init();
+    await cdn();
+    await respond(pageUrl(1, 1), image());
+    const late = await vi.waitFor(() => http.expectOne(pageUrl(1, 2)));
+
+    await service.remove(1);
+    const again = service.download(gallery(1, 3));
+    await respond(coverUrl(1), image('cover'));
+    await again;
+    // The first download's page arrives after all: it belongs to the removed download.
+    late.flush(image());
+
+    // The new download starts from its first page; the old one doesn't go on to page 3.
+    await respond(pageUrl(1, 1), image());
+    await respond(pageUrl(1, 2), image());
+    await respond(pageUrl(1, 3), image());
+    await vi.waitFor(() => expect(service.stateOf(1)).toBe('downloaded'));
     expect(service.jobs()).toEqual([]);
   });
 

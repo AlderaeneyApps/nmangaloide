@@ -12,7 +12,7 @@ import { ApiKeyService } from './api-key.service';
  */
 export const nhentaiInterceptor: HttpInterceptorFn = (req, next) => {
   const config = inject(NHENTAI_API_CONFIG);
-  if (!req.url.startsWith(config.baseUrl)) {
+  if (!isApiUrl(req.url, config.baseUrl)) {
     return next(req);
   }
 
@@ -29,3 +29,15 @@ export const nhentaiInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req.clone({ setHeaders }));
 };
+
+/**
+ * Whether `url` is the API itself or below it. A plain prefix test would also match
+ * `https://nhentai.net/api/v2-other/…`, sending the key to an endpoint it isn't meant for.
+ */
+export function isApiUrl(url: string, baseUrl: string): boolean {
+  if (!url.startsWith(baseUrl)) {
+    return false;
+  }
+  const next = url.charAt(baseUrl.length);
+  return next === '' || next === '/' || next === '?' || next === '#';
+}

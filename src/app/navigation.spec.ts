@@ -1,6 +1,18 @@
-import { backUrlFor, parseSingleFilter } from './navigation';
+import { backUrlFor, parseSingleFilter, pathOf, pathSegments } from './navigation';
 
 import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
+
+describe('pathOf / pathSegments', () => {
+  it('drop the query and fragment', () => {
+    expect(pathOf('/gallery/1?from=%2F%3Fq%3Dx#top')).toBe('/gallery/1');
+    expect(pathSegments('/gallery/1/read?page=2')).toEqual(['gallery', '1', 'read']);
+  });
+
+  it('give no segments for the home page', () => {
+    expect(pathOf('/?q=tag:"a"')).toBe('/');
+    expect(pathSegments('/')).toEqual([]);
+  });
+});
 
 describe('parseSingleFilter', () => {
   it('reads a single type:"name" filter', () => {
